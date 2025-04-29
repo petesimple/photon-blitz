@@ -388,11 +388,13 @@
     }
 
     function swapSides() {
-      const homeInput = document.getElementById('homeName');
-      const awayInput = document.getElementById('awayName');
-      [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
-      saveNames();
-    }
+  const homeInput = document.getElementById('homeName');
+  const awayInput = document.getElementById('awayName');
+  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon]; // << THIS IS NEW
+  saveNames();
+  updateNameDisplays();
+}
 
     function saveNames() {
       localStorage.setItem('homeName', document.getElementById('homeName').value);
