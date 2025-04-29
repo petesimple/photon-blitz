@@ -230,6 +230,7 @@
     let timeoutInterval;
     const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
     let announcedTimes = new Set();
+    let gameScores = [];
 
     function speak(text) {
       if ('speechSynthesis' in window) {
@@ -317,13 +318,18 @@
     }
 
     function endGame() {
-      if (!suddenDeath) matchesPlayed++;
-      if (homeScoreValue > awayScoreValue) homeGamesWon++;
-      else awayGamesWon++;
-      swapSides();
-      resetForNextGame();
-      updateSummary();
-    }
+  if (!suddenDeath) matchesPlayed++;
+  if (homeScoreValue > awayScoreValue) homeGamesWon++;
+  else awayGamesWon++;
+
+  const homeName = document.getElementById('homeName').value || 'Home';
+  const awayName = document.getElementById('awayName').value || 'Away';
+  gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+
+  swapSides();
+  resetForNextGame();
+  updateSummary();
+}
 
     function resetForNextGame() {
       homeScoreValue = 0;
@@ -409,19 +415,26 @@
     }
 
     function updateSummary() {
-      const homeName = document.getElementById('homeName').value || 'Home';
-      const awayName = document.getElementById('awayName').value || 'Away';
-      let summary = '';
-      if (homeGamesWon > awayGamesWon) {
-        summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
-      } else if (awayGamesWon > homeGamesWon) {
-        summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
-      } else {
-        summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
-      }
-      summary += `Matches Played: ${matchesPlayed}`;
-      document.getElementById('summaryText').innerHTML = summary;
-    }
+  const homeName = document.getElementById('homeName').value || 'Home';
+  const awayName = document.getElementById('awayName').value || 'Away';
+  let summary = '';
+
+  if (homeGamesWon > awayGamesWon) {
+    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+  } else if (awayGamesWon > homeGamesWon) {
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+  } else {
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+  }
+
+  summary += `Matches Played: ${matchesPlayed}<br><br>`;
+
+  if (gameScores.length > 0) {
+    summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => `Game ${i + 1}: ${s}`).join('<br>');
+  }
+
+  document.getElementById('summaryText').innerHTML = summary;
+}
 
     function loadNames() {
       const savedHome = localStorage.getItem('homeName');
