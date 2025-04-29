@@ -56,16 +56,16 @@ body {
 
 #blitzBanner {
   display: none;
-  font-size: 2em;
+  font-size: 1.8em;
   font-weight: bold;
-  color: #ff0;
+  color: #ffcc00;
   position: absolute;
   top: 10px;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
   text-align: center;
   animation: flash 1s infinite;
-  text-shadow: 0 0 10px #ffff00, 0 0 20px #ff0;
+  text-shadow: 0 0 4px #ffcc00;
 }
 
 @keyframes flash {
