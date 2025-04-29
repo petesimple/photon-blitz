@@ -6,6 +6,8 @@
   <title>Photon Blitz Score System</title>
   <link rel="manifest" href="manifest.json">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
     body {
       font-family: 'Orbitron', sans-serif;
       text-align: center;
@@ -20,7 +22,16 @@
     }
     .scoreboard {
       margin-top: 10px;
-      font-size: 2em;
+      font-size: 3em;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+      color: #00ffff;
+      letter-spacing: 3px;
+    }
+    #timer {
+      font-size: 4em;
+      margin-bottom: 10px;
+      color: #ff4444;
+      text-shadow: 0 0 8px #ff0000, 0 0 15px #ff0000, 0 0 30px #ff0000;
     }
     .buttons {
       margin-top: 20px;
@@ -56,7 +67,6 @@
       border: none;
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo">
