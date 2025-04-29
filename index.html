@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photon Blitz Score System</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body { font-family: 'Orbitron', sans-serif; text-align: center; background: #000; color: #0ff; padding: 20px; }
+    .scoreboard-top {
+      background: url('scoreboard.webp') no-repeat center;
+      background-size: contain;
+      height: 200px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .scoreboard {
+      margin-top: 20px;
+      font-size: 2em;
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    button {
+      font-size: 1.5em;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      background: #0ff;
+      color: #000;
+      cursor: pointer;
+    }
+    button:active { transform: scale(0.98); }
+    #gear {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 2em;
+      cursor: pointer;
+    }
+    #menu { display: none; margin-top: 30px; }
+    input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1.2em;
+      border-radius: 5px;
+      border: none;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Photon Blitz Scoreboard</h1>
+  <div class="scoreboard-top"></div>
+
+  <div>
+    <input type="text" id="homeName" placeholder="Home Name">
+    <input type="text" id="awayName" placeholder="Away Name">
+  </div>
+
+  <div class="scoreboard">
+    <div id="timer">03:00</div>
+    <div>
+      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button onclick="score('home')">Home Score</button>
+    <button onclick="toggleTimer()">Pause/Resume Timer</button>
+    <button onclick="score('away')">Away Score</button>
+  </div>
+
+  <div id="gear" onclick="openMenu()">⚙️</div>
+
+  <div id="menu">
+    <button onclick="restartGame()">Restart Game</button>
+    <button onclick="startSuddenDeath()">Sudden Death</button>
+  </div>
+
+  <script>
+    let time = 180;
+    let timerInterval;
+    let running = false;
+    let homeScoreValue = 0;
+    let awayScoreValue = 0;
+    let blitz = false;
+
+    function updateTimer() {
+      const minutes = String(Math.floor(time / 60)).padStart(2, '0');
+      const seconds = String(time % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+    }
+
+    function toggleTimer() {
+      if (running) {
+        clearInterval(timerInterval);
+      } else {
+        timerInterval = setInterval(() => {
+          if (time > 0) {
+            time--;
+            updateTimer();
+            if (time === 60) blitz = true;
+          } else {
+            clearInterval(timerInterval);
+            running = false;
+          }
+        }, 1000);
+      }
+      running = !running;
+    }
+
+    function score(side) {
+      clearInterval(timerInterval);
+      running = false;
+      if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+      if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+      document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+      document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+    }
+
+    function restartGame() {
+      if (confirm('Restart Game? Hold confirm to reset.')) {
+        homeScoreValue = 0;
+        awayScoreValue = 0;
+        time = 180;
+        blitz = false;
+        updateTimer();
+        document.getElementById('homeScoreDisplay').textContent = 0;
+        document.getElementById('awayScoreDisplay').textContent = 0;
+        running = false;
+        clearInterval(timerInterval);
+        document.getElementById('menu').style.display = 'none';
+      }
+    }
+
+    function openMenu() {
+      document.getElementById('menu').style.display = 'block';
+    }
+
+    function startSuddenDeath() {
+      clearInterval(timerInterval);
+      running = false;
+      time = 0;
+      document.getElementById('timer').textContent = 'Sudden Death';
+      document.getElementById('menu').style.display = 'none';
+    }
+
+    updateTimer();
+  </script>
+</body>
+</html>
