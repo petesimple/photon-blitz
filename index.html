@@ -16,7 +16,6 @@
     }
   </script>
 
-  <!-- Styles -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
@@ -75,7 +74,9 @@
       display: flex;
       justify-content: center;
       gap: 20px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+      overflow-x: auto;
     }
 
     button {
@@ -87,6 +88,7 @@
       color: #012B58;
       cursor: pointer;
       box-shadow: 0 0 10px #00eaff80;
+      flex-shrink: 0;
     }
 
     button:active {
@@ -142,7 +144,6 @@
       font-family: 'Orbitron', sans-serif;
     }
 
-    /* Responsive Tweaks for Small Screens */
     @media (max-width: 600px) {
       #timer {
         font-size: 2.5em;
@@ -153,14 +154,9 @@
         gap: 15px;
       }
 
-      .buttons {
-        flex-direction: column;
-        gap: 10px;
-      }
-
       button {
-        font-size: 1.2em;
-        padding: 10px 20px;
+        font-size: 1.1em;
+        padding: 10px 15px;
       }
 
       .name-input, .name-display {
@@ -170,6 +166,10 @@
       .scoreboard {
         height: auto;
         padding: 10px;
+      }
+
+      .buttons {
+        gap: 10px;
       }
     }
   </style>
