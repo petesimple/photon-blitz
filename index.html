@@ -176,6 +176,22 @@
       document.getElementById('menu').style.display = 'none';
     }
 
+    function saveNames() {
+      localStorage.setItem('homeName', document.getElementById('homeName').value);
+      localStorage.setItem('awayName', document.getElementById('awayName').value);
+    }
+
+    function loadNames() {
+      const savedHome = localStorage.getItem('homeName');
+      const savedAway = localStorage.getItem('awayName');
+      if (savedHome) document.getElementById('homeName').value = savedHome;
+      if (savedAway) document.getElementById('awayName').value = savedAway;
+    }
+
+    document.getElementById('homeName').addEventListener('input', saveNames);
+    document.getElementById('awayName').addEventListener('input', saveNames);
+
+    loadNames();
     updateTimer();
   </script>
 </body>
