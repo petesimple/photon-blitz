@@ -33,8 +33,11 @@
       color: #ff4444;
       text-shadow: 0 0 8px #ff0000, 0 0 15px #ff0000, 0 0 30px #ff0000;
     }
-    .buttons {
+    .timeout-button {
       margin-top: 20px;
+    }
+    .buttons {
+      margin-top: 10px;
       display: flex;
       justify-content: center;
       gap: 20px;
@@ -83,11 +86,14 @@
     </div>
   </div>
 
+  <div class="timeout-button">
+    <button onclick="startTimeout()">Timeout 10s</button>
+  </div>
+
   <div class="buttons">
     <button onclick="score('home')">Home Score</button>
     <button onclick="toggleTimer()">Pause/Resume Timer</button>
     <button onclick="score('away')">Away Score</button>
-    <button onclick="startTimeout()">Timeout 10s</button>
   </div>
 
   <div id="gear" onclick="openMenu()">⚙️</div>
