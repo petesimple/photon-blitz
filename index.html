@@ -62,21 +62,45 @@
       cursor: pointer;
     }
     #menu { display: none; margin-top: 30px; }
-    input {
-      padding: 10px;
-      margin: 10px;
-      font-size: 1.2em;
-      border-radius: 5px;
+    .name-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .name-wrapper {
+      min-width: 150px;
+    }
+    .name-input, .name-display {
+      font-size: 1.5em;
+      padding: 8px;
       border: none;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .name-display {
+      background: transparent;
+      color: #0ff;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+      cursor: pointer;
+    }
+    input.name-input {
+      font-family: 'Orbitron', sans-serif;
     }
   </style>
 </head>
 <body>
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo">
 
-  <div>
-    <input type="text" id="homeName" placeholder="Home Name">
-    <input type="text" id="awayName" placeholder="Away Name">
+  <div class="name-container">
+    <div class="name-wrapper">
+      <input type="text" id="homeName" class="name-input" placeholder="Home Name">
+      <span id="homeDisplay" class="name-display" style="display:none;"></span>
+    </div>
+    <div class="name-wrapper">
+      <input type="text" id="awayName" class="name-input" placeholder="Away Name">
+      <span id="awayDisplay" class="name-display" style="display:none;"></span>
+    </div>
   </div>
 
   <div class="scoreboard">
@@ -215,8 +239,25 @@
     }
 
     function saveNames() {
-      localStorage.setItem('homeName', document.getElementById('homeName').value);
-      localStorage.setItem('awayName', document.getElementById('awayName').value);
+      const homeInput = document.getElementById('homeName');
+      const awayInput = document.getElementById('awayName');
+      localStorage.setItem('homeName', homeInput.value);
+      localStorage.setItem('awayName', awayInput.value);
+      updateNameDisplay('home');
+      updateNameDisplay('away');
+    }
+
+    function updateNameDisplay(side) {
+      const input = document.getElementById(`${side}Name`);
+      const display = document.getElementById(`${side}Display`);
+      if (input.value.trim()) {
+        input.style.display = 'none';
+        display.textContent = input.value;
+        display.style.display = 'inline-block';
+      } else {
+        display.style.display = 'none';
+        input.style.display = 'inline-block';
+      }
     }
 
     function loadNames() {
@@ -224,10 +265,22 @@
       const savedAway = localStorage.getItem('awayName');
       if (savedHome) document.getElementById('homeName').value = savedHome;
       if (savedAway) document.getElementById('awayName').value = savedAway;
+      updateNameDisplay('home');
+      updateNameDisplay('away');
     }
 
-    document.getElementById('homeName').addEventListener('input', saveNames);
-    document.getElementById('awayName').addEventListener('input', saveNames);
+    document.getElementById('homeName').addEventListener('blur', saveNames);
+    document.getElementById('awayName').addEventListener('blur', saveNames);
+    document.getElementById('homeDisplay').addEventListener('click', () => {
+      document.getElementById('homeDisplay').style.display = 'none';
+      document.getElementById('homeName').style.display = 'inline-block';
+      document.getElementById('homeName').focus();
+    });
+    document.getElementById('awayDisplay').addEventListener('click', () => {
+      document.getElementById('awayDisplay').style.display = 'none';
+      document.getElementById('awayName').style.display = 'inline-block';
+      document.getElementById('awayName').focus();
+    });
 
     loadNames();
     updateTimer();
