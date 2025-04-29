@@ -63,23 +63,6 @@
       text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
     }
 
-    .name-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin: 30px 0;
-    }
-
-    .name-input {
-      font-size: 1.3em;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
-      font-family: 'Orbitron', sans-serif;
-      text-align: center;
-    }
-
     .timeout-button {
       margin-bottom: 20px;
     }
@@ -120,11 +103,29 @@
     #menu {
       display: none;
       margin-top: 30px;
+      transition: all 0.3s ease;
     }
 
-    #menu button {
-      display: block;
+    #menu button, #menu .name-container {
       margin: 10px auto;
+    }
+
+    .name-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: nowrap;
+      margin-top: 10px;
+    }
+
+    .name-input {
+      font-size: 1.3em;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      min-width: 150px;
     }
 
     @media (max-width: 600px) {
@@ -152,11 +153,6 @@
     </div>
   </div>
 
-  <div class="name-container">
-    <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
-    <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
-  </div>
-
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
   </div>
@@ -170,6 +166,10 @@
   <div id="gear" onclick="toggleMenu()">⚙️</div>
 
   <div id="menu">
+    <div class="name-container">
+      <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
+      <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
+    </div>
     <button onclick="restartGame()">Restart Game</button>
     <button onclick="startSuddenDeath()">Sudden Death</button>
     <button onclick="swapSides()">Swap Sides</button>
@@ -270,9 +270,13 @@
     function toggleMenu() {
       const menu = document.getElementById('menu');
       const buttonsWrapper = document.getElementById('buttonsWrapper');
-      const isMenuShown = menu.style.display === 'block';
-      menu.style.display = isMenuShown ? 'none' : 'block';
-      buttonsWrapper.style.display = isMenuShown ? 'flex' : 'none';
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        buttonsWrapper.style.display = 'flex';
+      } else {
+        menu.style.display = 'block';
+        buttonsWrapper.style.display = 'none';
+      }
     }
 
     function startSuddenDeath() {
