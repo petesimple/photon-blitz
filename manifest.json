@@ -1,19 +1,14 @@
 {
   "name": "Photon Blitz Scoreboard",
-  "short_name": "Photon Blitz",
-  "start_url": "./index.html",
+  "short_name": "PhotonBlitz",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#00ffff",
+  "background_color": "#010518",
+  "theme_color": "#00eaff",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
+      "src": "photonblitzlogo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
