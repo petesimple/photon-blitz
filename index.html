@@ -6,17 +6,20 @@
   <title>Photon Blitz Score System</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body { font-family: 'Orbitron', sans-serif; text-align: center; background: #000; color: #0ff; padding: 20px; }
-    .scoreboard-top {
-      background: url('scoreboard.webp') no-repeat center;
-      background-size: contain;
-      height: 200px;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
+    body {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom right, #010518, #012B58);
+      color: #00eaff;
+      padding: 20px;
+    }
+    .logo {
+      max-width: 300px;
+      height: auto;
+      margin: 20px auto;
     }
     .scoreboard {
-      margin-top: 20px;
+      margin-top: 10px;
       font-size: 2em;
     }
     .buttons {
@@ -31,9 +34,10 @@
       padding: 15px 30px;
       border: none;
       border-radius: 8px;
-      background: #0ff;
-      color: #000;
+      background: #00eaff;
+      color: #012B58;
       cursor: pointer;
+      box-shadow: 0 0 10px #00eaff80;
     }
     button:active { transform: scale(0.98); }
     #gear {
@@ -55,8 +59,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Photon Blitz Scoreboard</h1>
-  <div class="scoreboard-top"></div>
+  <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo">
 
   <div>
     <input type="text" id="homeName" placeholder="Home Name">
