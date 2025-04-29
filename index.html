@@ -37,7 +37,7 @@
       margin-top: 20px;
       display: flex;
       justify-content: center;
-      gap: 40px;
+      gap: 20px;
       flex-wrap: wrap;
     }
     button {
@@ -87,6 +87,7 @@
     <button onclick="score('home')">Home Score</button>
     <button onclick="toggleTimer()">Pause/Resume Timer</button>
     <button onclick="score('away')">Away Score</button>
+    <button onclick="startTimeout()">Timeout 10s</button>
   </div>
 
   <div id="gear" onclick="openMenu()">⚙️</div>
@@ -104,6 +105,9 @@
     let awayScoreValue = 0;
     let blitz = false;
     let announcedTimes = new Set();
+    let timeoutActive = false;
+    let timeoutCounter = 10;
+    let timeoutInterval;
 
     const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
 
@@ -156,6 +160,24 @@
       if (side === 'away') awayScoreValue += blitz ? 2 : 1;
       document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
       document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+    }
+
+    function startTimeout() {
+      if (running) toggleTimer();
+      timeoutActive = true;
+      timeoutCounter = 10;
+      document.getElementById('timer').textContent = `Timeout: 10`;
+      timeoutInterval = setInterval(() => {
+        timeoutCounter--;
+        if (timeoutCounter > 0) {
+          document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
+        } else {
+          clearInterval(timeoutInterval);
+          timeoutActive = false;
+          updateTimer();
+          toggleTimer();
+        }
+      }, 1000);
     }
 
     function restartGame() {
