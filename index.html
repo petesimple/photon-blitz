@@ -139,8 +139,10 @@
       pointer-events: all;
     }
 
-    #menu button, #menu .name-container {
-      margin: 10px auto;
+    .match-summary {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px #0ff;
     }
 
     .name-container {
@@ -206,8 +208,13 @@
       <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
     </div>
     <button onclick="restartGame()">Restart Game</button>
-    <button onclick="startSuddenDeath()">Sudden Death</button>
+    <button onclick="startSuddenDeath()">Force Sudden Death</button>
     <button onclick="swapSides()">Swap Sides</button>
+
+    <div class="match-summary" id="matchSummary">
+      <h3>Match Summary</h3>
+      <div id="summaryText"></div>
+    </div>
   </div>
 
   <script>
@@ -219,6 +226,10 @@
     let blitz = false;
     let timeoutCounter = 10;
     let timeoutInterval;
+    let suddenDeath = false;
+    let homeGamesWon = 0;
+    let awayGamesWon = 0;
+    let matchesPlayed = 0;
     const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
     let announcedTimes = new Set();
 
@@ -243,6 +254,16 @@
         speak("Blitz period! Double points!");
       }
 
+      if (time === 0) {
+        clearInterval(timerInterval);
+        running = false;
+        if (homeScoreValue === awayScoreValue) {
+          startSuddenDeath();
+        } else {
+          endGame();
+        }
+      }
+
       if (calloutTimes.has(time) && !announcedTimes.has(time)) {
         speak(`${minutes}:${seconds}`);
         announcedTimes.add(time);
@@ -257,9 +278,6 @@
           if (time > 0) {
             time--;
             updateTimer();
-          } else {
-            clearInterval(timerInterval);
-            running = false;
           }
         }, 1000);
       }
@@ -267,12 +285,17 @@
     }
 
     function score(side) {
-      clearInterval(timerInterval);
-      running = false;
       if (side === 'home') homeScoreValue += blitz ? 2 : 1;
       if (side === 'away') awayScoreValue += blitz ? 2 : 1;
       document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
       document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+      if (suddenDeath) {
+        endGame();
+      } else {
+        clearInterval(timerInterval);
+        running = false;
+      }
     }
 
     function startTimeout() {
@@ -291,22 +314,28 @@
       }, 1000);
     }
 
-    function restartGame() {
-      if (confirm('Restart Game?')) {
-        homeScoreValue = 0;
-        awayScoreValue = 0;
-        time = 180;
-        blitz = false;
-        document.getElementById('blitzBanner').style.display = 'none';
-        announcedTimes.clear();
-        updateTimer();
-        document.getElementById('homeScoreDisplay').textContent = 0;
-        document.getElementById('awayScoreDisplay').textContent = 0;
-        clearInterval(timerInterval);
-        document.getElementById('menu').classList.remove('active');
-        document.getElementById('buttonsWrapper').style.display = 'flex';
-        running = false;
-      }
+    function endGame() {
+      if (!suddenDeath) matchesPlayed++;
+      if (homeScoreValue > awayScoreValue) homeGamesWon++;
+      else awayGamesWon++;
+
+      swapSides();
+      resetForNextGame();
+      updateSummary();
+    }
+
+    function resetForNextGame() {
+      homeScoreValue = 0;
+      awayScoreValue = 0;
+      time = 180;
+      blitz = false;
+      suddenDeath = false;
+      announcedTimes.clear();
+      document.getElementById('blitzBanner').style.display = 'none';
+      updateTimer();
+      document.getElementById('homeScoreDisplay').textContent = 0;
+      document.getElementById('awayScoreDisplay').textContent = 0;
+      updateNameDisplays();
     }
 
     function toggleMenu() {
@@ -326,11 +355,10 @@
 
     function startSuddenDeath() {
       clearInterval(timerInterval);
+      suddenDeath = true;
       running = false;
       time = 0;
       document.getElementById('timer').textContent = 'Sudden Death';
-      document.getElementById('menu').classList.remove('active');
-      document.getElementById('buttonsWrapper').style.display = 'flex';
     }
 
     function swapSides() {
@@ -341,12 +369,24 @@
     }
 
     function saveNames() {
-      const home = document.getElementById('homeName').value;
-      const away = document.getElementById('awayName').value;
-      localStorage.setItem('homeName', home);
-      localStorage.setItem('awayName', away);
-      document.getElementById('homeDisplay').textContent = home || 'Home';
-      document.getElementById('awayDisplay').textContent = away || 'Away';
+      localStorage.setItem('homeName', document.getElementById('homeName').value);
+      localStorage.setItem('awayName', document.getElementById('awayName').value);
+      updateNameDisplays();
+    }
+
+    function updateNameDisplays() {
+      document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
+      document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
+    }
+
+    function updateSummary() {
+      const home = document.getElementById('homeName').value || 'Home';
+      const away = document.getElementById('awayName').value || 'Away';
+      document.getElementById('summaryText').innerHTML = `
+        Home: ${home} (${homeGamesWon} Wins)<br>
+        Away: ${away} (${awayGamesWon} Wins)<br>
+        Matches Played: ${matchesPlayed}
+      `;
     }
 
     function loadNames() {
@@ -354,12 +394,12 @@
       const savedAway = localStorage.getItem('awayName');
       if (savedHome) document.getElementById('homeName').value = savedHome;
       if (savedAway) document.getElementById('awayName').value = savedAway;
-      document.getElementById('homeDisplay').textContent = savedHome || 'Home';
-      document.getElementById('awayDisplay').textContent = savedAway || 'Away';
+      updateNameDisplays();
     }
 
     loadNames();
     updateTimer();
+    updateSummary();
   </script>
 </body>
 </html>
