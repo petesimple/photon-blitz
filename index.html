@@ -21,17 +21,27 @@
       margin: 20px auto;
     }
     .scoreboard {
-      margin-top: 10px;
-      font-size: 3em;
-      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
-      color: #00ffff;
-      letter-spacing: 3px;
+      margin-top: 20px;
+      padding: 20px;
+      border: 3px solid #00ffff;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
+      display: inline-block;
     }
     #timer {
       font-size: 4em;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       color: #ff4444;
       text-shadow: 0 0 8px #ff0000, 0 0 15px #ff0000, 0 0 30px #ff0000;
+    }
+    .names {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #00ffff;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
     }
     .timeout-button {
       margin-top: 20px;
@@ -93,21 +103,25 @@
 <body>
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo">
 
-  <div class="name-container">
-    <div class="name-wrapper">
-      <input type="text" id="homeName" class="name-input" placeholder="Home Name">
-      <span id="homeDisplay" class="name-display" style="display:none;"></span>
+  <div class="scoreboard">
+    <div id="timer">03:00</div>
+
+    <div class="names">
+      <span id="homeDisplay">Home</span>
+      <span id="awayDisplay">Away</span>
     </div>
-    <div class="name-wrapper">
-      <input type="text" id="awayName" class="name-input" placeholder="Away Name">
-      <span id="awayDisplay" class="name-display" style="display:none;"></span>
+
+    <div>
+      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
   </div>
 
-  <div class="scoreboard">
-    <div id="timer">03:00</div>
-    <div>
-      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
+  <div class="name-container">
+    <div class="name-wrapper">
+      <input type="text" id="homeName" class="name-input" placeholder="Home Name">
+    </div>
+    <div class="name-wrapper">
+      <input type="text" id="awayName" class="name-input" placeholder="Away Name">
     </div>
   </div>
 
@@ -250,6 +264,9 @@
       homeInput.value = awayInput.value;
       awayInput.value = tempName;
 
+      homeDisplay.textContent = homeInput.value || 'Home';
+      awayDisplay.textContent = awayInput.value || 'Away';
+
       saveNames();
     }
 
@@ -258,21 +275,8 @@
       const awayInput = document.getElementById('awayName');
       localStorage.setItem('homeName', homeInput.value);
       localStorage.setItem('awayName', awayInput.value);
-      updateNameDisplay('home');
-      updateNameDisplay('away');
-    }
-
-    function updateNameDisplay(side) {
-      const input = document.getElementById(`${side}Name`);
-      const display = document.getElementById(`${side}Display`);
-      if (input.value.trim()) {
-        input.style.display = 'none';
-        display.textContent = input.value;
-        display.style.display = 'inline-block';
-      } else {
-        display.style.display = 'none';
-        input.style.display = 'inline-block';
-      }
+      document.getElementById('homeDisplay').textContent = homeInput.value || 'Home';
+      document.getElementById('awayDisplay').textContent = awayInput.value || 'Away';
     }
 
     function loadNames() {
@@ -280,22 +284,9 @@
       const savedAway = localStorage.getItem('awayName');
       if (savedHome) document.getElementById('homeName').value = savedHome;
       if (savedAway) document.getElementById('awayName').value = savedAway;
-      updateNameDisplay('home');
-      updateNameDisplay('away');
+      document.getElementById('homeDisplay').textContent = savedHome || 'Home';
+      document.getElementById('awayDisplay').textContent = savedAway || 'Away';
     }
-
-    document.getElementById('homeName').addEventListener('blur', saveNames);
-    document.getElementById('awayName').addEventListener('blur', saveNames);
-    document.getElementById('homeDisplay').addEventListener('click', () => {
-      document.getElementById('homeDisplay').style.display = 'none';
-      document.getElementById('homeName').style.display = 'inline-block';
-      document.getElementById('homeName').focus();
-    });
-    document.getElementById('awayDisplay').addEventListener('click', () => {
-      document.getElementById('awayDisplay').style.display = 'none';
-      document.getElementById('awayName').style.display = 'inline-block';
-      document.getElementById('awayName').focus();
-    });
 
     loadNames();
     updateTimer();
