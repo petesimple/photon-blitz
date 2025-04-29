@@ -269,18 +269,24 @@
     }
 
     function toggleTimer() {
-      if (running) {
-        clearInterval(timerInterval);
-      } else {
-        timerInterval = setInterval(() => {
-          if (time > 0) {
-            time--;
-            updateTimer();
-          }
-        }, 100);
+  if (timeoutInterval) {
+    clearInterval(timeoutInterval);
+    timeoutInterval = null;
+    updateTimer(); // restore the normal timer display
+  }
+  
+  if (running) {
+    clearInterval(timerInterval);
+  } else {
+    timerInterval = setInterval(() => {
+      if (time > 0) {
+        time--;
+        updateTimer();
       }
-      running = !running;
-    }
+    }, 100);
+  }
+  running = !running;
+}
 
     function adjustTime(seconds) {
       time = Math.max(0, Math.min(5999, time + seconds * 10));
