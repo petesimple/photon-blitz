@@ -346,11 +346,12 @@
     }
 
     function resetMatch() {
-      homeGamesWon = 0;
-      awayGamesWon = 0;
-      matchesPlayed = 0;
-      restartGame();
-    }
+  homeGamesWon = 0;
+  awayGamesWon = 0;
+  matchesPlayed = 0;
+  gameScores = []; // ← optional
+  restartGame();
+}
 
     function restartGame() {
       homeScoreValue = 0;
