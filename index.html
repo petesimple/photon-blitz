@@ -78,10 +78,10 @@
 
     .buttons button {
       flex: 0 0 auto;
-      font-size: 1.5em;
-      padding: 15px 25px;
+      font-size: 1.6em;
+      padding: 18px 28px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: #00eaff;
       color: #012B58;
       cursor: pointer;
@@ -96,14 +96,20 @@
     #gear {
       display: block;
       margin: 30px auto 10px auto;
-      font-size: 2em;
+      font-size: 2.5em;
       cursor: pointer;
     }
 
     #menu {
-      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
       margin-top: 30px;
-      transition: all 0.3s ease;
+    }
+
+    #menu.active {
+      opacity: 1;
+      pointer-events: all;
     }
 
     #menu button, #menu .name-container {
@@ -119,8 +125,8 @@
     }
 
     .name-input {
-      font-size: 1.3em;
-      padding: 8px;
+      font-size: 1.4em;
+      padding: 10px;
       border: none;
       border-radius: 5px;
       font-family: 'Orbitron', sans-serif;
@@ -131,8 +137,8 @@
     @media (max-width: 600px) {
       #timer { font-size: 2.5em; }
       .names { font-size: 1.2em; gap: 15px; }
-      .buttons button { font-size: 1.2em; padding: 10px 20px; }
-      .name-input { font-size: 1.1em; }
+      .buttons button { font-size: 1.3em; padding: 14px 20px; }
+      .name-input { font-size: 1.2em; }
       .scoreboard { padding: 10px; }
       .buttons { gap: 10px; }
     }
@@ -261,7 +267,7 @@
         document.getElementById('homeScoreDisplay').textContent = 0;
         document.getElementById('awayScoreDisplay').textContent = 0;
         clearInterval(timerInterval);
-        document.getElementById('menu').style.display = 'none';
+        document.getElementById('menu').classList.remove('active');
         document.getElementById('buttonsWrapper').style.display = 'flex';
         running = false;
       }
@@ -270,12 +276,15 @@
     function toggleMenu() {
       const menu = document.getElementById('menu');
       const buttonsWrapper = document.getElementById('buttonsWrapper');
-      if (menu.style.display === 'block') {
-        menu.style.display = 'none';
+      if (menu.classList.contains('active')) {
+        menu.classList.remove('active');
         buttonsWrapper.style.display = 'flex';
       } else {
-        menu.style.display = 'block';
+        menu.classList.add('active');
         buttonsWrapper.style.display = 'none';
+        setTimeout(() => {
+          document.getElementById('homeName').focus();
+        }, 300);
       }
     }
 
@@ -284,7 +293,7 @@
       running = false;
       time = 0;
       document.getElementById('timer').textContent = 'Sudden Death';
-      document.getElementById('menu').style.display = 'none';
+      document.getElementById('menu').classList.remove('active');
       document.getElementById('buttonsWrapper').style.display = 'flex';
     }
 
