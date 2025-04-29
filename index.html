@@ -62,6 +62,7 @@
       cursor: pointer;
     }
     #menu { display: none; margin-top: 30px; }
+    #menu button { display: block; margin: 10px auto; }
     .name-container {
       display: flex;
       justify-content: center;
@@ -125,6 +126,7 @@
   <div id="menu">
     <button onclick="restartGame()">Restart Game</button>
     <button onclick="startSuddenDeath()">Sudden Death</button>
+    <button onclick="swapSides()">Swap Sides</button>
   </div>
 
   <script>
@@ -236,6 +238,19 @@
       time = 0;
       document.getElementById('timer').textContent = 'Sudden Death';
       document.getElementById('menu').style.display = 'none';
+    }
+
+    function swapSides() {
+      const homeInput = document.getElementById('homeName');
+      const awayInput = document.getElementById('awayName');
+      const homeDisplay = document.getElementById('homeDisplay');
+      const awayDisplay = document.getElementById('awayDisplay');
+
+      let tempName = homeInput.value;
+      homeInput.value = awayInput.value;
+      awayInput.value = tempName;
+
+      saveNames();
     }
 
     function saveNames() {
