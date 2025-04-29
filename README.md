@@ -22,5 +22,10 @@ Welcome to the **Photon Blitz Scoreboard**, a fast, responsive, and referee-frie
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/photon-blitz-score.git
+git clone https://github.com/petesimple/photon-blitz-score.git
 cd photon-blitz-score
+
+---
+Created with ❤️ by pete and the Photon Blitz community.
+Inspired by real gameplay needs.
+Play fast. Play hard. Play Photon.
