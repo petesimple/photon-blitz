@@ -93,11 +93,32 @@
     let homeScoreValue = 0;
     let awayScoreValue = 0;
     let blitz = false;
+    let announcedTimes = new Set();
+
+    const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.pitch = 1.2;
+        msg.rate = 1.1;
+        msg.volume = 1;
+        speechSynthesis.speak(msg);
+      }
+    }
 
     function updateTimer() {
       const minutes = String(Math.floor(time / 60)).padStart(2, '0');
       const seconds = String(time % 60).padStart(2, '0');
       document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+
+      if (calloutTimes.has(time) && !announcedTimes.has(time)) {
+        let say = `${minutes}:${seconds}`;
+        if (time === 60) say = "Blitz period! Double points!";
+        else if (time < 10) say = `${seconds}`;
+        speak(say);
+        announcedTimes.add(time);
+      }
     }
 
     function toggleTimer() {
@@ -133,6 +154,7 @@
         awayScoreValue = 0;
         time = 180;
         blitz = false;
+        announcedTimes.clear();
         updateTimer();
         document.getElementById('homeScoreDisplay').textContent = 0;
         document.getElementById('awayScoreDisplay').textContent = 0;
