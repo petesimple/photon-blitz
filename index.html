@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photon Blitz Score System</title>
-
-  <!-- PWA Support -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#00eaff" />
   <link rel="apple-touch-icon" href="photonblitzlogo.png" />
@@ -15,7 +13,6 @@
         .then(() => console.log('Service Worker Registered'));
     }
   </script>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
     body {
@@ -166,7 +163,7 @@
 
   <div class="scoreboard">
     <div id="blitzBanner">BLITZ MODE ⚡</div>
-    <div id="timer">03:00</div>
+    <div id="timer">03:00.0</div>
     <div class="names">
       <span id="homeDisplay">Home</span>
       <span id="awayDisplay">Away</span>
@@ -200,9 +197,13 @@
     <button onclick="resetMatch()">Reset Match</button>
 
     <div class="time-controls">
+      <button onclick="adjustTime(0.5)">+0.5s</button>
+      <button onclick="adjustTime(1)">+1s</button>
       <button onclick="adjustTime(10)">+10s</button>
       <button onclick="adjustTime(30)">+30s</button>
       <button onclick="adjustTime(60)">+1min</button>
+      <button onclick="adjustTime(-0.5)">-0.5s</button>
+      <button onclick="adjustTime(-1)">-1s</button>
       <button onclick="adjustTime(-10)">-10s</button>
       <button onclick="adjustTime(-30)">-30s</button>
       <button onclick="adjustTime(-60)">-1min</button>
@@ -215,7 +216,7 @@
   </div>
 
   <script>
-    let time = 180;
+    let time = 1800; // tenths of seconds
     let timerInterval;
     let running = false;
     let homeScoreValue = 0;
@@ -241,10 +242,11 @@
     }
 
     function updateTimer() {
-      const minutes = String(Math.floor(time / 60)).padStart(2, '0');
-      const seconds = String(time % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
-      if (time === 60 && !blitz) {
+      const minutes = String(Math.floor(time / 600)).padStart(2, '0');
+      const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
+      const tenths = String(time % 10);
+      document.getElementById('timer').textContent = `${minutes}:${seconds}.${tenths}`;
+      if (time === 600 && !blitz) {
         blitz = true;
         document.getElementById('blitzBanner').style.display = 'block';
         speak("Blitz period! Double points!");
@@ -258,9 +260,10 @@
           endGame();
         }
       }
-      if (calloutTimes.has(time) && !announcedTimes.has(time)) {
+      const sec = Math.floor(time / 10);
+      if (calloutTimes.has(sec) && !announcedTimes.has(sec)) {
         speak(`${minutes}:${seconds}`);
-        announcedTimes.add(time);
+        announcedTimes.add(sec);
       }
     }
 
@@ -273,10 +276,20 @@
             time--;
             updateTimer();
           }
-        }, 1000);
+        }, 100);
       }
       running = !running;
     }
+
+    function adjustTime(seconds) {
+      time = Math.max(0, Math.min(5999, time + seconds * 10));
+      updateTimer();
+    }
+
+    // All remaining helper functions (score, startTimeout, endGame, etc.)
+    // remain unchanged from your last working version
+
+    // (You can re-paste or merge from your working copy if needed)
 
     function score(side) {
       if (side === 'home') homeScoreValue += blitz ? 2 : 1;
