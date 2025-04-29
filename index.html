@@ -37,7 +37,7 @@
     .scoreboard {
       width: 100%;
       max-width: 100%;
-      height: 220px;
+      height: 320px;
       padding: 20px;
       margin-bottom: 20px;
       border: 3px solid #00ffff;
@@ -46,13 +46,33 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
+    }
+
+    #blitzBanner {
+      display: none;
+      font-size: 2em;
+      font-weight: bold;
+      color: #ff0;
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      animation: flash 1s infinite;
+      text-shadow: 0 0 10px #ffff00, 0 0 20px #ff0;
+    }
+
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     #timer {
-      font-size: 4em;
+      font-size: 6em;
       margin-bottom: 10px;
       color: #ff4444;
-      text-shadow: 0 0 10px #f00;
+      text-shadow: 0 0 10px #f00, 0 0 20px #f00;
     }
 
     .names {
@@ -61,6 +81,13 @@
       gap: 30px;
       font-size: 1.5em;
       text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
+
+    .scores {
+      margin-top: 10px;
+      font-size: 5em;
+      font-weight: bold;
+      text-shadow: 0 0 8px #0ff, 0 0 15px #0ff;
     }
 
     .timeout-button {
@@ -135,8 +162,9 @@
     }
 
     @media (max-width: 600px) {
-      #timer { font-size: 2.5em; }
+      #timer { font-size: 4em; }
       .names { font-size: 1.2em; gap: 15px; }
+      .scores { font-size: 3.5em; }
       .buttons button { font-size: 1.3em; padding: 14px 20px; }
       .name-input { font-size: 1.2em; }
       .scoreboard { padding: 10px; }
@@ -149,12 +177,13 @@
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo" />
 
   <div class="scoreboard">
+    <div id="blitzBanner">BLITZ MODE ⚡</div>
     <div id="timer">03:00</div>
     <div class="names">
       <span id="homeDisplay">Home</span>
       <span id="awayDisplay">Away</span>
     </div>
-    <div>
+    <div class="scores">
       <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
   </div>
@@ -207,8 +236,15 @@
       const minutes = String(Math.floor(time / 60)).padStart(2, '0');
       const seconds = String(time % 60).padStart(2, '0');
       document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+
+      if (time === 60 && !blitz) {
+        blitz = true;
+        document.getElementById('blitzBanner').style.display = 'block';
+        speak("Blitz period! Double points!");
+      }
+
       if (calloutTimes.has(time) && !announcedTimes.has(time)) {
-        speak(time === 60 ? "Blitz period! Double points!" : seconds < 10 ? `${seconds}` : `${minutes}:${seconds}`);
+        speak(`${minutes}:${seconds}`);
         announcedTimes.add(time);
       }
     }
@@ -221,7 +257,6 @@
           if (time > 0) {
             time--;
             updateTimer();
-            if (time === 60) blitz = true;
           } else {
             clearInterval(timerInterval);
             running = false;
@@ -262,6 +297,7 @@
         awayScoreValue = 0;
         time = 180;
         blitz = false;
+        document.getElementById('blitzBanner').style.display = 'none';
         announcedTimes.clear();
         updateTimer();
         document.getElementById('homeScoreDisplay').textContent = 0;
