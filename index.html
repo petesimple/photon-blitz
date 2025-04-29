@@ -102,7 +102,7 @@ body {
 .buttons {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* 👈 ensures buttons never stack */
   gap: 20px;
   overflow-x: auto;
   padding: 10px;
@@ -221,6 +221,11 @@ body {
     padding: 15px;
   }
 }
+    @media (max-width: 400px) {
+    .buttons {
+      justify-content: flex-start;
+    }
+  }
   </style>
 </head>
 <body>
