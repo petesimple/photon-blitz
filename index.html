@@ -1,43 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photon Blitz Score System</title>
 
-  <!-- PWA essentials -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00eaff">
-  <link rel="apple-touch-icon" href="photonblitzlogo.png">
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#00eaff" />
+  <link rel="apple-touch-icon" href="photonblitzlogo.png" />
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(function() { console.log('Service Worker Registered'); });
+        .then(() => console.log('Service Worker Registered'));
     }
   </script>
 
+  <!-- Styling -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-
     body {
       font-family: 'Orbitron', sans-serif;
       text-align: center;
       background: linear-gradient(to bottom right, #010518, #012B58);
       color: #00eaff;
       padding: 20px;
+      margin: 0;
     }
     .logo {
       max-width: 300px;
       height: auto;
-      margin: 20px auto;
+      display: block;
+      margin: 0 auto 20px auto;
     }
     .scoreboard {
-      margin: 40px auto 20px auto;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto 20px auto;
       padding: 20px;
       border: 3px solid #00ffff;
       border-radius: 15px;
       box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
-      display: inline-block;
     }
     #timer {
       font-size: 4em;
@@ -74,7 +77,9 @@
       cursor: pointer;
       box-shadow: 0 0 10px #00eaff80;
     }
-    button:active { transform: scale(0.98); }
+    button:active {
+      transform: scale(0.98);
+    }
     #gear {
       position: fixed;
       bottom: 20px;
@@ -82,8 +87,14 @@
       font-size: 2em;
       cursor: pointer;
     }
-    #menu { display: none; margin-top: 30px; }
-    #menu button { display: block; margin: 10px auto; }
+    #menu {
+      display: none;
+      margin-top: 30px;
+    }
+    #menu button {
+      display: block;
+      margin: 10px auto;
+    }
     .name-container {
       display: flex;
       justify-content: center;
@@ -113,16 +124,14 @@
 </head>
 
 <body>
-  <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo">
+  <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo" />
 
   <div class="scoreboard">
     <div id="timer">03:00</div>
-
     <div class="names">
       <span id="homeDisplay">Home</span>
       <span id="awayDisplay">Away</span>
     </div>
-
     <div>
       <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
@@ -155,164 +164,145 @@
     <button onclick="swapSides()">Swap Sides</button>
   </div>
 
-<script>
-  let time = 180;
-  let timerInterval;
-  let running = false;
-  let homeScoreValue = 0;
-  let awayScoreValue = 0;
-  let blitz = false;
-  let announcedTimes = new Set();
-  let timeoutActive = false;
-  let timeoutCounter = 10;
-  let timeoutInterval;
+  <script>
+    let time = 180;
+    let timerInterval;
+    let running = false;
+    let homeScoreValue = 0;
+    let awayScoreValue = 0;
+    let blitz = false;
+    let announcedTimes = new Set();
+    let timeoutCounter = 10;
+    let timeoutInterval;
 
-  const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
+    const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
 
-  function speak(text) {
-    if ('speechSynthesis' in window) {
-      const msg = new SpeechSynthesisUtterance(text);
-      msg.pitch = 1.2;
-      msg.rate = 1.1;
-      msg.volume = 1;
-      speechSynthesis.speak(msg);
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.pitch = 1.2;
+        msg.rate = 1.1;
+        msg.volume = 1;
+        speechSynthesis.speak(msg);
+      }
     }
-  }
 
-  function updateTimer() {
-    const minutes = String(Math.floor(time / 60)).padStart(2, '0');
-    const seconds = String(time % 60).padStart(2, '0');
-    document.getElementById('timer').textContent = `${minutes}:${seconds}`;
-
-    if (calloutTimes.has(time) && !announcedTimes.has(time)) {
-      let say = `${minutes}:${seconds}`;
-      if (time === 60) say = "Blitz period! Double points!";
-      else if (time < 10) say = `${seconds}`;
-      speak(say);
-      announcedTimes.add(time);
+    function updateTimer() {
+      const minutes = String(Math.floor(time / 60)).padStart(2, '0');
+      const seconds = String(time % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+      if (calloutTimes.has(time) && !announcedTimes.has(time)) {
+        speak(time === 60 ? "Blitz period! Double points!" : seconds < 10 ? `${seconds}` : `${minutes}:${seconds}`);
+        announcedTimes.add(time);
+      }
     }
-  }
 
-  function toggleTimer() {
-    if (running) {
+    function toggleTimer() {
+      if (running) {
+        clearInterval(timerInterval);
+      } else {
+        timerInterval = setInterval(() => {
+          if (time > 0) {
+            time--;
+            updateTimer();
+            if (time === 60) blitz = true;
+          } else {
+            clearInterval(timerInterval);
+            running = false;
+          }
+        }, 1000);
+      }
+      running = !running;
+    }
+
+    function score(side) {
       clearInterval(timerInterval);
-    } else {
-      timerInterval = setInterval(() => {
-        if (time > 0) {
-          time--;
-          updateTimer();
-          if (time === 60) blitz = true;
+      running = false;
+      if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+      if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+      document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+      document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+    }
+
+    function startTimeout() {
+      if (running) toggleTimer();
+      timeoutCounter = 10;
+      document.getElementById('timer').textContent = `Timeout: 10`;
+      timeoutInterval = setInterval(() => {
+        timeoutCounter--;
+        if (timeoutCounter > 0) {
+          document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
         } else {
-          clearInterval(timerInterval);
-          running = false;
+          clearInterval(timeoutInterval);
+          updateTimer();
+          toggleTimer();
         }
       }, 1000);
     }
-    running = !running;
-  }
 
-  function score(side) {
-    clearInterval(timerInterval);
-    running = false;
-    if (side === 'home') homeScoreValue += blitz ? 2 : 1;
-    if (side === 'away') awayScoreValue += blitz ? 2 : 1;
-    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-  }
-
-  function startTimeout() {
-    if (running) toggleTimer();
-    timeoutActive = true;
-    timeoutCounter = 10;
-    document.getElementById('timer').textContent = `Timeout: 10`;
-    timeoutInterval = setInterval(() => {
-      timeoutCounter--;
-      if (timeoutCounter > 0) {
-        document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
-      } else {
-        clearInterval(timeoutInterval);
-        timeoutActive = false;
+    function restartGame() {
+      if (confirm('Restart Game?')) {
+        homeScoreValue = 0;
+        awayScoreValue = 0;
+        time = 180;
+        blitz = false;
+        announcedTimes.clear();
         updateTimer();
-        toggleTimer();
+        document.getElementById('homeScoreDisplay').textContent = 0;
+        document.getElementById('awayScoreDisplay').textContent = 0;
+        clearInterval(timerInterval);
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('buttonsWrapper').style.display = 'flex';
+        running = false;
       }
-    }, 1000);
-  }
+    }
 
-  function restartGame() {
-    if (confirm('Restart Game? Hold confirm to reset.')) {
-      homeScoreValue = 0;
-      awayScoreValue = 0;
-      time = 180;
-      blitz = false;
-      announcedTimes.clear();
-      updateTimer();
-      document.getElementById('homeScoreDisplay').textContent = 0;
-      document.getElementById('awayScoreDisplay').textContent = 0;
-      running = false;
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      const buttonsWrapper = document.getElementById('buttonsWrapper');
+      const isMenuShown = menu.style.display === 'block';
+      menu.style.display = isMenuShown ? 'none' : 'block';
+      buttonsWrapper.style.display = isMenuShown ? 'flex' : 'none';
+    }
+
+    function startSuddenDeath() {
       clearInterval(timerInterval);
+      running = false;
+      time = 0;
+      document.getElementById('timer').textContent = 'Sudden Death';
       document.getElementById('menu').style.display = 'none';
       document.getElementById('buttonsWrapper').style.display = 'flex';
     }
-  }
 
-  function toggleMenu() {
-    const menu = document.getElementById('menu');
-    const buttonsWrapper = document.getElementById('buttonsWrapper');
-    if (menu.style.display === 'block') {
-      menu.style.display = 'none';
-      buttonsWrapper.style.display = 'flex';
-    } else {
-      menu.style.display = 'block';
-      buttonsWrapper.style.display = 'none';
+    function swapSides() {
+      const homeInput = document.getElementById('homeName');
+      const awayInput = document.getElementById('awayName');
+      const homeDisplay = document.getElementById('homeDisplay');
+      const awayDisplay = document.getElementById('awayDisplay');
+      [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+      saveNames();
     }
-  }
 
-  function startSuddenDeath() {
-    clearInterval(timerInterval);
-    running = false;
-    time = 0;
-    document.getElementById('timer').textContent = 'Sudden Death';
-    document.getElementById('menu').style.display = 'none';
-    document.getElementById('buttonsWrapper').style.display = 'flex';
-  }
+    function saveNames() {
+      const home = document.getElementById('homeName').value;
+      const away = document.getElementById('awayName').value;
+      localStorage.setItem('homeName', home);
+      localStorage.setItem('awayName', away);
+      document.getElementById('homeDisplay').textContent = home || 'Home';
+      document.getElementById('awayDisplay').textContent = away || 'Away';
+    }
 
-  function swapSides() {
-    const homeInput = document.getElementById('homeName');
-    const awayInput = document.getElementById('awayName');
-    const homeDisplay = document.getElementById('homeDisplay');
-    const awayDisplay = document.getElementById('awayDisplay');
+    function loadNames() {
+      const savedHome = localStorage.getItem('homeName');
+      const savedAway = localStorage.getItem('awayName');
+      if (savedHome) document.getElementById('homeName').value = savedHome;
+      if (savedAway) document.getElementById('awayName').value = savedAway;
+      document.getElementById('homeDisplay').textContent = savedHome || 'Home';
+      document.getElementById('awayDisplay').textContent = savedAway || 'Away';
+    }
 
-    let tempName = homeInput.value;
-    homeInput.value = awayInput.value;
-    awayInput.value = tempName;
-
-    homeDisplay.textContent = homeInput.value || 'Home';
-    awayDisplay.textContent = awayInput.value || 'Away';
-
-    saveNames();
-  }
-
-  function saveNames() {
-    const homeInput = document.getElementById('homeName');
-    const awayInput = document.getElementById('awayName');
-    localStorage.setItem('homeName', homeInput.value);
-    localStorage.setItem('awayName', awayInput.value);
-    document.getElementById('homeDisplay').textContent = homeInput.value || 'Home';
-    document.getElementById('awayDisplay').textContent = awayInput.value || 'Away';
-  }
-
-  function loadNames() {
-    const savedHome = localStorage.getItem('homeName');
-    const savedAway = localStorage.getItem('awayName');
-    if (savedHome) document.getElementById('homeName').value = savedHome;
-    if (savedAway) document.getElementById('awayName').value = savedAway;
-    document.getElementById('homeDisplay').textContent = savedHome || 'Home';
-    document.getElementById('awayDisplay').textContent = savedAway || 'Away';
-  }
-
-  loadNames();
-  updateTimer();
-</script>
-
+    loadNames();
+    updateTimer();
+  </script>
 </body>
 </html>
