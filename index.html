@@ -16,13 +16,17 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
     body {
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to bottom right, #010518, #012B58);
-      color: #00eaff;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(to bottom right, #010518, #012B58);
+  color: #00eaff;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+
+  display: flex;              /* 👈 added */
+  flex-direction: column;     /* 👈 added */
+  align-items: center;        /* 👈 added */
+}
     .logo {
       max-width: 300px;
       margin: 0 auto 20px;
@@ -30,17 +34,18 @@
     }
     .scoreboard {
   width: 100%;
-  max-width: 500px; /* Prevent it from getting too wide */
+  max-width: 500px;
   height: 320px;
   padding: 20px;
-  margin: 0 auto 20px auto; /* Center horizontally */
+  margin: 0 auto 20px auto; /* Centers horizontally */
   border: 3px solid #00ffff;
   border-radius: 15px;
   box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: relative;
+  align-items: center; /* ✅ Add this to center internal content horizontally */
+  box-sizing: border-box; /* ✅ Prevents overflow due to padding */
 }
     #blitzBanner {
       display: none;
