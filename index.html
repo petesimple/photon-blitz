@@ -129,13 +129,13 @@
     <button onclick="startTimeout()">Timeout 10s</button>
   </div>
 
-  <div class="buttons">
+  <div id="buttonsWrapper" class="buttons">
     <button onclick="score('home')">Home Score</button>
     <button onclick="toggleTimer()">Pause/Resume Timer</button>
     <button onclick="score('away')">Away Score</button>
   </div>
 
-  <div id="gear" onclick="openMenu()">⚙️</div>
+  <div id="gear" onclick="toggleMenu()">⚙️</div>
 
   <div id="menu">
     <button onclick="restartGame()">Restart Game</button>
@@ -239,11 +239,20 @@
         running = false;
         clearInterval(timerInterval);
         document.getElementById('menu').style.display = 'none';
+        document.getElementById('buttonsWrapper').style.display = 'flex';
       }
     }
 
-    function openMenu() {
-      document.getElementById('menu').style.display = 'block';
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      const buttonsWrapper = document.getElementById('buttonsWrapper');
+      if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+        buttonsWrapper.style.display = 'flex';
+      } else {
+        menu.style.display = 'block';
+        buttonsWrapper.style.display = 'none';
+      }
     }
 
     function startSuddenDeath() {
@@ -252,6 +261,7 @@
       time = 0;
       document.getElementById('timer').textContent = 'Sudden Death';
       document.getElementById('menu').style.display = 'none';
+      document.getElementById('buttonsWrapper').style.display = 'flex';
     }
 
     function swapSides() {
