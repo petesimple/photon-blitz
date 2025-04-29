@@ -117,6 +117,7 @@ body {
   border-radius: 8px;
   background: #00eaff;
   color: #012B58;
+  font-weight: bold; /* 👈 makes text stand out */
   cursor: pointer;
   box-shadow: 0 0 10px #00eaff80;
   white-space: nowrap;
@@ -239,11 +240,11 @@ body {
     <button onclick="startTimeout()">Timeout 10s</button>
   </div>
 
-  <div id="buttonsWrapper" class="buttons">
-    <button onclick="score('home')">Home</button>
-    <button onclick="toggleTimer()">⏯</button>
-    <button onclick="score('away')">Away</button>
-  </div>
+  <div id="buttonsWrapper" class="buttons" style="display: flex;">
+  <button onclick="score('home')">Home</button>
+  <button onclick="toggleTimer()">⏯</button>
+  <button onclick="score('away')">Away</button>
+</div>
 
   <div id="gear" onclick="toggleMenu()">⚙️</div>
 
