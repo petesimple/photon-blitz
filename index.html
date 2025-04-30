@@ -250,6 +250,29 @@
   }
       .buttons { justify-content: flex-start; }
     }
+    body.wide .scoreboard {
+  flex-direction: row;
+  height: auto;
+  min-height: 180px;
+  padding: 10px;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+body.wide .scoreboard #timer {
+  font-size: 3.5em;
+  margin: 0;
+  order: 2;
+  flex: 1 1 100%;
+}
+
+body.wide .scoreboard .names,
+body.wide .scoreboard .scores {
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.2em;
+}
   </style>
 </head>
 <body>
@@ -299,7 +322,10 @@
       <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
       Lock scoreboard to top
     </label>
-
+<label style="display: block; margin: 15px 0;">
+  <input type="checkbox" id="wideToggle" onchange="toggleWideLayout(this)" />
+  Use wide scoreboard layout
+</label>
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
@@ -641,6 +667,13 @@
       document.body.classList.remove('locked');
     }
   }
+    function toggleWideLayout(checkbox) {
+  if (checkbox.checked) {
+    document.body.classList.add('wide');
+  } else {
+    document.body.classList.remove('wide');
+  }
+}
 </script>
 </body>
 </html>
