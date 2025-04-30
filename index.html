@@ -273,6 +273,51 @@ body.wide .scoreboard .scores {
   gap: 10px;
   font-size: 1.2em;
 }
+    body.wide .scoreboard {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  height: auto;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+body.wide #blitzBanner {
+  top: -20px;
+}
+
+body.wide #timer {
+  font-size: 4em;
+  margin: 0;
+  order: 2;
+}
+
+body.wide .names,
+body.wide .scores {
+  display: none; /* Hide stacked layout pieces */
+}
+
+body.wide #homeDisplay,
+body.wide #awayDisplay {
+  font-size: 1.5em;
+  text-align: center;
+  text-shadow: 0 0 5px #0ff;
+}
+
+body.wide #homeScoreDisplay,
+body.wide #awayScoreDisplay {
+  font-size: 3.5em;
+  font-weight: bold;
+  text-shadow: 0 0 5px #0ff;
+}
+
+body.wide .player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 30%;
+}
   </style>
 </head>
 <body>
@@ -326,6 +371,7 @@ body.wide .scoreboard .scores {
   <input type="checkbox" id="wideToggle" onchange="toggleWideLayout(this)" />
   Use wide scoreboard layout
 </label>
+    
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
