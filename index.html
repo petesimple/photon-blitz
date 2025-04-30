@@ -242,47 +242,67 @@
   </style>
 </head>
 <body>
+  <!-- App logo: visible at top unless scoreboard is locked -->
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo" />
 
+  <!-- Main scoreboard display -->
   <div class="scoreboard">
+    <!-- Flashing banner that appears at 1-minute mark -->
     <div id="blitzBanner">BLITZ MODE ⚡</div>
+
+    <!-- Main countdown timer display -->
     <div id="timer">03:00.0</div>
+
+    <!-- Display player/team names -->
     <div class="names">
       <span id="homeDisplay">Home</span>
       <span id="awayDisplay">Away</span>
     </div>
+
+    <!-- Display player/team scores -->
     <div class="scores">
       <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
   </div>
 
+  <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
   </div>
 
+  <!-- Core control buttons for scoring and timer -->
   <div id="buttonsWrapper" class="buttons" style="display: flex;">
-  <button onclick="score('home')">Home</button>
-  <button onclick="toggleTimer()">⏯</button>
-  <button onclick="score('away')">Away</button>
-</div>
+    <button onclick="score('home')">Home</button> <!-- Score point for Home -->
+    <button onclick="toggleTimer()">⏯</button>   <!-- Start/Pause timer -->
+    <button onclick="score('away')">Away</button> <!-- Score point for Away -->
+  </div>
 
+  <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
 
+  <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
+
+    <!-- Checkbox to lock scoreboard to top of screen -->
     <label style="display: block; margin: 15px 0;">
-  <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
-  Lock scoreboard to top
-</label>
+      <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
+      Lock scoreboard to top
+    </label>
+
+    <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
       <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
     </div>
+
+    <!-- Action buttons for match control -->
     <button onclick="saveNames()">Update Names</button>
     <button onclick="restartGame()">Restart Game</button>
     <button onclick="startSuddenDeath()">Force Sudden Death</button>
     <button onclick="swapSides()">Swap Sides</button>
     <button onclick="resetMatch()">Reset Match</button>
 
+    <!-- Time adjustment controls -->
     <div class="time-controls">
       <button onclick="adjustTime(0.5)">+0.5s</button>
       <button onclick="adjustTime(1)">+1s</button>
@@ -296,6 +316,7 @@
       <button onclick="adjustTime(-60)">-1min</button>
     </div>
 
+    <!-- Dynamic summary of match results -->
     <div class="match-summary" id="matchSummary">
       <h3>Match Summary</h3>
       <div id="summaryText"></div>
@@ -303,253 +324,286 @@
   </div>
 
   <script>
-    let time = 1800; // tenths of seconds
-    let timerInterval;
-    let running = false;
-    let homeScoreValue = 0;
-    let awayScoreValue = 0;
-    let blitz = false;
-    let suddenDeath = false;
-    let homeGamesWon = 0;
-    let awayGamesWon = 0;
-    let matchesPlayed = 0;
-    let timeoutCounter = 10;
-    let timeoutInterval;
-    const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
-    let announcedTimes = new Set();
-    let gameScores = [];
+  // Set the initial time to 3 minutes (in tenths of seconds)
+  let time = 1800;
 
-    function speak(text) {
-      if ('speechSynthesis' in window) {
-        const msg = new SpeechSynthesisUtterance(text);
-        msg.pitch = 1.2;
-        msg.rate = 1.1;
-        msg.volume = 1;
-        speechSynthesis.speak(msg);
-      }
+  // Declare timers and game state variables
+  let timerInterval;
+  let running = false;
+  let homeScoreValue = 0;
+  let awayScoreValue = 0;
+  let blitz = false; // Blitz mode triggers at 1:00
+  let suddenDeath = false;
+  let homeGamesWon = 0;
+  let awayGamesWon = 0;
+  let matchesPlayed = 0;
+  let timeoutCounter = 10;
+  let timeoutInterval;
+
+  // Predefined times in seconds to call out remaining time
+  const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
+  let announcedTimes = new Set(); // Keeps track of times already announced
+  let gameScores = []; // Stores completed game results
+
+  // Speaks the given text aloud using browser's speech synthesis
+  function speak(text) {
+    if ('speechSynthesis' in window) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.pitch = 1.2;
+      msg.rate = 1.1;
+      msg.volume = 1;
+      speechSynthesis.speak(msg);
     }
-
-    function updateTimer() {
-      const minutes = String(Math.floor(time / 600)).padStart(2, '0');
-      const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
-      const tenths = String(time % 10);
-      document.getElementById('timer').textContent = `${minutes}:${seconds}.${tenths}`;
-      if (time === 600 && !blitz) {
-        blitz = true;
-        document.getElementById('blitzBanner').style.display = 'block';
-        speak("Blitz period! Double points!");
-      }
-      if (time === 0) {
-        clearInterval(timerInterval);
-        running = false;
-        if (homeScoreValue === awayScoreValue) {
-          startSuddenDeath();
-        } else {
-          endGame();
-        }
-      }
-      const sec = Math.floor(time / 10);
-      if (calloutTimes.has(sec) && !announcedTimes.has(sec)) {
-        speak(`${minutes}:${seconds}`);
-        announcedTimes.add(sec);
-      }
-    }
-
-    function toggleTimer() {
-  if (timeoutInterval) {
-    clearInterval(timeoutInterval);
-    timeoutInterval = null;
-    updateTimer(); // restore the normal timer display
   }
-  
-  if (running) {
-    clearInterval(timerInterval);
-  } else {
-    timerInterval = setInterval(() => {
-      if (time > 0) {
-        time--;
-        updateTimer();
-      }
-    }, 100);
-  }
-  running = !running;
-}
 
-    function adjustTime(seconds) {
-      time = Math.max(0, Math.min(5999, time + seconds * 10));
-      updateTimer();
+  // Updates the visible timer and manages game flow at key time events
+  function updateTimer() {
+    const minutes = String(Math.floor(time / 600)).padStart(2, '0');
+    const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
+    const tenths = String(time % 10);
+    document.getElementById('timer').textContent = `${minutes}:${seconds}.${tenths}`;
+
+    // Trigger Blitz mode at exactly 1:00 remaining
+    if (time === 600 && !blitz) {
+      blitz = true;
+      document.getElementById('blitzBanner').style.display = 'block';
+      speak("Blitz period! Double points!");
     }
 
-    // All remaining helper functions (score, startTimeout, endGame, etc.)
-    // remain unchanged from your last working version
-
-    // (You can re-paste or merge from your working copy if needed)
-
-    function score(side) {
-      if (side === 'home') homeScoreValue += blitz ? 2 : 1;
-      if (side === 'away') awayScoreValue += blitz ? 2 : 1;
-      document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-      document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-      if (suddenDeath) endGame();
-      else clearInterval(timerInterval), running = false;
-    }
-
-    function startTimeout() {
-      if (running) toggleTimer();
-      timeoutCounter = 10;
-      document.getElementById('timer').textContent = `Timeout: 10`;
-      timeoutInterval = setInterval(() => {
-        timeoutCounter--;
-        if (timeoutCounter > 0) {
-          document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
-        } else {
-          clearInterval(timeoutInterval);
-          updateTimer();
-          toggleTimer();
-        }
-      }, 1000);
-    }
-
-    function endGame() {
-  if (!suddenDeath) matchesPlayed++;
-  if (homeScoreValue > awayScoreValue) homeGamesWon++;
-  else awayGamesWon++;
-
-  const homeName = document.getElementById('homeName').value || 'Home';
-  const awayName = document.getElementById('awayName').value || 'Away';
-  gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
-
-  swapSides();
-  resetForNextGame();
-  updateSummary();
-}
-
-    function resetForNextGame() {
-      homeScoreValue = 0;
-      awayScoreValue = 0;
-      time = 1800;
-      blitz = false;
-      suddenDeath = false;
-      announcedTimes.clear();
-      document.getElementById('blitzBanner').style.display = 'none';
-      updateTimer();
-      document.getElementById('homeScoreDisplay').textContent = 0;
-      document.getElementById('awayScoreDisplay').textContent = 0;
-      updateNameDisplays();
-    }
-
-    function resetMatch() {
-  homeGamesWon = 0;
-  awayGamesWon = 0;
-  matchesPlayed = 0;
-  gameScores = []; // ← optional
-  announcedTimes.clear();
-  restartGame();
-}
-
-    function restartGame() {
-      homeScoreValue = 0;
-      awayScoreValue = 0;
-      time = 1800;
-      blitz = false;
-      suddenDeath = false;
-      announcedTimes.clear();
-      document.getElementById('blitzBanner').style.display = 'none';
-      updateTimer();
-      document.getElementById('homeScoreDisplay').textContent = 0;
-      document.getElementById('awayScoreDisplay').textContent = 0;
+    // Handle end-of-match logic
+    if (time === 0) {
       clearInterval(timerInterval);
-      document.getElementById('menu').classList.remove('active');
-      document.getElementById('buttonsWrapper').style.display = 'flex';
       running = false;
-      updateSummary();
-    }
-
-    function toggleMenu() {
-      const menu = document.getElementById('menu');
-      const buttonsWrapper = document.getElementById('buttonsWrapper');
-      if (menu.classList.contains('active')) {
-        menu.classList.remove('active');
-        buttonsWrapper.style.display = 'flex';
+      if (homeScoreValue === awayScoreValue) {
+        startSuddenDeath();
       } else {
-        menu.classList.add('active');
-        buttonsWrapper.style.display = 'none';
-        setTimeout(() => {
-          document.getElementById('homeName').focus();
-        }, 300);
+        endGame();
       }
     }
 
-    function startSuddenDeath() {
+    // Announce specific countdown moments
+    const sec = Math.floor(time / 10);
+    if (calloutTimes.has(sec) && !announcedTimes.has(sec)) {
+      speak(`${minutes}:${seconds}`);
+      announcedTimes.add(sec);
+    }
+  }
+
+  // Starts or pauses the timer
+  function toggleTimer() {
+    // If timeout is running, cancel it and resume normal timer
+    if (timeoutInterval) {
+      clearInterval(timeoutInterval);
+      timeoutInterval = null;
+      updateTimer();
+    }
+
+    // Toggle timer state
+    if (running) {
       clearInterval(timerInterval);
-      suddenDeath = true;
-      running = false;
-      time = 0;
-      document.getElementById('timer').textContent = 'Sudden Death';
+    } else {
+      timerInterval = setInterval(() => {
+        if (time > 0) {
+          time--;
+          updateTimer();
+        }
+      }, 100);
     }
-
-    function swapSides() {
-  const homeInput = document.getElementById('homeName');
-  const awayInput = document.getElementById('awayName');
-  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
-  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon]; // << THIS IS NEW
-  saveNames();
-  updateNameDisplays();
-}
-
-    function saveNames() {
-      localStorage.setItem('homeName', document.getElementById('homeName').value);
-      localStorage.setItem('awayName', document.getElementById('awayName').value);
-      updateNameDisplays();
-      updateSummary();
-    }
-
-    function updateNameDisplays() {
-      document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
-      document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
-    }
-
-    function updateSummary() {
-  const homeName = document.getElementById('homeName').value || 'Home';
-  const awayName = document.getElementById('awayName').value || 'Away';
-  let summary = '';
-
-  if (homeGamesWon > awayGamesWon) {
-    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
-  } else if (awayGamesWon > homeGamesWon) {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
-  } else {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+    running = !running;
   }
 
-  summary += `Matches Played: ${matchesPlayed}<br><br>`;
-
-  if (gameScores.length > 0) {
-    summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => `Game ${i + 1}: ${s}`).join('<br>');
-  }
-
-  document.getElementById('summaryText').innerHTML = summary;
-}
-
-    function loadNames() {
-      const savedHome = localStorage.getItem('homeName');
-      const savedAway = localStorage.getItem('awayName');
-      if (savedHome) document.getElementById('homeName').value = savedHome;
-      if (savedAway) document.getElementById('awayName').value = savedAway;
-      updateNameDisplays();
-      updateSummary();
-    }
-
-    loadNames();
+  // Adjusts the timer by a number of seconds (+/-)
+  function adjustTime(seconds) {
+    time = Math.max(0, Math.min(5999, time + seconds * 10));
     updateTimer();
-    function toggleLock(checkbox) {
-  const scoreboard = document.querySelector('.scoreboard');
-  if (checkbox.checked) {
-    document.body.classList.add('locked');
-  } else {
-    document.body.classList.remove('locked');
   }
-}
-  </script>
+
+  // Increments score for specified team (blitz gives double points)
+  function score(side) {
+    if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+    if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+    // If in sudden death, any score ends the game
+    if (suddenDeath) endGame();
+    else {
+      clearInterval(timerInterval);
+      running = false;
+    }
+  }
+
+  // Starts a 10-second timeout period
+  function startTimeout() {
+    if (running) toggleTimer(); // pause the game if running
+    timeoutCounter = 10;
+    document.getElementById('timer').textContent = `Timeout: 10`;
+    timeoutInterval = setInterval(() => {
+      timeoutCounter--;
+      if (timeoutCounter > 0) {
+        document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
+      } else {
+        clearInterval(timeoutInterval);
+        updateTimer();
+        toggleTimer(); // resume the game
+      }
+    }, 1000);
+  }
+
+  // Handles end-of-game logic and saves result
+  function endGame() {
+    if (!suddenDeath) matchesPlayed++;
+    if (homeScoreValue > awayScoreValue) homeGamesWon++;
+    else awayGamesWon++;
+
+    const homeName = document.getElementById('homeName').value || 'Home';
+    const awayName = document.getElementById('awayName').value || 'Away';
+    gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+
+    swapSides();
+    resetForNextGame();
+    updateSummary();
+  }
+
+  // Resets scoreboard for the next game
+  function resetForNextGame() {
+    homeScoreValue = 0;
+    awayScoreValue = 0;
+    time = 1800;
+    blitz = false;
+    suddenDeath = false;
+    announcedTimes.clear();
+    document.getElementById('blitzBanner').style.display = 'none';
+    updateTimer();
+    document.getElementById('homeScoreDisplay').textContent = 0;
+    document.getElementById('awayScoreDisplay').textContent = 0;
+    updateNameDisplays();
+  }
+
+  // Fully resets match data and stats
+  function resetMatch() {
+    homeGamesWon = 0;
+    awayGamesWon = 0;
+    matchesPlayed = 0;
+    gameScores = [];
+    announcedTimes.clear();
+    restartGame();
+  }
+
+  // Fully resets game and scoreboard UI state
+  function restartGame() {
+    homeScoreValue = 0;
+    awayScoreValue = 0;
+    time = 1800;
+    blitz = false;
+    suddenDeath = false;
+    announcedTimes.clear();
+    document.getElementById('blitzBanner').style.display = 'none';
+    updateTimer();
+    document.getElementById('homeScoreDisplay').textContent = 0;
+    document.getElementById('awayScoreDisplay').textContent = 0;
+    clearInterval(timerInterval);
+    document.getElementById('menu').classList.remove('active');
+    document.getElementById('buttonsWrapper').style.display = 'flex';
+    running = false;
+    updateSummary();
+  }
+
+  // Opens and closes gear menu
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    const buttonsWrapper = document.getElementById('buttonsWrapper');
+    if (menu.classList.contains('active')) {
+      menu.classList.remove('active');
+      buttonsWrapper.style.display = 'flex';
+    } else {
+      menu.classList.add('active');
+      buttonsWrapper.style.display = 'none';
+      setTimeout(() => {
+        document.getElementById('homeName').focus();
+      }, 300);
+    }
+  }
+
+  // Puts game into sudden death mode (no timer, first score wins)
+  function startSuddenDeath() {
+    clearInterval(timerInterval);
+    suddenDeath = true;
+    running = false;
+    time = 0;
+    document.getElementById('timer').textContent = 'Sudden Death';
+  }
+
+  // Swaps sides and updates win counters and displays
+  function swapSides() {
+    const homeInput = document.getElementById('homeName');
+    const awayInput = document.getElementById('awayName');
+    [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+    [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
+    saveNames();
+    updateNameDisplays();
+  }
+
+  // Save player names to local storage and update UI
+  function saveNames() {
+    localStorage.setItem('homeName', document.getElementById('homeName').value);
+    localStorage.setItem('awayName', document.getElementById('awayName').value);
+    updateNameDisplays();
+    updateSummary();
+  }
+
+  // Updates name and score UI for each player
+  function updateNameDisplays() {
+    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
+    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
+  }
+
+  // Builds summary text for the match summary section
+  function updateSummary() {
+    const homeName = document.getElementById('homeName').value || 'Home';
+    const awayName = document.getElementById('awayName').value || 'Away';
+    let summary = '';
+
+    if (homeGamesWon > awayGamesWon) {
+      summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+    } else if (awayGamesWon > homeGamesWon) {
+      summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+    } else {
+      summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+    }
+
+    summary += `Matches Played: ${matchesPlayed}<br><br>`;
+
+    if (gameScores.length > 0) {
+      summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => `Game ${i + 1}: ${s}`).join('<br>');
+    }
+
+    document.getElementById('summaryText').innerHTML = summary;
+  }
+
+  // Loads saved player names from localStorage on page load
+  function loadNames() {
+    const savedHome = localStorage.getItem('homeName');
+    const savedAway = localStorage.getItem('awayName');
+    if (savedHome) document.getElementById('homeName').value = savedHome;
+    if (savedAway) document.getElementById('awayName').value = savedAway;
+    updateNameDisplays();
+    updateSummary();
+  }
+
+  // Run initial load
+  loadNames();
+  updateTimer();
+
+  // Toggles the "locked" class on body to fix scoreboard at top
+  function toggleLock(checkbox) {
+    const scoreboard = document.querySelector('.scoreboard');
+    if (checkbox.checked) {
+      document.body.classList.add('locked');
+    } else {
+      document.body.classList.remove('locked');
+    }
+  }
+</script>
 </body>
 </html>
