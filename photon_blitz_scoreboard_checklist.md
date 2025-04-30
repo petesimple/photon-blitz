@@ -2,8 +2,8 @@
 # Photon Blitz Score System - Development Checklist
 
 ## ✅ Phase 1: Immediate UI/UX Fixes
-- [x] Change “Home/Away” to “Player 1/Player 2” as default labels
-- [x] Score buttons update to player names once entered
+- [ ] Change “Home/Away” to “Player 1/Player 2” as default labels
+- [ ] Score buttons update to player names once entered
 - [ ] Make score and timeout buttons larger for easier tapping
 - [ ] Bring back `Start/Pause Match` text instead of icon
 - [ ] Expand player name display width to match timer area
