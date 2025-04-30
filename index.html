@@ -188,7 +188,13 @@ body {
   margin: 20px auto;
   gap: 10px;
 }
+body.locked .logo {
+  display: none;
+}
 
+body.locked {
+  padding-top: 360px; /* Ensures room below fixed scoreboard */
+}
 /* --- Responsive tweaks --- */
 @media (max-width: 600px) {
   #timer {
