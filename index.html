@@ -305,7 +305,25 @@
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
       <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
     </div>
+    
+<!-- Score Correction -->
+<h3>Adjust Scores</h3>
+<div class="time-controls">
+  <button onclick="adjustScore('home', 1)">Home +1</button>
+  <button onclick="adjustScore('home', -1)">Home -1</button>
+  <button onclick="adjustScore('away', 1)">Away +1</button>
+  <button onclick="adjustScore('away', -1)">Away -1</button>
+</div>
 
+<!-- Game Count Correction -->
+<h3>Adjust Game Wins</h3>
+<div class="time-controls">
+  <button onclick="adjustGames('home', 1)">Home +1</button>
+  <button onclick="adjustGames('home', -1)">Home -1</button>
+  <button onclick="adjustGames('away', 1)">Away +1</button>
+  <button onclick="adjustGames('away', -1)">Away -1</button>
+</div>
+    
     <!-- Action buttons for match control -->
     <button onclick="saveNames()">Update Names</button>
     <button onclick="restartGame()">Restart Game</button>
@@ -641,6 +659,25 @@
       document.body.classList.remove('locked');
     }
   }
+    function adjustScore(side, delta) {
+  if (side === 'home') {
+    homeScoreValue = Math.max(0, homeScoreValue + delta);
+    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  } else {
+    awayScoreValue = Math.max(0, awayScoreValue + delta);
+    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+  }
+}
+
+function adjustGames(side, delta) {
+  if (side === 'home') {
+    homeGamesWon = Math.max(0, homeGamesWon + delta);
+  } else {
+    awayGamesWon = Math.max(0, awayGamesWon + delta);
+  }
+  updateNameDisplays();
+  updateSummary();
+}
 </script>
 </body>
 </html>
