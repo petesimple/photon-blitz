@@ -229,7 +229,7 @@
       overflow-y: auto;
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 600px) {
       #timer { font-size: 4em; }
       .names { font-size: 1.2em; gap: 15px; }
       .scores { font-size: 3.5em; }
@@ -240,7 +240,7 @@
       .name-input { width: 90%; max-width: 300px; }
     }
 
-    @media (max-width: 360px) {
+    @media (max-width: 400px) {
       #timer {
     font-size: 3.2em;
     max-width: 100%;
@@ -250,107 +250,6 @@
   }
       .buttons { justify-content: flex-start; }
     }
-    body.wide .scoreboard {
-  flex-direction: row;
-  height: auto;
-  min-height: 180px;
-  padding: 10px;
-  justify-content: space-around;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-body.wide .scoreboard #timer {
-  font-size: 3.5em;
-  margin: 0;
-  order: 2;
-  flex: 1 1 100%;
-}
-
-body.wide .scoreboard .names,
-body.wide .scoreboard .scores {
-  flex-direction: column;
-  gap: 10px;
-  font-size: 1.2em;
-}
-    body.wide .scoreboard {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  height: auto;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-body.wide #blitzBanner {
-  top: -20px;
-}
-
-body.wide #timer {
-  font-size: 4em;
-  margin: 0;
-  order: 2;
-}
-
-body.wide .names,
-body.wide .scores {
-  display: none; /* Hide stacked layout pieces */
-}
-
-body.wide #homeDisplay,
-body.wide #awayDisplay {
-  font-size: 1.5em;
-  text-align: center;
-  text-shadow: 0 0 5px #0ff;
-}
-
-body.wide #homeScoreDisplay,
-body.wide #awayScoreDisplay {
-  font-size: 3.5em;
-  font-weight: bold;
-  text-shadow: 0 0 5px #0ff;
-}
-
-body.wide .player-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1 1 30%;
-}
-    /* Hide old layout in wide mode */
-body.wide .names,
-body.wide .scores {
-  display: none;
-}
-
-/* Show new layout elements in wide mode */
-body.wide .player-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex: 1 1 30%;
-}
-
-body.wide .player-box div {
-  font-size: 1.4em;
-  text-shadow: 0 0 5px #0ff;
-}
-
-body.wide #homeScoreDisplay,
-body.wide #awayScoreDisplay {
-  font-size: 3.2em;
-  font-weight: bold;
-  color: #00eaff;
-}
-    /* Default: show portrait layout, hide wide */
-.portrait-only { display: block; }
-.wide-only { display: none; }
-
-/* In wide mode: flip visibility */
-body.wide .portrait-only { display: none; }
-body.wide .wide-only { display: flex; }
   </style>
 </head>
 <body>
@@ -360,32 +259,22 @@ body.wide .wide-only { display: flex; }
   <!-- Main scoreboard display -->
   <div class="scoreboard">
     <!-- Flashing banner that appears at 1-minute mark -->
-<div id="blitzBanner">BLITZ MODE ⚡</div>
+    <div id="blitzBanner">BLITZ MODE ⚡</div>
 
-<!-- Timer -->
-<div id="timer">03:00.0</div>
+    <!-- Main countdown timer display -->
+    <div id="timer">03:00.0</div>
 
-<!-- Portrait layout: visible only when NOT wide -->
-<div class="portrait-only">
-  <div class="names">
-    <span id="homeDisplay">Home</span>
-    <span id="awayDisplay">Away</span>
+    <!-- Display player/team names -->
+    <div class="names">
+      <span id="homeDisplay">Home</span>
+      <span id="awayDisplay">Away</span>
+    </div>
+
+    <!-- Display player/team scores -->
+    <div class="scores">
+      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
+    </div>
   </div>
-  <div class="scores">
-    <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
-  </div>
-</div>
-
-<!-- Wide layout: visible only when wide -->
-<div class="wide-only player-box" id="homeBox">
-  <div id="homeDisplayWide">Home</div>
-  <div id="homeScoreDisplayWide">0</div>
-</div>
-
-<div class="wide-only player-box" id="awayBox">
-  <div id="awayDisplayWide">Away</div>
-  <div id="awayScoreDisplayWide">0</div>
-</div>
 
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
@@ -410,11 +299,7 @@ body.wide .wide-only { display: flex; }
       <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
       Lock scoreboard to top
     </label>
-<label style="display: block; margin: 15px 0;">
-  <input type="checkbox" id="wideToggle" onchange="toggleWideLayout(this)" />
-  Use wide scoreboard layout
-</label>
-    
+
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
@@ -546,21 +431,18 @@ body.wide .wide-only { display: flex; }
 
   // Increments score for specified team (blitz gives double points)
   function score(side) {
-  if (side === 'home') homeScoreValue += blitz ? 2 : 1;
-  if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+    if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+    if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-
-  document.getElementById('homeScoreDisplayWide').textContent = homeScoreValue;
-  document.getElementById('awayScoreDisplayWide').textContent = awayScoreValue;
-
-  if (suddenDeath) endGame();
-  else {
-    clearInterval(timerInterval);
-    running = false;
+    // If in sudden death, any score ends the game
+    if (suddenDeath) endGame();
+    else {
+      clearInterval(timerInterval);
+      running = false;
+    }
   }
-}
 
   // Starts a 10-second timeout period
   function startTimeout() {
@@ -683,15 +565,9 @@ body.wide .wide-only { display: flex; }
 
   // Updates name and score UI for each player
   function updateNameDisplays() {
-  const home = document.getElementById('homeName').value || 'Home';
-  const away = document.getElementById('awayName').value || 'Away';
-
-  document.getElementById('homeDisplay').textContent = `${home} (${homeGamesWon})`;
-  document.getElementById('awayDisplay').textContent = `${away} (${awayGamesWon})`;
-
-  document.getElementById('homeDisplayWide').textContent = `${home} (${homeGamesWon})`;
-  document.getElementById('awayDisplayWide').textContent = `${away} (${awayGamesWon})`;
-}
+    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
+    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
+  }
 
   // Builds summary text for the match summary section
   function updateSummary() {
@@ -765,13 +641,6 @@ body.wide .wide-only { display: flex; }
       document.body.classList.remove('locked');
     }
   }
-    function toggleWideLayout(checkbox) {
-  if (checkbox.checked) {
-    document.body.classList.add('wide');
-  } else {
-    document.body.classList.remove('wide');
-  }
-}
 </script>
 </body>
 </html>
