@@ -344,6 +344,13 @@ body.wide #awayScoreDisplay {
   font-weight: bold;
   color: #00eaff;
 }
+    /* Default: show portrait layout, hide wide */
+.portrait-only { display: block; }
+.wide-only { display: none; }
+
+/* In wide mode: flip visibility */
+body.wide .portrait-only { display: none; }
+body.wide .wide-only { display: flex; }
   </style>
 </head>
 <body>
@@ -353,22 +360,32 @@ body.wide #awayScoreDisplay {
   <!-- Main scoreboard display -->
   <div class="scoreboard">
     <!-- Flashing banner that appears at 1-minute mark -->
-    <div id="blitzBanner">BLITZ MODE ⚡</div>
+<div id="blitzBanner">BLITZ MODE ⚡</div>
 
-    <!-- Display player/team names -->
-    <div class="player-box" id="homeBox">
-  <div id="homeDisplay">Home</div>
-  <div id="homeScoreDisplay">0</div>
-</div>
-   
-    <!-- Main countdown timer display -->
+<!-- Timer -->
 <div id="timer">03:00.0</div>
 
-<div class="player-box" id="awayBox">
-  <div id="awayDisplay">Away</div>
-  <div id="awayScoreDisplay">0</div>
-</div>
+<!-- Portrait layout: visible only when NOT wide -->
+<div class="portrait-only">
+  <div class="names">
+    <span id="homeDisplay">Home</span>
+    <span id="awayDisplay">Away</span>
   </div>
+  <div class="scores">
+    <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
+  </div>
+</div>
+
+<!-- Wide layout: visible only when wide -->
+<div class="wide-only player-box" id="homeBox">
+  <div id="homeDisplayWide">Home</div>
+  <div id="homeScoreDisplayWide">0</div>
+</div>
+
+<div class="wide-only player-box" id="awayBox">
+  <div id="awayDisplayWide">Away</div>
+  <div id="awayScoreDisplayWide">0</div>
+</div>
 
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
@@ -529,18 +546,21 @@ body.wide #awayScoreDisplay {
 
   // Increments score for specified team (blitz gives double points)
   function score(side) {
-    if (side === 'home') homeScoreValue += blitz ? 2 : 1;
-    if (side === 'away') awayScoreValue += blitz ? 2 : 1;
-    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+  if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+  if (side === 'away') awayScoreValue += blitz ? 2 : 1;
 
-    // If in sudden death, any score ends the game
-    if (suddenDeath) endGame();
-    else {
-      clearInterval(timerInterval);
-      running = false;
-    }
+  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+  document.getElementById('homeScoreDisplayWide').textContent = homeScoreValue;
+  document.getElementById('awayScoreDisplayWide').textContent = awayScoreValue;
+
+  if (suddenDeath) endGame();
+  else {
+    clearInterval(timerInterval);
+    running = false;
   }
+}
 
   // Starts a 10-second timeout period
   function startTimeout() {
@@ -663,9 +683,15 @@ body.wide #awayScoreDisplay {
 
   // Updates name and score UI for each player
   function updateNameDisplays() {
-    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
-    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
-  }
+  const home = document.getElementById('homeName').value || 'Home';
+  const away = document.getElementById('awayName').value || 'Away';
+
+  document.getElementById('homeDisplay').textContent = `${home} (${homeGamesWon})`;
+  document.getElementById('awayDisplay').textContent = `${away} (${awayGamesWon})`;
+
+  document.getElementById('homeDisplayWide').textContent = `${home} (${homeGamesWon})`;
+  document.getElementById('awayDisplayWide').textContent = `${away} (${awayGamesWon})`;
+}
 
   // Builds summary text for the match summary section
   function updateSummary() {
