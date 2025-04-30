@@ -225,6 +225,22 @@ body {
     width: 90%;
     max-width: 300px;
   }
+  body.locked .scoreboard {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+}
+
+body.locked #menu {
+  margin-top: 350px; /* Leaves room for fixed scoreboard */
+}
+
+#menu {
+  max-height: 70vh;
+  overflow-y: auto;
+}
   #menu {
     max-width: 95vw;
     padding: 15px;
@@ -266,6 +282,10 @@ body {
   <div id="gear" onclick="toggleMenu()">⚙️</div>
 
   <div id="menu">
+    <label style="display: block; margin: 15px 0;">
+  <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
+  Lock scoreboard to top
+</label>
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
       <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
@@ -535,6 +555,14 @@ body {
 
     loadNames();
     updateTimer();
+    function toggleLock(checkbox) {
+  const scoreboard = document.querySelector('.scoreboard');
+  if (checkbox.checked) {
+    document.body.classList.add('locked');
+  } else {
+    document.body.classList.remove('locked');
+  }
+}
   </script>
 </body>
 </html>
