@@ -4,260 +4,241 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photon Blitz Score System</title>
+  
+  <!-- PWA metadata -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#00eaff" />
   <link rel="apple-touch-icon" href="photonblitzlogo.png" />
+
+  <!-- Register service worker for offline support -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then(() => console.log('Service Worker Registered'));
     }
   </script>
+
+  <!-- Styling -->
   <style>
-   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-* {
-  box-sizing: border-box;
-}
+    /* General reset and theme */
+    * { box-sizing: border-box; }
 
-body {
-  font-family: 'Orbitron', sans-serif;
-  background: linear-gradient(to bottom right, #010518, #012B58);
-  color: #00eaff;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to bottom right, #010518, #012B58);
+      color: #00eaff;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.logo {
-  max-width: 300px;
-  margin: 0 auto 20px;
-  display: block;
-}
+    .logo {
+      max-width: 300px;
+      margin: 0 auto 20px;
+      display: block;
+    }
 
-.scoreboard {
-  width: 100%;
-  max-width: min(500px, 90vw);
-  height: 320px;
-  padding: 20px;
-  margin: 0 auto 20px auto;
-  border: 3px solid #00ffff;
-  border-radius: 15px;
-  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
+    /* Main scoreboard container */
+    .scoreboard {
+      width: 100%;
+      max-width: min(500px, 90vw);
+      height: 320px;
+      padding: 20px;
+      margin: 0 auto 20px auto;
+      border: 3px solid #00ffff;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
 
-#blitzBanner {
-  display: none;
-  font-size: 1.8em;
-  font-weight: bold;
-  color: #ffcc00;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  animation: flash 1s infinite;
-  text-shadow: 0 0 4px #ffcc00;
-}
+    /* Blitz Mode banner */
+    #blitzBanner {
+      display: none;
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ffcc00;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: flash 1s infinite;
+      text-shadow: 0 0 4px #ffcc00;
+    }
 
-@keyframes flash {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
-#timer {
-  font-size: 6em;
-  margin-bottom: 10px;
-  color: #ff4444;
-  text-shadow: 0 0 10px #f00, 0 0 20px #f00;
-}
+    /* Timer display */
+    #timer {
+      font-size: 6em;
+      margin-bottom: 10px;
+      color: #ff4444;
+      text-shadow: 0 0 10px #f00, 0 0 20px #f00;
+    }
 
-.names {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  font-size: 1.5em;
-  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
-}
+    .names {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 1.5em;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+    }
 
-.scores {
-  margin-top: 10px;
-  font-size: 5em;
-  font-weight: bold;
-  text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
-}
+    .scores {
+      margin-top: 10px;
+      font-size: 5em;
+      font-weight: bold;
+      text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
+    }
 
-.timeout-button {
-  margin-bottom: 20px;
-}
+    .timeout-button {
+      margin-bottom: 20px;
+    }
 
-.buttons {
-  display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 20px;
-  overflow-x: auto;
-  padding: 10px;
-  scroll-behavior: smooth;
-}
+    /* Button layout */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 10px;
+      scroll-behavior: smooth;
+    }
 
-.buttons button,
-.time-controls button {
-  flex: 0 0 auto;
-  font-size: 1.2em;
-  padding: 10px 18px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  background: #00eaff;
-  color: #012B58;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 10px #00eaff80;
-  white-space: nowrap;
-}
+    /* Button styling */
+    .buttons button,
+    .time-controls button {
+      flex: 0 0 auto;
+      font-size: 1.2em;
+      padding: 10px 18px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #00eaff;
+      color: #012B58;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00eaff80;
+      white-space: nowrap;
+    }
 
-#gear {
-  display: block;
-  margin: 30px auto 10px auto;
-  font-size: 2.5em;
-  cursor: pointer;
-}
+    #gear {
+      display: block;
+      margin: 30px auto 10px auto;
+      font-size: 2.5em;
+      cursor: pointer;
+    }
 
-#menu {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-  margin-top: 30px;
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
-  box-sizing: border-box;
-  background: rgba(1, 5, 24, 0.9);
-  border: 2px solid #00ffff;
-  border-radius: 10px;
-}
+    /* Settings menu */
+    #menu {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      margin-top: 30px;
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      background: rgba(1, 5, 24, 0.9);
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
 
-#menu.active {
-  opacity: 1;
-  pointer-events: all;
-}
+    #menu.active {
+      opacity: 1;
+      pointer-events: all;
+    }
 
-.name-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
+    .name-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
 
-.name-input {
-  font-size: 1.4em;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  font-family: 'Orbitron', sans-serif;
-  text-align: center;
-  min-width: 150px;
-  flex: 1 1 40%;
-}
+    .name-input {
+      font-size: 1.4em;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      min-width: 150px;
+      flex: 1 1 40%;
+    }
 
-.match-summary {
-  margin-top: 20px;
-  font-size: 1.2em;
-  text-shadow: 0 0 5px #0ff;
-}
+    .match-summary {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px #0ff;
+    }
 
-.winner {
-  color: #00ff00;
-  font-weight: bold;
-}
+    .winner {
+      color: #00ff00;
+      font-weight: bold;
+    }
 
-.time-controls {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 20px auto;
-  gap: 10px;
-}
-body.locked .logo {
-  display: none;
-}
+    .time-controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px auto;
+      gap: 10px;
+    }
 
-body.locked {
-  padding-top: 360px; /* Ensures room below fixed scoreboard */
-}
-/* --- Responsive tweaks --- */
-@media (max-width: 600px) {
-  #timer {
-    font-size: 4em;
-  }
-  .names {
-    font-size: 1.2em;
-    gap: 15px;
-  }
-  .scores {
-    font-size: 3.5em;
-  }
-  .buttons {
-    justify-content: center;
-    gap: 10px;
-    padding: 5px;
-  }
-  .buttons button {
-    font-size: 0.9em;
-    padding: 6px 10px;
-    margin: 3px;
-    max-width: 100px;
-  }
-  .time-controls button {
-    font-size: 0.9em;
-    padding: 6px 10px;
-  }
-  .name-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .name-input {
-    width: 90%;
-    max-width: 300px;
-  }
-  body.locked .scoreboard {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-}
+    /* Locked mode tweaks (when scoreboard is fixed to top) */
+    body.locked .logo {
+      display: none;
+    }
 
-body.locked #menu {
-  margin-top: 350px; /* Leaves room for fixed scoreboard */
-}
+    body.locked {
+      padding-top: 360px;
+    }
 
-#menu {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-  #menu {
-    max-width: 95vw;
-    padding: 15px;
-  }
-}
+    body.locked .scoreboard {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+    }
 
-@media (max-width: 400px) {
-  .buttons {
-    justify-content: flex-start;
-  }
-}
+    body.locked #menu {
+      margin-top: 350px;
+    }
+
+    #menu {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 600px) {
+      #timer { font-size: 4em; }
+      .names { font-size: 1.2em; gap: 15px; }
+      .scores { font-size: 3.5em; }
+      .buttons { gap: 10px; padding: 5px; }
+      .buttons button { font-size: 0.9em; padding: 6px 10px; max-width: 100px; }
+      .time-controls button { font-size: 0.9em; padding: 6px 10px; }
+      .name-container { flex-direction: column; align-items: center; gap: 10px; }
+      .name-input { width: 90%; max-width: 300px; }
+    }
+
+    @media (max-width: 400px) {
+      .buttons { justify-content: flex-start; }
+    }
   </style>
 </head>
 <body>
