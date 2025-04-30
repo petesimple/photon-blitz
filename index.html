@@ -318,6 +318,32 @@ body.wide .player-box {
   align-items: center;
   flex: 1 1 30%;
 }
+    /* Hide old layout in wide mode */
+body.wide .names,
+body.wide .scores {
+  display: none;
+}
+
+/* Show new layout elements in wide mode */
+body.wide .player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 30%;
+}
+
+body.wide .player-box div {
+  font-size: 1.4em;
+  text-shadow: 0 0 5px #0ff;
+}
+
+body.wide #homeScoreDisplay,
+body.wide #awayScoreDisplay {
+  font-size: 3.2em;
+  font-weight: bold;
+  color: #00eaff;
+}
   </style>
 </head>
 <body>
@@ -333,15 +359,17 @@ body.wide .player-box {
     <div id="timer">03:00.0</div>
 
     <!-- Display player/team names -->
-    <div class="names">
-      <span id="homeDisplay">Home</span>
-      <span id="awayDisplay">Away</span>
-    </div>
+    <div class="player-box" id="homeBox">
+  <div id="homeDisplay">Home</div>
+  <div id="homeScoreDisplay">0</div>
+</div>
 
-    <!-- Display player/team scores -->
-    <div class="scores">
-      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
-    </div>
+<div id="timer">03:00.0</div>
+
+<div class="player-box" id="awayBox">
+  <div id="awayDisplay">Away</div>
+  <div id="awayScoreDisplay">0</div>
+</div>
   </div>
 
   <!-- Timeout control button: pauses for 10 seconds -->
