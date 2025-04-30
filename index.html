@@ -81,11 +81,15 @@
 
     /* Timer display */
     #timer {
-      font-size: 6em;
-      margin-bottom: 10px;
-      color: #ff4444;
-      text-shadow: 0 0 10px #f00, 0 0 20px #f00;
-    }
+  font-size: 6em;
+  margin-bottom: 10px;
+  color: #ff4444;
+  text-shadow: 0 0 10px #f00, 0 0 20px #f00;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 
     .names {
       display: flex;
@@ -237,6 +241,13 @@
     }
 
     @media (max-width: 400px) {
+      #timer {
+    font-size: 3.2em;
+    max-width: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
       .buttons { justify-content: flex-start; }
     }
   </style>
