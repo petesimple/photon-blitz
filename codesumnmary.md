@@ -1,67 +1,99 @@
-Photon Blitz Score System - Code Summary
+## 📄 Photon Blitz Score System – Code Summary
 
-1. HTML Structure
+---
 
-The HTML section of the code defines the structure of the Photon Blitz Score System interface:
+### 🧱 HTML Structure
 
-Header (<head>): Includes meta settings for responsiveness and PWA support, loads a Google font, and registers a service worker for offline capability.
+The HTML defines the visual layout and structure of the web scoreboard.
 
-Body (<body>): Contains all main UI elements:
+#### Key Sections:
 
-Logo: An image for branding, hidden when scoreboard is locked.
+- **Logo Image**: `<img>` for branding; hidden when the scoreboard is fixed.
+- **Scoreboard (`.scoreboard`)**:
+  - `#blitzBanner`: Flashing text shown at 1:00 left ("Blitz Mode").
+  - `#timer`: Countdown clock in mm:ss.t format.
+  - `.names`: Display of current player/team names.
+  - `.scores`: Current game score (home vs away).
+- **Timeout Button**: Single button for initiating 10-second timeout.
+- **Buttons Wrapper (`#buttonsWrapper`)**:
+  - Three main buttons for home score, away score, and start/pause toggle.
+- **Gear Icon (`#gear`)**: Toggles visibility of configuration menu.
+- **Menu Panel (`#menu`)**:
+  - Name inputs, control buttons (reset, swap, update), and time adjustment buttons.
+  - Match summary display.
+  - "Lock scoreboard to top" checkbox.
 
-Scoreboard: Displays the timer, player names, and current scores.
+---
 
-Timeout Button: Allows ref to call a 10-second timeout.
+### 🎨 CSS Purpose & Styles
 
-Score Buttons: Buttons to award points to Home or Away and to start/pause the game.
+#### General Styles:
+- **Fonts and Theme**: Uses the Orbitron font for a digital look. Colors are neon-on-dark.
+- **Layout**: Flexbox-based alignment for responsiveness and clarity.
 
-Gear Menu: Toggles a menu for game configuration and match management.
+#### Key Classes:
 
-Gear Panel (#menu): Inputs for player names, controls for resetting games, time adjustment buttons, and a match summary.
+- `.scoreboard`: Main game display panel; becomes `fixed` when locked.
+- `.buttons`: Scrollable row of buttons, responsive for mobile.
+- `.names`, `.scores`: High visibility for real-time viewing.
+- `@media` queries:
+  - Adjust font sizes and layout for mobile users.
+  - Support a locked scoreboard position on mobile and desktop.
 
-2. CSS Purpose
+#### Special Behaviors:
+- `body.locked`: Adds top-padding, hides logo, and fixes scoreboard.
 
-The CSS styles ensure the app is visually polished and responsive:
+---
 
-General Styling: Uses a futuristic font and dark theme with neon accents.
+### ⚙️ JavaScript Functionality
 
-Scoreboard Styling: Neon border, glowing effects, and a structured layout.
+#### Game Timer & Blitz Mode:
+- `time = 1800`: Timer starts at 3:00. Stored in tenths of seconds.
+- `updateTimer()`: Updates the visible timer every 100ms.
+- Calls `speak()` for verbal announcements at set time intervals.
+- At 1:00 (600 tenths), Blitz Mode activates visually and audibly.
 
-Responsive Layout: Includes media queries to resize elements for smaller screens.
+#### Timer Controls:
+- `toggleTimer()`: Starts or pauses the timer.
+- `adjustTime(seconds)`: Adds or subtracts time dynamically.
 
-Button Design: Styled with shadows, hover feedback, and spacing for usability.
+#### Scoring:
+- `score('home'/'away')`: Adds 1 or 2 points based on blitz state.
+- `startTimeout()`: Pauses game for 10s; countdown visible.
 
-Gear Menu: Hidden by default; becomes visible when toggled. It is scrollable if scoreboard is locked.
+#### Game State:
+- `endGame()`: Determines winner or triggers sudden death.
+- `restartGame()`, `resetForNextGame()`, `resetMatch()`: Manage game rounds.
 
-Locked State: When enabled, the scoreboard stays fixed at the top and the logo is hidden for a cleaner display on external screens.
+#### Player & Match Management:
+- `saveNames()`: Stores names in `localStorage`.
+- `updateSummary()`: Builds HTML summary of game history.
+- `swapSides()`: Switches player names and score counts.
 
-3. JavaScript Functionality
+#### UI Toggles:
+- `toggleMenu()`: Shows or hides the gear/settings menu.
+- `toggleLock()`: Locks/unlocks the scoreboard to the top.
 
-The script section controls all interactivity and game logic:
+#### Speech:
+- `speak(text)`: Uses Web Speech API for audible cues.
 
-Variables: Manage timer, score, match state, and game stats.
+---
 
-Timer Logic: Converts tenths of seconds to MM:SS.t, triggers blitz mode at 1:00, ends game at 0:00.
+### 🧭 Visual Diagram
 
-Speech: Uses speechSynthesis to announce times and blitz activation.
+```
+ ____________________________
+|        Photon Blitz       |
+|---------------------------|
+|  [BLITZ MODE ⚡]          |
+|  [   02:35.7   ]          |  <- Timer
+| Home (2)    Away (1)      |  <- Names + Scores
+|---------------------------|
+| [Home] [⏯] [Away]         |  <- Buttons
+|   Timeout 10s             |
+|     ⚙️ Settings           |
+|___________________________|
+```
 
-Score Tracking: Updates score based on team, accounts for blitz double-points, handles sudden death.
+---
 
-Timeout Feature: Temporarily halts the game and counts down from 10 seconds.
-
-Game Flow:
-
-endGame(): Determines winner and triggers next game setup.
-
-restartGame() / resetMatch(): Fully or partially resets the match.
-
-swapSides(): Switches player names and win counters.
-
-Name Management: Saves and loads player names using localStorage.
-
-UI Updates: Updates scoreboard and match summary after relevant events.
-
-Gear Menu Toggle: Shows/hides the settings panel.
-
-Lock Toggle: Adds a .locked class to the body to pin the scoreboard to the top for external display setups.
