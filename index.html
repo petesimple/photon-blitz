@@ -595,6 +595,32 @@
   loadNames();
   updateTimer();
 
+    document.querySelector('.scoreboard').addEventListener('click', (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const width = rect.width;
+
+  // Clicked the far left on timer (timeout trigger)?
+  const timerRect = document.getElementById('timer').getBoundingClientRect();
+  if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom && x < width * 0.2) {
+    startTimeout();
+    return;
+  }
+
+  // Clicked the timer (pause/resume)?
+  if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom) {
+    toggleTimer();
+    return;
+  }
+
+  // Left side of scoreboard (score home)
+  if (x < width / 2) {
+    score('home');
+  } else {
+    score('away');
+  }
+});
+
   // Toggles the "locked" class on body to fix scoreboard at top
   function toggleLock(checkbox) {
     const scoreboard = document.querySelector('.scoreboard');
