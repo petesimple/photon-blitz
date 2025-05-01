@@ -12,10 +12,10 @@
 - [x] Blitz Mode display: Use one line (“Blitz ⚡”) and hide it when match ends or sudden death starts
 
 ## 🖥️ Phase 2: Screen/OBS Compatibility View
-- [ ] Add horizontal layout mode (for screen display / OBS integration)
-- [ ] Allow switching between vertical/mobile and horizontal/OBS layout
-- [ ] Player names and timer scaled up for across-the-room visibility
-- [ ] Buttons minimized or hidden in screen-view-only mode (ref controls can stay on a separate device)
+- [x] Add horizontal layout mode (for screen display / OBS integration)
+- [x] Allow switching between vertical/mobile and horizontal/OBS layout
+- [x] Player names and timer scaled up for across-the-room visibility
+- [x] Buttons minimized or hidden in screen-view-only mode (ref controls can stay on a separate device)
 
 ## 🔊 Phase 3: Audio Enhancements
 - [x] Horn sound when match ends (with toggle option in gear menu)
