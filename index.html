@@ -46,31 +46,73 @@
     /* Main scoreboard container */
     .scoreboard {
       width: 100%;
-      max-width: min(500px, 90vw);
-      height: 320px;
+      max-width: 900px;
       padding: 20px;
       margin: 0 auto 20px auto;
       border: 3px solid #00ffff;
       border-radius: 15px;
       box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      flex-direction: row; /* row instead of column */
+      justify-content: space-around;
       align-items: center;
       position: relative;
+      height: 180px; /* Shorter, wide box */
     }
 
-    /* Blitz Mode banner */
-    #blitzBanner {
+    .score-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .score-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .score-name {
+      font-size: 1.4em;
+      text-shadow: 0 0 5px #0ff;
+    }
+
+    .score-number {
+      font-size: 5em;
+      font-weight: bold;
+      text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
+    }
+
+    #logoWrapper {
+      display: flex;
+      justify-content: center;
+      animation: flash 1s infinite;
+    }
+
+    #mainLogo {
+      height: 60px;
+      filter: drop-shadow(0 0 6px #00eaff);
+    }
+
+    #blitzWrapper {
       display: none;
+      align-items: center;
+      gap: 10px;
+      animation: flash 1s infinite;
+    }
+
+    #blitzLogo {
+      height: 40px;
+      filter: drop-shadow(0 0 6px #ffcc00);
+    }
+
+    #blitzBanner {
       font-size: 1.8em;
       font-weight: bold;
       color: #ffcc00;
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: flash 1s infinite;
       text-shadow: 0 0 4px #ffcc00;
     }
 
@@ -276,28 +318,30 @@
 </head>
 <body>
   <!-- App logo: visible at top unless scoreboard is locked -->
-  <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo" />
   
-  <!-- Main scoreboard display -->
   <div class="scoreboard">
-    <!-- Flashing banner that appears at 1-minute mark -->
-    <div id="blitzBanner">BLITZ ⚡</div>
-
-    <!-- Main countdown timer display -->
-    <div id="timer">03:00.0</div>
-
-    <!-- Display player/team names -->
-    <div class="names">
-      <span id="homeDisplay">Home</span>
-      <span id="awayDisplay">Away</span>
+    <div class="score-side">
+      <div id="homeDisplay" class="score-name">Home</div>
+      <div id="homeScoreDisplay" class="score-number">0</div>
+    </div>
+  
+    <div class="score-center">
+      <div id="logoWrapper">
+        <img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
+      </div>
+      <div id="blitzWrapper">
+        <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" />
+        <div id="blitzBanner">BLITZ ⚡</div>
+      </div>
+            <div id="timer">03:00.0</div>
     </div>
 
-    <!-- Display player/team scores -->
-    <div class="scores">
-      <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
+    <div class="score-side">
+      <div id="awayDisplay" class="score-name">Away</div>
+      <div id="awayScoreDisplay" class="score-number">0</div>
     </div>
   </div>
-  
+    
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
@@ -427,6 +471,17 @@
     }
   }
 
+  // Add dedicated click listeners for score elements
+  document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
+    e.stopPropagation(); // prevent it from triggering scoreboard click
+    score('home');
+  });
+
+  document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
+    e.stopPropagation();
+    score('away');
+  });
+
   // Updates the visible timer and manages game flow at key time events
   function updateTimer() {
     const minutes = String(Math.floor(time / 600)).padStart(2, '0');
@@ -435,11 +490,16 @@
     document.getElementById('timer').textContent = `${minutes}:${seconds}.${tenths}`;
 
     // Trigger Blitz mode at exactly 1:00 remaining
-    if (time === 600 && !blitz) {
-  blitz = true;
-  document.getElementById('blitzBanner').style.display = 'block';
-  speak("Blitz Blitz Blitz! Double Points!");
-}
+    if (time <= 600 && !blitz) {
+      blitz = true;
+      document.getElementById('logoWrapper').style.display = 'none';
+      document.getElementById('blitzWrapper').style.display = 'flex';
+      speak("Blitz Blitz Blitz! Double Points!");
+    } else if (time > 600 && !running) {
+      // Ensure normal logo shows again after blitz ends during reset
+      document.getElementById('blitzWrapper').style.display = 'none';
+      document.getElementById('logoWrapper').style.display = 'flex';
+    }
 
     // Handle end-of-match logic
     if (time === 0) {
