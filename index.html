@@ -370,6 +370,9 @@
   <input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
   Enable Sounds
 </label>
+
+    <!-- Layout toggle button -->
+<button onclick="switchToPortrait()">Switch to Portrait Mode</button>
     
     <!-- Back gear in menu -->
 <div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
@@ -807,6 +810,12 @@ function playHorn() {
     // Toggles sound on/off 
     function toggleSound() {
   soundEnabled = document.getElementById('soundToggle').checked;
+}
+    function switchToPortrait() {
+  // Optional: confirm switch
+  if (confirm("Switch to Portrait (One-Hand) Mode?")) {
+    window.location.href = "PMindex.html";
+  }
 }
 </script>
 </body>
