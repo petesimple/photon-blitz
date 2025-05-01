@@ -251,20 +251,20 @@
       .buttons { justify-content: flex-start; }
     }
     #scoreboardMask {
-  display: none;
-}
+    display: none;
+  }
 
-body.locked #scoreboardMask {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 320px; /* same as scoreboard height */
-  width: 100vw;
-  background: linear-gradient(to bottom right, #010518, #012B58);
-  z-index: 9998; /* just under scoreboard */
-  pointer-events: none;
-}
+  body.locked #scoreboardMask {
+    display: block;
+    position: fixed;
+    top: 320px; /* start just below the scoreboard */
+    left: 0;
+    height: calc(100vh - 320px);
+    width: 100vw;
+    background: linear-gradient(to bottom right, #010518, #012B58);
+    z-index: 998; /* BELOW the scoreboard, ABOVE the content */
+    pointer-events: none;
+  }
   </style>
 </head>
 <body>
