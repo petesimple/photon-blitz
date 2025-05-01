@@ -250,6 +250,21 @@
   }
       .buttons { justify-content: flex-start; }
     }
+    #scoreboardMask {
+  display: none;
+}
+
+body.locked #scoreboardMask {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 320px; /* same as scoreboard height */
+  width: 100vw;
+  background: linear-gradient(to bottom right, #010518, #012B58);
+  z-index: 9998; /* just under scoreboard */
+  pointer-events: none;
+}
   </style>
 </head>
 <body>
@@ -275,7 +290,10 @@
       <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
   </div>
-
+  
+  <!-- Mask to hide tools scrolling under scoreboard -->
+<div id="scoreboardMask"></div>
+  
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
