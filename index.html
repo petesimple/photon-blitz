@@ -322,6 +322,11 @@
       Lock scoreboard to top
     </label>
 
+    <label style="display: block; margin-top: 15px;">
+  <input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
+  Enable Sounds
+</label>
+    
     <!-- Back gear in menu -->
 <div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
     
@@ -386,6 +391,10 @@
   </div>
 
   <script>
+
+    // Set horn sound 
+    <audio id="hornSound" src="horn.mp3" preload="auto"></audio>
+    
   // Set the initial time to 3 minutes (in tenths of seconds)
   let time = 1800;
 
@@ -514,18 +523,21 @@
 
   // Handles end-of-game logic and saves result
   function endGame() {
-    if (!suddenDeath) matchesPlayed++;
-    if (homeScoreValue > awayScoreValue) homeGamesWon++;
-    else awayGamesWon++;
+  if (!suddenDeath) matchesPlayed++;
+  if (homeScoreValue > awayScoreValue) homeGamesWon++;
+  else awayGamesWon++;
 
-    const homeName = document.getElementById('homeName').value || 'Home';
-    const awayName = document.getElementById('awayName').value || 'Away';
-    gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+  // 🟡 NEW: Play the horn sound
+  playHorn();
 
-    swapSides();
-    resetForNextGame();
-    updateSummary();
-  }
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
+  gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+
+  swapSides();
+  resetForNextGame();
+  updateSummary();
+}
 
   // Resets scoreboard for the next game
   function resetForNextGame() {
@@ -716,6 +728,20 @@ function adjustGames(side, delta) {
   }
   updateNameDisplays();
   updateSummary();
+}
+    // play horn sound at the end of the match
+    let soundEnabled = true;
+
+function playHorn() {
+  if (soundEnabled) {
+    const horn = document.getElementById('hornSound');
+    horn.currentTime = 0;
+    horn.play();
+  }
+}
+    // Toggles sound on/off 
+    function toggleSound() {
+  soundEnabled = document.getElementById('soundToggle').checked;
 }
 </script>
 </body>
