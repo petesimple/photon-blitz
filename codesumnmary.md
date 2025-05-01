@@ -1,99 +1,115 @@
-## 📄 Photon Blitz Score System – Code Summary
+📄 Photon Blitz Score System – Updated Code Summary (v1.5 Beta)
 
----
+⸻
 
-### 🧱 HTML Structure
+🧱 HTML Structure
 
-The HTML defines the visual layout and structure of the web scoreboard.
+The app includes two layout versions:
+	•	PMindex.html → Portrait Mode (one-hand, mobile-friendly)
+	•	index.html → Landscape Mode (widescreen / stream view)
 
-#### Key Sections:
+Key Sections (Both Layouts Share):
+	•	Logo/Blitz Display:
+	•	#logoWrapper (landscape) / .logo (portrait)
+	•	#blitzBanner or #blitzWrapper: Shows “Blitz ⚡” at 1:00 with flashing text.
+	•	Timer Display: #timer shows mm:ss.t format.
+	•	Score Areas:
+	•	Portrait: .names and .scores stacked.
+	•	Landscape: .score-side and .score-center arranged horizontally.
+	•	Score Controls: Buttons for scoring Home/Away, toggling the timer.
+	•	Timeout Button: Now a large blue button for better visibility.
+	•	Settings Menu (#menu):
+	•	Includes gear toggle, name inputs, score/game adjusters, time controls, and summary.
+	•	New: A Layout Switch button to jump between modes (warning: resets game data).
 
-- **Logo Image**: `<img>` for branding; hidden when the scoreboard is fixed.
-- **Scoreboard (`.scoreboard`)**:
-  - `#blitzBanner`: Flashing text shown at 1:00 left ("Blitz Mode").
-  - `#timer`: Countdown clock in mm:ss.t format.
-  - `.names`: Display of current player/team names.
-  - `.scores`: Current game score (home vs away).
-- **Timeout Button**: Single button for initiating 10-second timeout.
-- **Buttons Wrapper (`#buttonsWrapper`)**:
-  - Three main buttons for home score, away score, and start/pause toggle.
-- **Gear Icon (`#gear`)**: Toggles visibility of configuration menu.
-- **Menu Panel (`#menu`)**:
-  - Name inputs, control buttons (reset, swap, update), and time adjustment buttons.
-  - Match summary display.
-  - "Lock scoreboard to top" checkbox.
+⸻
 
----
+🎨 CSS Purpose & Styles
 
-### 🎨 CSS Purpose & Styles
+Base Styling:
+	•	Digital-theme: Orbitron font, dark neon aesthetic.
+	•	Responsiveness via flexbox and @media queries.
 
-#### General Styles:
-- **Fonts and Theme**: Uses the Orbitron font for a digital look. Colors are neon-on-dark.
-- **Layout**: Flexbox-based alignment for responsiveness and clarity.
+Landscape Mode (index.html):
+	•	.scoreboard is wide and shallow, arranged in rows.
+	•	.score-side and .score-center group elements for alignment.
+	•	#logoWrapper and #blitzWrapper swap based on blitz state.
 
-#### Key Classes:
+Portrait Mode (PMindex.html):
+	•	.scoreboard is tall and narrow, arranged in columns.
+	•	Easier for one-handed phone use.
 
-- `.scoreboard`: Main game display panel; becomes `fixed` when locked.
-- `.buttons`: Scrollable row of buttons, responsive for mobile.
-- `.names`, `.scores`: High visibility for real-time viewing.
-- `@media` queries:
-  - Adjust font sizes and layout for mobile users.
-  - Support a locked scoreboard position on mobile and desktop.
+Shared Visual Features:
+	•	Flash animation on #blitzBanner / #blitzWrapper.
+	•	body.locked state pins scoreboard to top and hides the logo.
+	•	Larger touch targets for buttons.
 
-#### Special Behaviors:
-- `body.locked`: Adds top-padding, hides logo, and fixes scoreboard.
+⸻
 
----
+⚙️ JavaScript Functionality
 
-### ⚙️ JavaScript Functionality
+Core Timer Logic:
+	•	time = 1800 (tenths of seconds → 3:00.0).
+	•	updateTimer() runs every 100ms while active.
+	•	speak() calls announce critical times and Blitz Mode.
 
-#### Game Timer & Blitz Mode:
-- `time = 1800`: Timer starts at 3:00. Stored in tenths of seconds.
-- `updateTimer()`: Updates the visible timer every 100ms.
-- Calls `speak()` for verbal announcements at set time intervals.
-- At 1:00 (600 tenths), Blitz Mode activates visually and audibly.
+Scoring System:
+	•	score('home'/'away') increases score by 1 or 2 depending on Blitz.
+	•	suddenDeath mode disables timer; next score ends the game.
 
-#### Timer Controls:
-- `toggleTimer()`: Starts or pauses the timer.
-- `adjustTime(seconds)`: Adds or subtracts time dynamically.
+Blitz Mode:
+	•	Auto-triggers at time === 600 (1:00 mark).
+	•	Displays banner and calls out “Blitz Blitz Blitz! Double Points!”
+	•	Auto-clears if Sudden Death is triggered before time ends.
 
-#### Scoring:
-- `score('home'/'away')`: Adds 1 or 2 points based on blitz state.
-- `startTimeout()`: Pauses game for 10s; countdown visible.
+Timeout System:
+	•	startTimeout() pauses the game for 10 seconds and shows a countdown.
 
-#### Game State:
-- `endGame()`: Determines winner or triggers sudden death.
-- `restartGame()`, `resetForNextGame()`, `resetMatch()`: Manage game rounds.
+Match Control:
+	•	endGame(), resetForNextGame(), restartGame(), resetMatch() manage match flow.
+	•	Win counts and game results are tracked.
 
-#### Player & Match Management:
-- `saveNames()`: Stores names in `localStorage`.
-- `updateSummary()`: Builds HTML summary of game history.
-- `swapSides()`: Switches player names and score counts.
+Name Handling & Swapping:
+	•	saveNames() saves input to localStorage.
+	•	swapSides() reverses players and scores.
+	•	updateSummary() builds match results for review.
 
-#### UI Toggles:
-- `toggleMenu()`: Shows or hides the gear/settings menu.
-- `toggleLock()`: Locks/unlocks the scoreboard to the top.
+UI Toggles & Layout:
+	•	toggleMenu(): Opens/closes settings gear panel.
+	•	toggleLock(): Pins scoreboard to top of screen.
+	•	New: Layout Switch Button
+	•	Switches between portrait and landscape modes.
+	•	⚠️ Displays warning: “Changing layout will reset all game data.”
 
-#### Speech:
-- `speak(text)`: Uses Web Speech API for audible cues.
+Audio:
+	•	playHorn() plays match end sound.
+	•	Sound toggled by gear menu (soundEnabled).
 
----
+⸻
 
-### 🧭 Visual Diagram
+🧠 Planned Features Not Yet Implemented
+	•	Persistent game data across layouts (possible with shared localStorage + URL flags).
+	•	Automated ref mode with minimal interface.
 
-```
+ 🧭 Visual Overview (Now With Layout Options)
+
+Portrait (PMindex.html):
  ____________________________
 |        Photon Blitz       |
 |---------------------------|
-|  [BLITZ MODE ⚡]          |
-|  [   02:35.7   ]          |  <- Timer
-| Home (2)    Away (1)      |  <- Names + Scores
+|  [BLITZ ⚡]               |
+|  [   02:35.7   ]          |
+| Player 1 (3)  Player 2(2) |
 |---------------------------|
-| [Home] [⏯] [Away]         |  <- Buttons
-|   Timeout 10s             |
-|     ⚙️ Settings           |
+| [P1] [⏯] [P2]             |
+|  Timeout 10s (Big Blue)   |
+|     ⚙️ Gear & Settings   |
 |___________________________|
-```
 
----
-
+Landscape (index.html):
+ __________________________________________________
+| P1 Name (3)   [Logo/Blitz ⚡]   (2) P2 Name       |
+|     Score       [   02:35.7   ]       Score      |
+|__________________________________________________|
+| [P1] [⏯] [P2]    Timeout 10s   ⚙️ Settings       |
+|__________________________________________________|
