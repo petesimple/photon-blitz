@@ -265,6 +265,13 @@
     z-index: 998; /* BELOW the scoreboard, ABOVE the content */
     pointer-events: none;
   }
+    #gearBack {
+  display: none;
+}
+
+#menu.active #gearBack {
+  display: block;
+}
   </style>
 </head>
 <body>
@@ -315,6 +322,9 @@
       Lock scoreboard to top
     </label>
 
+    <!-- Back gear in menu -->
+<div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
+    
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
@@ -563,19 +573,25 @@
 
   // Opens and closes gear menu
   function toggleMenu() {
-    const menu = document.getElementById('menu');
-    const buttonsWrapper = document.getElementById('buttonsWrapper');
-    if (menu.classList.contains('active')) {
-      menu.classList.remove('active');
-      buttonsWrapper.style.display = 'flex';
-    } else {
-      menu.classList.add('active');
-      buttonsWrapper.style.display = 'none';
-      setTimeout(() => {
-        document.getElementById('homeName').focus();
-      }, 300);
-    }
+  const menu = document.getElementById('menu');
+  const buttonsWrapper = document.getElementById('buttonsWrapper');
+  const gear = document.getElementById('gear');
+  const timeoutBtn = document.querySelector('.timeout-button');
+  const gearBack = document.getElementById('gearBack');
+
+  const isActive = menu.classList.contains('active');
+  menu.classList.toggle('active');
+  buttonsWrapper.style.display = isActive ? 'flex' : 'none';
+  gear.style.display = isActive ? 'block' : 'none';
+  timeoutBtn.style.display = isActive ? 'block' : 'none';
+  gearBack.style.display = isActive ? 'none' : 'block';
+
+  if (!isActive) {
+    setTimeout(() => {
+      document.getElementById('homeName').focus();
+    }, 300);
   }
+}
 
   // Puts game into sudden death mode (no timer, first score wins)
   function startSuddenDeath() {
