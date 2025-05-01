@@ -326,6 +326,9 @@
   <input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
   Enable Sounds
 </label>
+
+    <!-- Layout toggle button -->
+<button onclick="switchToLandscape()">Switch to Landscape Mode</button>
     
     <!-- Back gear in menu -->
 <div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
@@ -747,6 +750,12 @@ function playHorn() {
     // Toggles sound on/off 
     function toggleSound() {
   soundEnabled = document.getElementById('soundToggle').checked;
+}
+
+    function switchToLandscape() {
+  if (confirm("Switch to Landscape (Streaming) Mode?")) {
+    window.location.href = "index.html";
+  }
 }
 </script>
 </body>
