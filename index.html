@@ -81,11 +81,15 @@
 
     /* Timer display */
     #timer {
-      font-size: 6em;
-      margin-bottom: 10px;
-      color: #ff4444;
-      text-shadow: 0 0 10px #f00, 0 0 20px #f00;
-    }
+  font-size: 6em;
+  margin-bottom: 10px;
+  color: #ff4444;
+  text-shadow: 0 0 10px #f00, 0 0 20px #f00;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 
     .names {
       display: flex;
@@ -210,7 +214,7 @@
 
     body.locked .scoreboard {
       position: fixed;
-      top: 0;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 999;
@@ -225,7 +229,7 @@
       overflow-y: auto;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 500px) {
       #timer { font-size: 4em; }
       .names { font-size: 1.2em; gap: 15px; }
       .scores { font-size: 3.5em; }
@@ -236,19 +240,48 @@
       .name-input { width: 90%; max-width: 300px; }
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 360px) {
+      #timer {
+    font-size: 3.2em;
+    max-width: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
       .buttons { justify-content: flex-start; }
     }
+    #scoreboardMask {
+    display: none;
+  }
+
+  body.locked #scoreboardMask {
+    display: block;
+    position: fixed;
+    top: 320px; /* start just below the scoreboard */
+    left: 0;
+    height: calc(100vh - 320px);
+    width: 100vw;
+    background: linear-gradient(to bottom right, #010518, #012B58);
+    z-index: 998; /* BELOW the scoreboard, ABOVE the content */
+    pointer-events: none;
+  }
+    #gearBack {
+  display: none;
+}
+
+#menu.active #gearBack {
+  display: block;
+}
   </style>
 </head>
 <body>
   <!-- App logo: visible at top unless scoreboard is locked -->
   <img src="photonblitzlogo.png" alt="Photon Blitz Logo" class="logo" />
-
+  
   <!-- Main scoreboard display -->
   <div class="scoreboard">
     <!-- Flashing banner that appears at 1-minute mark -->
-    <div id="blitzBanner">BLITZ MODE ⚡</div>
+    <div id="blitzBanner">BLITZ ⚡</div>
 
     <!-- Main countdown timer display -->
     <div id="timer">03:00.0</div>
@@ -264,7 +297,7 @@
       <span id="homeScoreDisplay">0</span> - <span id="awayScoreDisplay">0</span>
     </div>
   </div>
-
+  
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
@@ -272,9 +305,9 @@
 
   <!-- Core control buttons for scoring and timer -->
   <div id="buttonsWrapper" class="buttons" style="display: flex;">
-    <button onclick="score('home')">Home</button> <!-- Score point for Home -->
+    <button onclick="score('home')">Player 1</button> <!-- Score point for Home -->
     <button onclick="toggleTimer()">⏯</button>   <!-- Start/Pause timer -->
-    <button onclick="score('away')">Away</button> <!-- Score point for Away -->
+    <button onclick="score('away')">Player 2</button> <!-- Score point for Away -->
   </div>
 
   <!-- Settings (gear) icon to open config panel -->
@@ -289,12 +322,46 @@
       Lock scoreboard to top
     </label>
 
+    <label style="display: block; margin-top: 15px;">
+  <input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
+  Enable Sounds
+</label>
+    
+    <!-- Back gear in menu -->
+<div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
+    
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
-      <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
-      <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
+      <input type="text" id="homeName" class="name-input" placeholder="Player 1" />
+      <input type="text" id="awayName" class="name-input" placeholder="Player 2" />
     </div>
+    
+<!-- Score Correction -->
+<h3>Adjust Scores</h3>
+<div class="time-controls" style="justify-content: space-between;">
+  <div style="display: flex; gap: 10px;">
+    <button onclick="adjustScore('home', 1)">+1</button>
+    <button onclick="adjustScore('home', -1)">–1</button>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button onclick="adjustScore('away', 1)">+1</button>
+    <button onclick="adjustScore('away', -1)">–1</button>
+  </div>
+</div>
 
+<!-- Game Count Correction -->
+<h3>Adjust Game Wins</h3>
+<div class="time-controls" style="justify-content: space-between;">
+  <div style="display: flex; gap: 10px;">
+    <button onclick="adjustGames('home', 1)">+1</button>
+    <button onclick="adjustGames('home', -1)">–1</button>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button onclick="adjustGames('away', 1)">+1</button>
+    <button onclick="adjustGames('away', -1)">–1</button>
+  </div>
+</div>
+    
     <!-- Action buttons for match control -->
     <button onclick="saveNames()">Update Names</button>
     <button onclick="restartGame()">Restart Game</button>
@@ -323,7 +390,11 @@
     </div>
   </div>
 
+  <!-- Set horn sound --> 
+    <audio id="hornSound" src="horn.mp3" preload="auto"></audio>
+  
   <script>
+    
   // Set the initial time to 3 minutes (in tenths of seconds)
   let time = 1800;
 
@@ -365,10 +436,10 @@
 
     // Trigger Blitz mode at exactly 1:00 remaining
     if (time === 600 && !blitz) {
-      blitz = true;
-      document.getElementById('blitzBanner').style.display = 'block';
-      speak("Blitz period! Double points!");
-    }
+  blitz = true;
+  document.getElementById('blitzBanner').style.display = 'block';
+  speak("Blitz Blitz Blitz! Double Points!");
+}
 
     // Handle end-of-match logic
     if (time === 0) {
@@ -452,18 +523,21 @@
 
   // Handles end-of-game logic and saves result
   function endGame() {
-    if (!suddenDeath) matchesPlayed++;
-    if (homeScoreValue > awayScoreValue) homeGamesWon++;
-    else awayGamesWon++;
+  if (!suddenDeath) matchesPlayed++;
+  if (homeScoreValue > awayScoreValue) homeGamesWon++;
+  else awayGamesWon++;
 
-    const homeName = document.getElementById('homeName').value || 'Home';
-    const awayName = document.getElementById('awayName').value || 'Away';
-    gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+  // 🟡 NEW: Play the horn sound
+  playHorn();
 
-    swapSides();
-    resetForNextGame();
-    updateSummary();
-  }
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
+  gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+
+  swapSides();
+  resetForNextGame();
+  updateSummary();
+}
 
   // Resets scoreboard for the next game
   function resetForNextGame() {
@@ -511,28 +585,39 @@
 
   // Opens and closes gear menu
   function toggleMenu() {
-    const menu = document.getElementById('menu');
-    const buttonsWrapper = document.getElementById('buttonsWrapper');
-    if (menu.classList.contains('active')) {
-      menu.classList.remove('active');
-      buttonsWrapper.style.display = 'flex';
-    } else {
-      menu.classList.add('active');
-      buttonsWrapper.style.display = 'none';
-      setTimeout(() => {
-        document.getElementById('homeName').focus();
-      }, 300);
-    }
+  const menu = document.getElementById('menu');
+  const buttonsWrapper = document.getElementById('buttonsWrapper');
+  const gear = document.getElementById('gear');
+  const timeoutBtn = document.querySelector('.timeout-button');
+  const gearBack = document.getElementById('gearBack');
+
+  const isActive = menu.classList.contains('active');
+  menu.classList.toggle('active');
+  buttonsWrapper.style.display = isActive ? 'flex' : 'none';
+  gear.style.display = isActive ? 'block' : 'none';
+  timeoutBtn.style.display = isActive ? 'block' : 'none';
+  gearBack.style.display = isActive ? 'none' : 'block';
+
+  if (!isActive) {
+    setTimeout(() => {
+      document.getElementById('homeName').focus();
+    }, 300);
   }
+}
 
   // Puts game into sudden death mode (no timer, first score wins)
   function startSuddenDeath() {
-    clearInterval(timerInterval);
-    suddenDeath = true;
-    running = false;
-    time = 0;
-    document.getElementById('timer').textContent = 'Sudden Death';
-  }
+  clearInterval(timerInterval);
+  suddenDeath = true;
+  running = false;
+  time = 0;
+
+  // 🔁 Auto-clear Blitz Mode
+  blitz = false;
+  document.getElementById('blitzBanner').style.display = 'none';
+
+  document.getElementById('timer').textContent = 'Sudden Death';
+}
 
   // Swaps sides and updates win counters and displays
   function swapSides() {
@@ -554,14 +639,14 @@
 
   // Updates name and score UI for each player
   function updateNameDisplays() {
-    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
-    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
+    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Player 1'} (${homeGamesWon})`;
+    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Player 2'} (${awayGamesWon})`;
   }
 
   // Builds summary text for the match summary section
   function updateSummary() {
-    const homeName = document.getElementById('homeName').value || 'Home';
-    const awayName = document.getElementById('awayName').value || 'Away';
+    const homeName = document.getElementById('homeName').value || 'Player 1';
+    const awayName = document.getElementById('awayName').value || 'Player 2';
     let summary = '';
 
     if (homeGamesWon > awayGamesWon) {
@@ -596,31 +681,31 @@
   updateTimer();
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.closest('input')) {
+    return; // Allow input fields to be focused
+  }
+
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const width = rect.width;
 
-  // Clicked the far left on timer (timeout trigger)?
   const timerRect = document.getElementById('timer').getBoundingClientRect();
   if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom && x < width * 0.2) {
     startTimeout();
     return;
   }
 
-  // Clicked the timer (pause/resume)?
   if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom) {
     toggleTimer();
     return;
   }
 
-  // Left side of scoreboard (score home)
   if (x < width / 2) {
     score('home');
   } else {
     score('away');
   }
 });
-
   // Toggles the "locked" class on body to fix scoreboard at top
   function toggleLock(checkbox) {
     const scoreboard = document.querySelector('.scoreboard');
@@ -630,6 +715,39 @@
       document.body.classList.remove('locked');
     }
   }
+    function adjustScore(side, delta) {
+  if (side === 'home') {
+    homeScoreValue = Math.max(0, homeScoreValue + delta);
+    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  } else {
+    awayScoreValue = Math.max(0, awayScoreValue + delta);
+    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+  }
+}
+
+function adjustGames(side, delta) {
+  if (side === 'home') {
+    homeGamesWon = Math.max(0, homeGamesWon + delta);
+  } else {
+    awayGamesWon = Math.max(0, awayGamesWon + delta);
+  }
+  updateNameDisplays();
+  updateSummary();
+}
+    // play horn sound at the end of the match
+    let soundEnabled = true;
+
+function playHorn() {
+  if (soundEnabled) {
+    const horn = document.getElementById('hornSound');
+    horn.currentTime = 0;
+    horn.play();
+  }
+}
+    // Toggles sound on/off 
+    function toggleSound() {
+  soundEnabled = document.getElementById('soundToggle').checked;
+}
 </script>
 </body>
 </html>
