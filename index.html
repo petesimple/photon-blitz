@@ -305,9 +305,9 @@
 
   <!-- Core control buttons for scoring and timer -->
   <div id="buttonsWrapper" class="buttons" style="display: flex;">
-    <button onclick="score('home')">Home</button> <!-- Score point for Home -->
+    <button onclick="score('home')">Player 1</button> <!-- Score point for Home -->
     <button onclick="toggleTimer()">⏯</button>   <!-- Start/Pause timer -->
-    <button onclick="score('away')">Away</button> <!-- Score point for Away -->
+    <button onclick="score('away')">Player 2</button> <!-- Score point for Away -->
   </div>
 
   <!-- Settings (gear) icon to open config panel -->
@@ -327,8 +327,8 @@
     
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
-      <input type="text" id="homeName" class="name-input" placeholder="Home Name" />
-      <input type="text" id="awayName" class="name-input" placeholder="Away Name" />
+      <input type="text" id="homeName" class="name-input" placeholder="Player 1" />
+      <input type="text" id="awayName" class="name-input" placeholder="Player 2" />
     </div>
     
 <!-- Score Correction -->
@@ -622,14 +622,14 @@
 
   // Updates name and score UI for each player
   function updateNameDisplays() {
-    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Home'} (${homeGamesWon})`;
-    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Away'} (${awayGamesWon})`;
+    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Player 1'} (${homeGamesWon})`;
+    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Player 2'} (${awayGamesWon})`;
   }
 
   // Builds summary text for the match summary section
   function updateSummary() {
-    const homeName = document.getElementById('homeName').value || 'Home';
-    const awayName = document.getElementById('awayName').value || 'Away';
+    const homeName = document.getElementById('homeName').value || 'Player 1';
+    const awayName = document.getElementById('awayName').value || 'Player 2';
     let summary = '';
 
     if (homeGamesWon > awayGamesWon) {
