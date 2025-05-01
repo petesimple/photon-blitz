@@ -607,12 +607,17 @@
 
   // Puts game into sudden death mode (no timer, first score wins)
   function startSuddenDeath() {
-    clearInterval(timerInterval);
-    suddenDeath = true;
-    running = false;
-    time = 0;
-    document.getElementById('timer').textContent = 'Sudden Death';
-  }
+  clearInterval(timerInterval);
+  suddenDeath = true;
+  running = false;
+  time = 0;
+
+  // 🔁 Auto-clear Blitz Mode
+  blitz = false;
+  document.getElementById('blitzBanner').style.display = 'none';
+
+  document.getElementById('timer').textContent = 'Sudden Death';
+}
 
   // Swaps sides and updates win counters and displays
   function swapSides() {
