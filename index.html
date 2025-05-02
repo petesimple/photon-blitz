@@ -641,22 +641,25 @@
 
   // Fully resets game and scoreboard UI state
   function restartGame() {
-    homeScoreValue = 0;
-    awayScoreValue = 0;
-    time = 1800;
-    blitz = false;
-    suddenDeath = false;
-    announcedTimes.clear();
-    document.getElementById('blitzBanner').style.display = 'none';
-    updateTimer();
-    document.getElementById('homeScoreDisplay').textContent = 0;
-    document.getElementById('awayScoreDisplay').textContent = 0;
-    clearInterval(timerInterval);
-    document.getElementById('menu').classList.remove('active');
-    document.getElementById('buttonsWrapper').style.display = 'flex';
-    running = false;
-    updateSummary();
-  }
+  homeScoreValue = 0;
+  awayScoreValue = 0;
+  time = 1800;
+  blitz = false;
+  suddenDeath = false;
+  announcedTimes.clear();
+  document.getElementById('blitzBanner').style.display = 'none';
+  updateTimer();
+  document.getElementById('homeScoreDisplay').textContent = 0;
+  document.getElementById('awayScoreDisplay').textContent = 0;
+  clearInterval(timerInterval);
+  document.getElementById('menu').classList.remove('active');
+  document.getElementById('buttonsWrapper').style.display = 'flex';
+  document.getElementById('gear').style.display = 'block'; // 🛠️ FIX: Make gear visible again
+  document.querySelector('.timeout-button').style.display = 'block'; // Restore timeout button too
+  document.getElementById('gearBack').style.display = 'none'; // Reset back gear just in case
+  running = false;
+  updateSummary();
+}
 
   // Opens and closes gear menu
   function toggleMenu() {
