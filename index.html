@@ -503,15 +503,15 @@
 
     // Trigger Blitz mode at exactly 1:00 remaining
     if (time <= 600 && !blitz) {
-      blitz = true;
-      document.getElementById('logoWrapper').style.display = 'none';
-      document.getElementById('blitzWrapper').style.display = 'flex';
-      speak("Blitz Blitz Blitz! Double Points!");
-    } else if (time > 600 && !running) {
-      // Ensure normal logo shows again after blitz ends during reset
-      document.getElementById('blitzWrapper').style.display = 'none';
-      document.getElementById('logoWrapper').style.display = 'flex';
-    }
+  blitz = true;
+  document.getElementById('blitzWrapper').style.display = 'flex';
+  document.getElementById('logoWrapper').style.display = 'none';
+  speak("Blitz Blitz Blitz! Double Points!");
+} else if (time > 600 && !running && !blitz) {
+  // Ensure correct visual reset
+  document.getElementById('blitzWrapper').style.display = 'none';
+  document.getElementById('logoWrapper').style.display = 'flex';
+}
 
     // Handle end-of-match logic
     if (time === 0) {
