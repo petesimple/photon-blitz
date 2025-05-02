@@ -546,9 +546,9 @@ if (!announcedTimes.has(sec)) {
   } else if (calloutTimes.has(sec)) {
     speak(`${minutes}:${seconds}`);
   }
-  announcedTimes.add(sec);
+    announcedTimes.add(sec);
+  }
 }
-
     
   // Starts or pauses the timer
   function toggleTimer() {
