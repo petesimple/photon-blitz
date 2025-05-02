@@ -816,6 +816,10 @@ const timerRect = document.getElementById('timer').getBoundingClientRect();
     score('away');
   }
 });
+    document.getElementById('timer').addEventListener('click', (e) => {
+  e.stopPropagation(); // prevent scoreboard click fallback
+  toggleTimer();       // toggle the match timer
+});
   // Toggles the "locked" class on body to fix scoreboard at top
   function toggleLock(checkbox) {
     const scoreboard = document.querySelector('.scoreboard');
