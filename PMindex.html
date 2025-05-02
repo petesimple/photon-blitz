@@ -422,7 +422,8 @@
   let matchesPlayed = 0;
   let timeoutCounter = 10;
   let timeoutInterval;
-
+  let soundEnabled = true;
+    
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
   let announcedTimes = new Set(); // Keeps track of times already announced
@@ -578,6 +579,7 @@
 
   // Fully resets game and scoreboard UI state
   function restartGame() {
+    document.getElementById('gear').style.display = 'block';
     homeScoreValue = 0;
     awayScoreValue = 0;
     time = 1800;
@@ -753,7 +755,11 @@ function playHorn() {
   if (soundEnabled) {
     const horn = document.getElementById('hornSound');
     horn.currentTime = 0;
-    horn.play();
+    setTimeout(() => {
+      horn.play().catch((e) => {
+        console.warn("Horn playback failed:", e);
+      });
+    }, 0);
   }
 }
     // Toggles sound on/off 
