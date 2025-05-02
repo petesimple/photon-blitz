@@ -71,11 +71,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
+  justify-content: flex-start; /* 👈 Pin content to top instead of center */
+  gap: 10px;
   width: 220px;
   flex-shrink: 0;
-  height: 100%; /* ensure full height for absolute positioning */
+  height: 100%;
+  padding-top: 10px; /* 👈 Optional, just for spacing */
 }
 
     .score-name {
