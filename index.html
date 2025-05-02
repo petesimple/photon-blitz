@@ -767,11 +767,11 @@
   const x = e.clientX - rect.left;
   const width = rect.width;
 
-  const timerRect = document.getElementById('timer').getBoundingClientRect();
-  if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom && x < width * 0.2) {
-    startTimeout();
-    return;
-  }
+  const logo = document.getElementById('mainLogo');
+if (logo && logo.contains(e.target)) {
+  startTimeout();
+  return;
+}
 
   if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom) {
     toggleTimer();
