@@ -526,11 +526,14 @@
 
     // Announce specific countdown moments
     const sec = Math.floor(time / 10);
-    if (calloutTimes.has(sec) && !announcedTimes.has(sec)) {
-      speak(`${minutes}:${seconds}`);
-      announcedTimes.add(sec);
-    }
+if (!announcedTimes.has(sec)) {
+  if (sec === 60) {
+    speak("One minute remaining");
+  } else if (calloutTimes.has(sec)) {
+    speak(`${minutes}:${seconds}`);
   }
+  announcedTimes.add(sec);
+}
 
   // Starts or pauses the timer
   function toggleTimer() {
