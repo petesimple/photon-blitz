@@ -705,8 +705,9 @@
   updateTimer();
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
-  if (e.target.tagName === 'INPUT' || e.target.closest('input')) {
-    return; // Allow input fields to be focused
+  const interactiveTags = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
+  if (interactiveTags.includes(e.target.tagName) || e.target.closest('button, input, select, textarea, label')) {
+    return; // Ignore taps on interactive elements
   }
 
   const rect = e.currentTarget.getBoundingClientRect();
