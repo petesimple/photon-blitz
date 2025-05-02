@@ -543,7 +543,7 @@
   function updateTimer() {
   const timerEl = document.getElementById('timer');
   timerEl.classList.remove('timer-small');
-  const minutes = String(Math.floor(time / 600)).padStart(2, '0');
+  const minutes = String(Math.floor(time / 600));
   const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
   const tenths = String(time % 10);
   timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
