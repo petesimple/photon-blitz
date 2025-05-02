@@ -600,26 +600,29 @@
     
   // Starts or pauses the timer
   function toggleTimer() {
-    // If timeout is running, cancel it and resume normal timer
-    if (timeoutInterval) {
-      clearInterval(timeoutInterval);
-      timeoutInterval = null;
-      updateTimer();
-    }
+  const timerEl = document.getElementById('timer');
 
-    // Toggle timer state
-    if (running) {
-      clearInterval(timerInterval);
-    } else {
-      timerInterval = setInterval(() => {
-        if (time > 0) {
-          time--;
-          updateTimer();
-        }
-      }, 100);
-    }
-    running = !running;
+  if (timeoutInterval) {
+    clearInterval(timeoutInterval);
+    timeoutInterval = null;
+    updateTimer();
   }
+
+  if (running) {
+    clearInterval(timerInterval);
+    timerEl.classList.remove('running'); // 🟥 Stopped = red
+  } else {
+    timerInterval = setInterval(() => {
+      if (time > 0) {
+        time--;
+        updateTimer();
+      }
+    }, 100);
+    timerEl.classList.add('running'); // 🟩 Running = green
+  }
+
+  running = !running;
+}
 
   // Adjusts the timer by a number of seconds (+/-)
   function adjustTime(seconds) {
