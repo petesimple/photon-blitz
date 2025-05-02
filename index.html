@@ -686,8 +686,9 @@
   announcedTimes.clear();
   restartGame(true);
 
-  // 🛠️ Fix: Ensure gear icon is visible again
-  document.getElementById('gear').style.display = 'block';
+  // ✅ Ensure only the correct gear is shown
+  document.getElementById('gear').style.display = 'none';        // Hide main gear
+  document.getElementById('gearBack').style.display = 'block';   // Show back gear
 }
 
   // Fully resets game and scoreboard UI state
