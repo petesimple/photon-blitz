@@ -772,7 +772,7 @@ if (logo && logo.contains(e.target)) {
   startTimeout();
   return;
 }
-
+const timerRect = document.getElementById('timer').getBoundingClientRect();
   if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom) {
     toggleTimer();
     return;
