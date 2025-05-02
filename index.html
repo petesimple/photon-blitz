@@ -632,18 +632,21 @@
 
   // Increments score for specified team (blitz gives double points)
   function score(side) {
-    if (side === 'home') homeScoreValue += blitz ? 2 : 1;
-    if (side === 'away') awayScoreValue += blitz ? 2 : 1;
-    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+  const timerEl = document.getElementById('timer');
+  if (side === 'home') homeScoreValue += blitz ? 2 : 1;
+  if (side === 'away') awayScoreValue += blitz ? 2 : 1;
+  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-    // If in sudden death, any score ends the game
-    if (suddenDeath) endGame();
-    else {
-      clearInterval(timerInterval);
-      running = false;
-    }
+  // If in sudden death, any score ends the game
+  if (suddenDeath) {
+    endGame();
+  } else {
+    clearInterval(timerInterval);
+    running = false;
+    timerEl.classList.remove('running'); // 🟥 Clear green when pausing on score
   }
+}
 
   // Starts a 10-second timeout period
   function startTimeout() {
