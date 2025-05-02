@@ -73,8 +73,9 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  width: 220px; /* 👈 Fixed width prevents layout shift */
+  width: 220px;
   flex-shrink: 0;
+  height: 100%; /* ensure full height for absolute positioning */
 }
 
     .score-name {
@@ -90,9 +91,9 @@
 
     #logoWrapper {
   position: absolute;
-  top: 50%;
+  top: 10px; /* 👈 push it near the top of .score-center */
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
