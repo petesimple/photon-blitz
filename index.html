@@ -355,6 +355,19 @@
   font-size: 3em !important;
   text-shadow: 0 0 6px #f00;
 }
+    .menu-action {
+  font-size: 1.2em;
+  padding: 10px 18px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #00eaff;
+  color: #012B58;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 10px #00eaff80;
+  white-space: nowrap;
+}
   </style>
 </head>
 <body>
@@ -451,11 +464,11 @@
 </div>
     
     <!-- Action buttons for match control -->
-    <button onclick="saveNames()">Update Names</button>
-    <button onclick="restartGame()">Restart Game</button>
-    <button onclick="startSuddenDeath()">Force Sudden Death</button>
-    <button onclick="swapSides()">Swap Sides</button>
-    <button onclick="resetMatch()">Reset Match</button>
+<button class="menu-action" onclick="saveNames()">Update Names</button>
+<button class="menu-action" onclick="restartGame()">Restart Game</button>
+<button class="menu-action" onclick="startSuddenDeath()">Force Sudden Death</button>
+<button class="menu-action" onclick="swapSides()">Swap Sides</button>
+<button class="menu-action" onclick="resetMatch()">Reset Match</button>
 
     <!-- Time adjustment controls -->
     <div class="time-controls">
