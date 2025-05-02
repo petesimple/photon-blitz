@@ -628,13 +628,16 @@
 
   // Fully resets match data and stats
   function resetMatch() {
-    homeGamesWon = 0;
-    awayGamesWon = 0;
-    matchesPlayed = 0;
-    gameScores = [];
-    announcedTimes.clear();
-    restartGame();
-  }
+  homeGamesWon = 0;
+  awayGamesWon = 0;
+  matchesPlayed = 0;
+  gameScores = [];
+  announcedTimes.clear();
+  restartGame();
+
+  // 🛠️ Fix: Ensure gear icon is visible again
+  document.getElementById('gear').style.display = 'block';
+}
 
   // Fully resets game and scoreboard UI state
   function restartGame() {
