@@ -724,7 +724,9 @@ if (!announcedTimes.has(sec)) {
   blitz = false;
   document.getElementById('blitzBanner').style.display = 'none';
 
-  document.getElementById('timer').textContent = 'Sudden Death';
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = 'Sudden Death';
+  timerEl.classList.add('timer-small'); // 👈 Add this line
 }
 
   // Swaps sides and updates win counters and displays
