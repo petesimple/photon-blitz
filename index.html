@@ -879,7 +879,11 @@ function playHorn() {
   if (soundEnabled) {
     const horn = document.getElementById('hornSound');
     horn.currentTime = 0;
-    horn.play();
+    setTimeout(() => {
+      horn.play().catch((e) => {
+        console.warn("Horn playback failed:", e);
+      });
+    }, 0);
   }
 }
     // Toggles sound on/off 
