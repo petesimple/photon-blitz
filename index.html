@@ -45,20 +45,19 @@
 
     /* Main scoreboard container */
     .scoreboard {
-      width: 100%;
-      max-width: 900px;
-      padding: 20px;
-      margin: 0 auto 20px auto;
-      border: 3px solid #00ffff;
-      border-radius: 15px;
-      box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
-      display: flex;
-      flex-direction: row; /* row instead of column */
-      justify-content: space-around;
-      align-items: center;
-      position: relative;
-      height: 180px; /* Shorter, wide box */
-    }
+  width: calc(100% - 20px); /* shrink width to allow for side padding */
+  padding: 20px 10px; /* top/bottom 20px, left/right 10px */
+  margin: 0 auto 20px auto;
+  border: 3px solid #00ffff;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  height: 180px;
+}
 
     .score-side {
       display: flex;
