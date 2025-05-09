@@ -372,6 +372,18 @@
   color: #00ff00;
   text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
 }
+    #rotatePrompt {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: #000000e0;
+    color: white;
+    font-size: 2em;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
   </style>
 </head>
 <body>
@@ -399,7 +411,8 @@
       <div id="awayScoreDisplay" class="score-number">0</div>
     </div>
   </div>
-    
+
+  <div id="rotatePrompt">Please rotate your device to landscape mode.</div>
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
     <button onclick="startTimeout()">Timeout 10s</button>
@@ -925,6 +938,18 @@ function playHorn() {
     window.location.href = "PMindex.html";
   }
 }
+    function checkOrientation() {
+    const prompt = document.getElementById('rotatePrompt');
+    if (window.innerHeight > window.innerWidth) {
+      prompt.style.display = 'flex';
+    } else {
+      prompt.style.display = 'none';
+    }
+  }
+
+  window.addEventListener("orientationchange", checkOrientation);
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("load", checkOrientation);
 </script>
 </body>
 </html>
