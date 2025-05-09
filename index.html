@@ -372,16 +372,18 @@
   color: #00ff00;
   text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
 }
-    #rotatePrompt {
+   #rotatePrompt {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
-    background: #000000e0;
+    background: #000000f0;
     color: white;
-    font-size: 2em;
+    font-size: 1.8em;
     justify-content: center;
     align-items: center;
+    text-align: center;
+    padding: 20px;
     z-index: 9999;
   }
   </style>
@@ -938,9 +940,13 @@ function playHorn() {
     window.location.href = "PMindex.html";
   }
 }
-    function checkOrientation() {
+    function isMobile() {
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  function checkOrientation() {
     const prompt = document.getElementById('rotatePrompt');
-    if (window.innerHeight > window.innerWidth) {
+    if (isMobile() && window.innerHeight > window.innerWidth) {
       prompt.style.display = 'flex';
     } else {
       prompt.style.display = 'none';
@@ -950,6 +956,8 @@ function playHorn() {
   window.addEventListener("orientationchange", checkOrientation);
   window.addEventListener("resize", checkOrientation);
   window.addEventListener("load", checkOrientation);
+
+    
 </script>
 </body>
 </html>
