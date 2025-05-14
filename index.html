@@ -386,6 +386,16 @@
     padding: 20px;
     z-index: 9999;
   }
+    /* Ensure controls are always below the scoreboard */
+#buttonsWrapper,
+.timeout-button {
+  margin-top: 200px; /* Adjust if needed, scoreboard height is 180px */
+}
+
+body.locked #buttonsWrapper,
+body.locked .timeout-button {
+  margin-top: 360px; /* Matches body's padding-top when locked */
+}
   </style>
 </head>
 <body>
