@@ -824,6 +824,7 @@ body.locked .timeout-button {
   const gear = document.getElementById('gear');
   const timeoutBtn = document.querySelector('.timeout-button');
   const gearBack = document.getElementById('gearBack');
+  const versionTag = document.getElementById('versionTag'); // 👈 add this line
 
   const isActive = menu.classList.contains('active');
   menu.classList.toggle('active');
@@ -831,6 +832,7 @@ body.locked .timeout-button {
   gear.style.display = isActive ? 'block' : 'none';
   timeoutBtn.style.display = isActive ? 'block' : 'none';
   gearBack.style.display = isActive ? 'none' : 'block';
+  versionTag.style.display = isActive ? 'block' : 'none'; // 👈 this hides version when menu is open
 
   if (!isActive) {
     setTimeout(() => {
