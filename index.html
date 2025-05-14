@@ -541,6 +541,7 @@ body.locked .timeout-button {
   let timeoutCounter = 10;
   let timeoutInterval;
   let playPuckAnnounced = false;
+  let timeoutActive = false;
 
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -682,23 +683,30 @@ body.locked .timeout-button {
 
   // Starts a 10-second timeout period
   function startTimeout() {
-    if (running) toggleTimer(); // pause the game if running
-    timeoutCounter = 10;
-    const timerEl = document.getElementById('timer');
-      timerEl.textContent = `Timeout: 10`;
-      timerEl.classList.add('timer-small');
-    timeoutInterval = setInterval(() => {
-      timeoutCounter--;
-      if (timeoutCounter > 0) {
-        document.getElementById('timer').textContent = `Timeout: ${timeoutCounter}`;
-      } else {
-        clearInterval(timeoutInterval);
-        document.getElementById('timer').classList.remove('timer-small');
-        updateTimer();
-        toggleTimer(); // resume the game
-      }
-    }, 1000);
-  }
+  if (timeoutActive) return; // 🚫 Prevent multiple timeouts
+
+  timeoutActive = true; // ✅ Lock future triggers
+  if (running) toggleTimer(); // pause the game if running
+
+  timeoutCounter = 10;
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = `Timeout: 10`;
+  timerEl.classList.add('timer-small');
+
+  timeoutInterval = setInterval(() => {
+    timeoutCounter--;
+    if (timeoutCounter > 0) {
+      timerEl.textContent = `Timeout: ${timeoutCounter}`;
+    } else {
+      clearInterval(timeoutInterval);
+      timeoutInterval = null;
+      timeoutActive = false; // ✅ Re-enable future timeouts
+      timerEl.classList.remove('timer-small');
+      updateTimer();
+      toggleTimer(); // resume the game
+    }
+  }, 1000);
+}
 
   // Handles end-of-game logic and saves result
   function endGame() {
