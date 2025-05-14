@@ -686,12 +686,25 @@ body.locked .timeout-button {
   if (timeoutActive) return; // 🚫 Prevent multiple timeouts
 
   timeoutActive = true; // ✅ Lock future triggers
-  if (running) toggleTimer(); // pause the game if running
+  if (running) toggleTimer(); // ⏸ Pause the game if it's running
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
   timerEl.textContent = `Timeout: 10`;
   timerEl.classList.add('timer-small');
+
+  // Add a one-time listener to cancel timeout on tap
+  const cancelTimeout = () => {
+    if (timeoutActive) {
+      clearInterval(timeoutInterval);
+      timeoutInterval = null;
+      timeoutActive = false;
+      timerEl.classList.remove('timer-small');
+      updateTimer();
+    }
+    timerEl.removeEventListener('click', cancelTimeout);
+  };
+  timerEl.addEventListener('click', cancelTimeout);
 
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
@@ -700,10 +713,11 @@ body.locked .timeout-button {
     } else {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
-      timeoutActive = false; // ✅ Re-enable future timeouts
+      timeoutActive = false;
       timerEl.classList.remove('timer-small');
       updateTimer();
-      toggleTimer(); // resume the game
+      toggleTimer(); // ▶️ Resume the game
+      timerEl.removeEventListener('click', cancelTimeout);
     }
   }, 1000);
 }
