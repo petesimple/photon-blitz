@@ -734,6 +734,7 @@ body.locked .timeout-button {
     blitz = false;
     suddenDeath = false;
     announcedTimes.clear();
+    timeoutActive = false;
     document.getElementById('blitzBanner').style.display = 'none';
     updateTimer();
     document.getElementById('homeScoreDisplay').textContent = 0;
@@ -766,6 +767,7 @@ body.locked .timeout-button {
   blitz = false;
   suddenDeath = false;
   announcedTimes.clear();
+  timeoutActive = false;
   document.getElementById('blitzBanner').style.display = 'none';
   updateTimer();
   document.getElementById('homeScoreDisplay').textContent = 0;
