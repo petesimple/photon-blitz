@@ -288,8 +288,14 @@
     }
 
     body.locked {
-      padding-top: 360px;
-    }
+  padding-top: 360px;
+  overflow-x: hidden;
+  scroll-padding-top: 360px; /* ensures in-page links don’t go behind the scoreboard */
+}
+
+body.locked #scrollSpacer {
+  height: 360px; /* same as padding-top so nothing scrolls under the scoreboard */
+}
 
     body.locked .scoreboard {
       position: fixed;
@@ -423,7 +429,9 @@ body.locked .timeout-button {
       <div id="awayScoreDisplay" class="score-number">0</div>
     </div>
   </div>
-
+  
+<div id="scrollSpacer"></div>
+  
   <div id="rotatePrompt">Please rotate your device to landscape mode.</div>
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
