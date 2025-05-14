@@ -869,30 +869,27 @@ body.locked .timeout-button {
   updateTimer();
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
-  if (e.target.tagName === 'INPUT' || e.target.closest('input')) {
-    return; // Allow input fields to be focused
-  }
-
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const width = rect.width;
-
   const logo = document.getElementById('mainLogo');
-if (logo && logo.contains(e.target)) {
-  startTimeout();
-  return;
-}
-const timerRect = document.getElementById('timer').getBoundingClientRect();
-  if (e.clientY >= timerRect.top && e.clientY <= timerRect.bottom) {
-    toggleTimer();
+  if (logo && logo.contains(e.target)) {
+    startTimeout();
     return;
   }
 
-  if (x < width / 2) {
+  if (e.target.id === 'homeScoreDisplay') {
     score('home');
-  } else {
-    score('away');
+    return;
   }
+
+  if (e.target.id === 'awayScoreDisplay') {
+    score('away');
+    return;
+  }
+
+  if (e.target.id === 'timer') {
+    toggleTimer();
+    return;
+  }
+});
 });
     document.getElementById('timer').addEventListener('click', (e) => {
   e.stopPropagation(); // prevent scoreboard click fallback
