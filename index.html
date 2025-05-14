@@ -540,6 +540,7 @@ body.locked .timeout-button {
   let matchesPlayed = 0;
   let timeoutCounter = 10;
   let timeoutInterval;
+  let playPuckAnnounced = false;
 
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -637,6 +638,12 @@ body.locked .timeout-button {
     clearInterval(timerInterval);
     timerEl.classList.remove('running'); // 🟥 Stopped = red
   } else {
+    // ✅ Only announce "Play Puck" once per game
+    if (!playPuckAnnounced) {
+      speak("Play Puck");
+      playPuckAnnounced = true;
+    }
+
     timerInterval = setInterval(() => {
       if (time > 0) {
         time--;
