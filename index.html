@@ -519,19 +519,32 @@ body.locked .timeout-button {
 <button class="menu-action" onclick="swapSides()">Swap Sides</button>
 <button class="menu-action" onclick="resetMatch()">Reset Match</button>
 
-    <!-- Time adjustment controls -->
-    <div class="time-controls">
-      <button onclick="adjustTime(0.5)">+0.5s</button>
-      <button onclick="adjustTime(1)">+1s</button>
-      <button onclick="adjustTime(10)">+10s</button>
-      <button onclick="adjustTime(30)">+30s</button>
-      <button onclick="adjustTime(60)">+1min</button>
-      <button onclick="adjustTime(-0.5)">-0.5s</button>
-      <button onclick="adjustTime(-1)">-1s</button>
-      <button onclick="adjustTime(-10)">-10s</button>
-      <button onclick="adjustTime(-30)">-30s</button>
-      <button onclick="adjustTime(-60)">-1min</button>
-    </div>
+    <!-- Elegant Time Adjustment Controls -->
+<div style="margin-top: 30px; padding: 15px; border: 2px solid #00ffff50; border-radius: 12px; background: rgba(0,255,255,0.05);">
+  <h3 style="margin-bottom: 10px; color: #00ffff;">Adjust Match Timer</h3>
+  
+  <div class="time-controls">
+    <strong>Add Time</strong>
+  </div>
+  <div class="time-controls">
+    <button onclick="adjustTime(0.5)">+0.5s</button>
+    <button onclick="adjustTime(1)">+1s</button>
+    <button onclick="adjustTime(10)">+10s</button>
+    <button onclick="adjustTime(30)">+30s</button>
+    <button onclick="adjustTime(60)">+1min</button>
+  </div>
+
+  <div class="time-controls">
+    <strong>Remove Time</strong>
+  </div>
+  <div class="time-controls">
+    <button onclick="adjustTime(-0.5)">-0.5s</button>
+    <button onclick="adjustTime(-1)">-1s</button>
+    <button onclick="adjustTime(-10)">-10s</button>
+    <button onclick="adjustTime(-30)">-30s</button>
+    <button onclick="adjustTime(-60)">-1min</button>
+  </div>
+</div>
 
     <!-- Dynamic summary of match results -->
     <div class="match-summary" id="matchSummary">
