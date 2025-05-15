@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Photon Blitz Score System</title>
   
   <!-- PWA metadata -->
@@ -408,6 +408,9 @@ body.locked .timeout-button {
   font-size: 0.9em;
   color: #00eaffa0;
   text-shadow: 0 0 5px #00eaff40;
+}
+    button, input[type="button"], input[type="submit"] {
+  touch-action: manipulation;
 }
   </style>
 </head>
