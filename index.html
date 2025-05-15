@@ -799,6 +799,7 @@ body.locked .timeout-button {
   matchesPlayed = 0;
   gameScores = [];
   announcedTimes.clear();
+  playPuckAnnounced = false;
   restartGame(true);
 
   // ✅ Ensure only the correct gear is shown
@@ -818,6 +819,7 @@ body.locked .timeout-button {
   suddenDeath = false;
   announcedTimes.clear();
   timeoutActive = false;
+  playPuckAnnounced = false;
   document.getElementById('blitzBanner').style.display = 'none';
   updateTimer();
   document.getElementById('homeScoreDisplay').textContent = 0;
