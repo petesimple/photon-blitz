@@ -417,6 +417,14 @@ body.locked .timeout-button {
   text-shadow: 0 0 5px #0ff;
   letter-spacing: 0.25em;
 }
+    .compact-summary {
+  font-size: 1em;
+  color: #00eaffcc;
+  text-shadow: 0 0 4px #00eaff;
+  padding: 0 10px;
+  max-width: 100%;
+  word-break: break-word;
+}
   </style>
 </head>
 <body>
@@ -436,6 +444,7 @@ body.locked .timeout-button {
   <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
   <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
 </div>
+            <div id="compactSummary" class="compact-summary"></div>
             <div id="timer">3:00.0</div>
     </div>
 
@@ -935,7 +944,28 @@ body.locked .timeout-button {
     }
 
     document.getElementById('summaryText').innerHTML = summary;
+    updateCompactSummary();
   }
+
+    function updateCompactSummary() {
+  const summaryDiv = document.getElementById('compactSummary');
+  if (!gameScores.length) {
+    summaryDiv.textContent = '';
+    return;
+  }
+
+  const compact = gameScores.map((score, i) => {
+    // Extract scores and initial logic
+    const match = score.match(/^(.*?) (\d+) - (\d+) (.*?)$/);
+    if (!match) return '';
+    const [, p1, s1, s2, p2] = match;
+    const winner = s1 > s2 ? p1 : p2;
+    const loser = s1 > s2 ? p2 : p1;
+    return `G${i + 1} ${winner[0]}${s1}–${s2}${loser[0]}`;
+  }).join(', ');
+
+  summaryDiv.textContent = compact;
+}
 
   // Loads saved player names from localStorage on page load
   function loadNames() {
