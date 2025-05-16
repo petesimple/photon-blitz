@@ -1086,7 +1086,8 @@ function playHorn() {
   window.addEventListener("load", checkOrientation);
 
 function getPips(wins, isLoser = false) {
-  const total = Math.max(7, wins); // show all wins even past 7
+  const totalGames = homeGamesWon + awayGamesWon;
+  const total = Math.max(1, totalGames); // at least one dot appears when a game is won
   const filled = '●'.repeat(wins);
   const empty = '○'.repeat(Math.max(0, total - wins));
   const skull = isLoser ? ' ☠️' : '';
