@@ -924,8 +924,12 @@ body.locked .timeout-button {
   const homeLost = showSkull && homeScoreValue < awayScoreValue;
   const awayLost = showSkull && awayScoreValue < homeScoreValue;
 
+  if (gameScores.length > 0) {
   document.getElementById('homeDisplay').textContent = `${homeName} ${getPips(homeGamesWon, homeLost)}`;
   document.getElementById('awayDisplay').textContent = `${awayName} ${getPips(awayGamesWon, awayLost)}`;
+} else {
+  document.getElementById('homeDisplay').textContent = homeName;
+  document.getElementById('awayDisplay').textContent = awayName;
 }
 
   // Builds summary text for the match summary section
