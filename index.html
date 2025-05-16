@@ -593,6 +593,7 @@ body.locked .timeout-button {
   let timeoutInterval;
   let playPuckAnnounced = false;
   let timeoutActive = false;
+  let lastGameWasSuddenDeath = false;
 
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -888,6 +889,7 @@ body.locked .timeout-button {
   function startSuddenDeath() {
   clearInterval(timerInterval);
   suddenDeath = true;
+  lastGameWasSuddenDeath = false;
   running = false;
   time = 0;
 
