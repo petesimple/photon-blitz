@@ -412,6 +412,11 @@ body.locked .timeout-button {
     button, input[type="button"], input[type="submit"] {
   touch-action: manipulation;
 }
+    .score-name {
+  font-size: 1.4em;
+  text-shadow: 0 0 5px #0ff;
+  letter-spacing: 0.25em;
+}
   </style>
 </head>
 <body>
@@ -898,9 +903,16 @@ body.locked .timeout-button {
 
   // Updates name and score UI for each player
   function updateNameDisplays() {
-    document.getElementById('homeDisplay').textContent = `${document.getElementById('homeName').value || 'Player 1'} (${homeGamesWon})`;
-    document.getElementById('awayDisplay').textContent = `${document.getElementById('awayName').value || 'Player 2'} (${awayGamesWon})`;
-  }
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
+
+  const showSkull = suddenDeath && homeScoreValue !== awayScoreValue;
+  const homeLost = showSkull && homeScoreValue < awayScoreValue;
+  const awayLost = showSkull && awayScoreValue < homeScoreValue;
+
+  document.getElementById('homeDisplay').textContent = `${homeName} ${getPips(homeGamesWon, homeLost)}`;
+  document.getElementById('awayDisplay').textContent = `${awayName} ${getPips(awayGamesWon, awayLost)}`;
+}
 
   // Builds summary text for the match summary section
   function updateSummary() {
@@ -1034,6 +1046,13 @@ function playHorn() {
   window.addEventListener("resize", checkOrientation);
   window.addEventListener("load", checkOrientation);
 
+function getPips(wins, isLoser = false) {
+  const total = Math.max(7, wins); // show all wins even past 7
+  const filled = '●'.repeat(wins);
+  const empty = '○'.repeat(Math.max(0, total - wins));
+  const skull = isLoser ? ' ☠️' : '';
+  return filled + empty + skull;
+}
     
 </script>
 </body>
