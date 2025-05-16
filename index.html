@@ -433,7 +433,7 @@ body.locked .timeout-button {
   
   <div class="scoreboard">
     <div class="score-side">
-      <div id="homeDisplay" class="score-name">PLayer 1</div>
+      <div id="homeDisplay" class="score-name">Player 1</div>
       <div id="homeScoreDisplay" class="score-number">0</div>
     </div>
   
@@ -924,13 +924,14 @@ body.locked .timeout-button {
   const homeLost = showSkull && homeScoreValue < awayScoreValue;
   const awayLost = showSkull && awayScoreValue < homeScoreValue;
 
-  if (gameScores.length > 0) {
-  document.getElementById('homeDisplay').textContent = `${homeName} ${getPips(homeGamesWon, homeLost)}`;
-  document.getElementById('awayDisplay').textContent = `${awayName} ${getPips(awayGamesWon, awayLost)}`;
+  const gamesTotal = homeGamesWon + awayGamesWon;
+if (gamesTotal > 0) {
+  document.getElementById('homeDisplay').textContent = `${homeName} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+  document.getElementById('awayDisplay').textContent = `${awayName} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
 } else {
   document.getElementById('homeDisplay').textContent = homeName;
   document.getElementById('awayDisplay').textContent = awayName;
-  }
+}
 }
   // Builds summary text for the match summary section
   function updateSummary() {
@@ -1085,9 +1086,8 @@ function playHorn() {
   window.addEventListener("resize", checkOrientation);
   window.addEventListener("load", checkOrientation);
 
-function getPips(wins, isLoser = false) {
-  const totalGames = homeGamesWon + awayGamesWon;
-  const total = Math.max(1, totalGames); // at least one dot appears when a game is won
+function getPips(wins, isLoser = false, totalGames = 0) {
+  const total = Math.max(totalGames, wins);
   const filled = '●'.repeat(wins);
   const empty = '○'.repeat(Math.max(0, total - wins));
   const skull = isLoser ? ' ☠️' : '';
