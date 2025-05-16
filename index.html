@@ -661,18 +661,19 @@ body.locked .timeout-button {
   const sec = Math.floor(time / 10);
   if (!announcedTimes.has(sec)) {
     if (sec === 70) speak("Ten seconds til Blitz!");
-    else if (sec === 60) speak("One minute remaining");
-    else if (sec === 45) speak("Forty-five seconds");
-    else if (sec === 30) speak("Thirty seconds");
-    else if (sec === 15) speak("Fifteen seconds");
-    else if (sec === 10) speak("Ten seconds");
-    else if (sec === 5) speak("Five");
-    else if (sec === 4) speak("Four");
-    else if (sec === 3) speak("Three");
-    else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
-    
-    announcedTimes.add(sec);
-  }
+  else if (sec === 60) speak("One minute remaining");
+  else if (sec === 45) speak("Forty-five seconds");
+  else if (sec === 30) speak("Thirty seconds");
+  else if (sec === 15) speak("Fifteen seconds");
+  else if (sec === 10) speak("Ten seconds");
+  else if (sec === 5) speak("Five");
+  else if (sec === 4) speak("Four");
+  else if (sec === 3) speak("Three");
+  else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
+  else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
+
+  announcedTimes.add(sec);
+}
 }
     
   // Starts or pauses the timer
