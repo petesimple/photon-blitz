@@ -71,11 +71,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* 👈 Pin content to top instead of center */
-  gap: 10px;
-  width: 220px;
-  flex-shrink: 0;
+  justify-content: space-between;
   height: 100%;
+  width: 220px;
+  padding: 10px 0;
+  gap: 5px;
+  box-sizing: border-box;
 }
 
     .score-name {
@@ -147,7 +148,7 @@
 
     /* Timer display */
     #timer {
-  font-size: 6em;
+  font-size: clamp(4em, 6vw, 5.5em);
   margin-bottom: 10px;
   color: #ff4444;
   text-shadow: 0 0 10px #f00, 0 0 20px #f00;
