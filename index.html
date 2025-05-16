@@ -777,11 +777,16 @@ body.locked .timeout-button {
 
   // Handles end-of-game logic and saves result
   function endGame() {
-  if (!suddenDeath) matchesPlayed++;
+  if (suddenDeath) {
+    lastGameWasSuddenDeath = true; // ✅ game ended in sudden death
+  } else {
+    matchesPlayed++;
+    lastGameWasSuddenDeath = false;
+  }
+
   if (homeScoreValue > awayScoreValue) homeGamesWon++;
   else awayGamesWon++;
 
-  // 🟡 NEW: Play the horn sound
   playHorn();
 
   const homeName = document.getElementById('homeName').value || 'Player 1';
@@ -925,7 +930,7 @@ body.locked .timeout-button {
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  const showSkull = suddenDeath && homeScoreValue !== awayScoreValue;
+  const showSkull = lastGameWasSuddenDeath && homeScoreValue !== awayScoreValue;
   const homeLost = showSkull && homeScoreValue < awayScoreValue;
   const awayLost = showSkull && awayScoreValue < homeScoreValue;
 
