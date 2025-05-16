@@ -1,0 +1,41 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.2 (☠️)] - 2025-05-16
+
+### ✨ Added
+
+- **Sudden Death Skull Mode**  
+  If a game ends in sudden death, the losing player gets a ☠️ skull badge next to their pips. Spooky but fair.
+
+- **`suddenDeathLoser` Tracking Variable**  
+  Tracks the loser of a sudden death game so we can accurately shame... we mean *highlight*... their moment.
+
+### 🔧 Changed
+
+- **`endGame()` Logic Overhaul**  
+  Cleaned up logic to distinguish sudden death results vs normal wins.  
+  Now it won't sneak in false skulls on non-sudden-death matches.
+
+- **`updateNameDisplays()` Logic**  
+  Now honors the `suddenDeathLoser` flag so skulls only show when they’re supposed to.  
+  No more accidental pirate vibes on regular wins.
+
+### ✅ Fixed
+
+- **Skull Display Bugs**  
+  Fixed issue where skulls showed up even when sudden death didn’t happen. No more phantom deaths.
+
+- **Score Swapping Accuracy**  
+  `swapSides()` now plays nicer with sudden death outcomes and pips display.
+
+---
+
+Tag: `ver-1.2 (☠️)`  
+Release Date: 2025-05-16  
+Codename: ☠️ "Skull Mode Unlocked"
