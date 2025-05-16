@@ -909,13 +909,21 @@ body.locked .timeout-button {
 
   // Swaps sides and updates win counters and displays
   function swapSides() {
-    const homeInput = document.getElementById('homeName');
-    const awayInput = document.getElementById('awayName');
-    [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
-    [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
-    saveNames();
-    updateNameDisplays();
-  }
+  const homeInput = document.getElementById('homeName');
+  const awayInput = document.getElementById('awayName');
+
+  // Swap name input values
+  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+
+  // Swap game win counters
+  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
+
+  // Swap score values (important for skull display right after sudden death)
+  [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
+
+  saveNames();
+  updateNameDisplays();
+}
 
   // Save player names to local storage and update UI
   function saveNames() {
