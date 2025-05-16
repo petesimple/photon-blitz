@@ -594,6 +594,7 @@ body.locked .timeout-button {
   let playPuckAnnounced = false;
   let timeoutActive = false;
   let lastGameWasSuddenDeath = false;
+  let suddenDeathLoser = null;
 
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -779,9 +780,15 @@ body.locked .timeout-button {
   function endGame() {
   if (suddenDeath) {
     lastGameWasSuddenDeath = true; // ✅ game ended in sudden death
+    if (homeScoreValue !== awayScoreValue) {
+      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
+    } else {
+      suddenDeathLoser = null;
+    }
   } else {
     matchesPlayed++;
     lastGameWasSuddenDeath = false;
+    suddenDeathLoser = null;
   }
 
   if (homeScoreValue > awayScoreValue) homeGamesWon++;
@@ -938,18 +945,19 @@ body.locked .timeout-button {
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  const showSkull = lastGameWasSuddenDeath && homeScoreValue !== awayScoreValue;
-  const homeLost = showSkull && homeScoreValue < awayScoreValue;
-  const awayLost = showSkull && awayScoreValue < homeScoreValue;
+  const homeLost = lastGameWasSuddenDeath && suddenDeathLoser === 'home';
+  const awayLost = lastGameWasSuddenDeath && suddenDeathLoser === 'away';
 
   const gamesTotal = homeGamesWon + awayGamesWon;
-if (gamesTotal > 0) {
-  document.getElementById('homeDisplay').textContent = `${homeName} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
-  document.getElementById('awayDisplay').textContent = `${awayName} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
-} else {
-  document.getElementById('homeDisplay').textContent = homeName;
-  document.getElementById('awayDisplay').textContent = awayName;
-}
+  if (gamesTotal > 0) {
+    document.getElementById('homeDisplay').textContent =
+      `${homeName} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+    document.getElementById('awayDisplay').textContent =
+      `${awayName} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+  } else {
+    document.getElementById('homeDisplay').textContent = homeName;
+    document.getElementById('awayDisplay').textContent = awayName;
+  }
 }
   // Builds summary text for the match summary section
   function updateSummary() {
