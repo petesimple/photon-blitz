@@ -799,6 +799,9 @@ body.locked .timeout-button {
 
   // Handles end-of-game logic and saves result
   function endGame() {
+  let preSwapWinner = null;
+  let preSwapLoser = null;
+
   if (suddenDeath) {
     lastGameWasSuddenDeath = true;
     if (homeScoreValue !== awayScoreValue) {
@@ -812,8 +815,15 @@ body.locked .timeout-button {
     suddenDeathLoser = null;
   }
 
-  if (homeScoreValue > awayScoreValue) homeGamesWon++;
-  else awayGamesWon++;
+  if (homeScoreValue > awayScoreValue) {
+    homeGamesWon++;
+    preSwapWinner = 'home';
+    preSwapLoser = 'away';
+  } else {
+    awayGamesWon++;
+    preSwapWinner = 'away';
+    preSwapLoser = 'home';
+  }
 
   playHorn();
 
@@ -821,14 +831,9 @@ body.locked .timeout-button {
   const awayName = document.getElementById('awayName').value || 'Player 2';
   gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
 
+  updateNameDisplays(preSwapWinner, preSwapLoser); // 🟨 use *before* swap
   swapSides();
-
-  // ✅ Reset everything EXCEPT sudden death flags
-  resetForNextGame(true); // <--- key change
-
-  // ✅ Now that the display is swapped, use the flags to show pips
-  updateNameDisplays();
-
+  resetForNextGame(true);
   updateSummary();
 }
 
