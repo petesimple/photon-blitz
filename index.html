@@ -975,11 +975,14 @@ body.locked .timeout-button {
   localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
   localStorage.setItem('awayName', tempStoredHome || 'Player 1');
 
-  // Swap DOM positions visually
+  // Get the score-side elements only
   const scoreboard = document.querySelector('.scoreboard');
-  const [homeSide, , awaySide] = scoreboard.children;
-  scoreboard.insertBefore(awaySide, scoreboard.firstElementChild); // move awaySide to first
-  scoreboard.appendChild(homeSide); // move homeSide to last
+  const sides = scoreboard.querySelectorAll('.score-side');
+  if (sides.length === 2) {
+    const [homeSide, awaySide] = sides;
+    scoreboard.insertBefore(awaySide, scoreboard.firstElementChild); // Move awaySide to the start
+    scoreboard.appendChild(homeSide); // Move homeSide to the end
+  }
 
   // Re-assign display scores after DOM change
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
@@ -988,7 +991,6 @@ body.locked .timeout-button {
   updateNameDisplays();
   updateSummary();
 }
-
   // Save player names to local storage and update UI
   function saveNames() {
     localStorage.setItem('homeName', document.getElementById('homeName').value);
