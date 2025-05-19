@@ -821,29 +821,37 @@ body.locked .timeout-button {
   const awayName = document.getElementById('awayName').value || 'Player 2';
   gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
 
-  // ✅ Make sure the pips display BEFORE swapping sides
-  updateNameDisplays(); // <--- add this here
-
   swapSides();
-  resetForNextGame();
-  updateSummary(); // optional redundancy
+
+  // ✅ Reset everything EXCEPT sudden death flags
+  resetForNextGame(true); // <--- key change
+
+  // ✅ Now that the display is swapped, use the flags to show pips
+  updateNameDisplays();
+
+  updateSummary();
 }
 
   // Resets scoreboard for the next game
-  function resetForNextGame() {
-    homeScoreValue = 0;
-    awayScoreValue = 0;
-    time = 1800;
-    blitz = false;
-    suddenDeath = false;
-    announcedTimes.clear();
-    timeoutActive = false;
-    document.getElementById('blitzBanner').style.display = 'none';
-    updateTimer();
-    document.getElementById('homeScoreDisplay').textContent = 0;
-    document.getElementById('awayScoreDisplay').textContent = 0;
-    updateNameDisplays();
+  function resetForNextGame(preserveSuddenDeath = false) {
+  homeScoreValue = 0;
+  awayScoreValue = 0;
+  time = 1800;
+  blitz = false;
+  suddenDeath = false;
+  announcedTimes.clear();
+  timeoutActive = false;
+  document.getElementById('blitzBanner').style.display = 'none';
+  updateTimer();
+  document.getElementById('homeScoreDisplay').textContent = 0;
+  document.getElementById('awayScoreDisplay').textContent = 0;
+
+  // Only reset these after the pip logic runs
+  if (!preserveSuddenDeath) {
+    lastGameWasSuddenDeath = false;
+    suddenDeathLoser = null;
   }
+}
 
   // Fully resets match data and stats
   function resetMatch() {
