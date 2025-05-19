@@ -654,7 +654,7 @@ body.locked .timeout-button {
   const minutes = String(Math.floor(time / 600));
   const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
   const tenths = String(time % 10);
-  timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
+  timerEl.textContent = ${minutes}:${seconds}.${tenths};
 
   // Trigger Blitz mode at exactly 1:00 remaining
   const blitzWrapper = document.getElementById('blitzWrapper');
@@ -697,7 +697,7 @@ body.locked .timeout-button {
   else if (sec === 4) speak("Four");
   else if (sec === 3) speak("Three");
   else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
-  else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
+  else if (calloutTimes.has(sec)) speak(${minutes}:${seconds});
 
   announcedTimes.add(sec);
 }
@@ -768,7 +768,7 @@ body.locked .timeout-button {
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
-  timerEl.textContent = `Timeout: 10`;
+  timerEl.textContent = Timeout: 10;
   timerEl.classList.add('timer-small');
 
   // Add a one-time listener to cancel timeout on tap
@@ -787,7 +787,7 @@ body.locked .timeout-button {
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
     if (timeoutCounter > 0) {
-      timerEl.textContent = `Timeout: ${timeoutCounter}`;
+      timerEl.textContent = Timeout: ${timeoutCounter};
     } else {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
@@ -1007,11 +1007,11 @@ body.locked .timeout-button {
 
   if (gamesTotal > 0) {
     if (!reversed) {
-      leftDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
-      rightDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+      leftDisplay.textContent = ${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)};
+      rightDisplay.textContent = ${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)};
     } else {
-      leftDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
-      rightDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+      leftDisplay.textContent = ${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)};
+      rightDisplay.textContent = ${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)};
     }
   } else {
     if (!reversed) {
@@ -1030,48 +1030,60 @@ body.locked .timeout-button {
     let summary = '';
 
     if (homeGamesWon > awayGamesWon) {
-      summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+      summary += <span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>;
     } else if (awayGamesWon > homeGamesWon) {
-      summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+      summary += Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>;
     } else {
-      summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+      summary += Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>;
     }
 
-    summary += `Matches Played: ${matchesPlayed}<br><br>`;
+    summary += Matches Played: ${matchesPlayed}<br><br>;
 
     if (gameScores.length > 0) {
-      summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => `Game ${i + 1}: ${s}`).join('<br>');
+      summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => Game ${i + 1}: ${s}).join('<br>');
     }
 
     document.getElementById('summaryText').innerHTML = summary;
     updateCompactSummary();
   }
 
-    const compact = gameScores.map((g, i) => {
-  const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
-  const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
-
-  const homeInitial = g.homeName[0] || '?';
-  const awayInitial = g.awayName[0] || '?';
-  const homeScore = g.homeScore;
-  const awayScore = g.awayScore;
-
-  let winnerInitial, loserInitial, winnerScore, loserScore;
-
-  if (homeScore > awayScore) {
-    winnerInitial = homeInitial;
-    loserInitial = awayInitial;
-    winnerScore = homeScore;
-    loserScore = awayScore;
-  } else {
-    winnerInitial = awayInitial;
-    loserInitial = homeInitial;
-    winnerScore = awayScore;
-    loserScore = homeScore;
+    function updateCompactSummary() {
+  const summaryDiv = document.getElementById('compactSummary');
+  if (!gameScores.length) {
+    summaryDiv.textContent = '';
+    return;
   }
 
-  return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
-}).join(', ');
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+
+  const compact = gameScores.map((g, i) => {
+    const homeInitial = g.homeName[0] || '?';
+    const awayInitial = g.awayName[0] || '?';
+    const homeScore = g.homeScore;
+    const awayScore = g.awayScore;
+
+    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
+    const dagger = isSuddenDeath ? <span class="suddendeath">†</span> : '';
+
+    let winnerInitial, loserInitial, winnerScore, loserScore;
+
+    if (homeScore > awayScore) {
+      winnerInitial = reversed ? awayInitial : homeInitial;
+      loserInitial = reversed ? homeInitial : awayInitial;
+      winnerScore = Math.max(homeScore, awayScore);
+      loserScore = Math.min(homeScore, awayScore);
+    } else {
+      winnerInitial = reversed ? homeInitial : awayInitial;
+      loserInitial = reversed ? awayInitial : homeInitial;
+      winnerScore = Math.max(homeScore, awayScore);
+      loserScore = Math.min(homeScore, awayScore);
+    }
+
+    return G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial};
+  }).join(', ');
+
+  summaryDiv.innerHTML = compact;
+}
 
   // Loads saved player names from localStorage on page load
   function loadNames() {
