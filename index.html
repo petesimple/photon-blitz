@@ -697,7 +697,7 @@ body.locked .timeout-button {
   else if (sec === 4) speak("Four");
   else if (sec === 3) speak("Three");
   else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
-  else if (calloutTimes.has(sec)) speak(${minutes}:${seconds});
+  else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
 
   announcedTimes.add(sec);
 }
