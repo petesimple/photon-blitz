@@ -992,8 +992,9 @@ body.locked .timeout-button {
   updateSummary();
 }
   // Updates name and score UI for each player
-  function updateNameDisplays(preWinner = null, preLoser = null) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  function updateNameDisplays(preLoser = null, preWinner = null, suddenDeathWinner = null) {
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
 
   const homeNameInput = document.getElementById('homeName').value || 'Player 1';
   const awayNameInput = document.getElementById('awayName').value || 'Player 2';
@@ -1006,22 +1007,22 @@ body.locked .timeout-button {
   const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
+  // Determine actual sides based on visual layout
+  const leftName = reversed ? awayNameInput : homeNameInput;
+  const rightName = reversed ? homeNameInput : awayNameInput;
+  const leftWins = reversed ? awayGamesWon : homeGamesWon;
+  const rightWins = reversed ? homeGamesWon : awayGamesWon;
+  const leftLost = reversed ? awayLost : homeLost;
+  const rightLost = reversed ? homeLost : awayLost;
+  const leftSide = reversed ? 'away' : 'home';
+  const rightSide = reversed ? 'home' : 'away';
+
   if (gamesTotal > 0) {
-    if (!reversed) {
-      leftDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
-      rightDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
-    } else {
-      leftDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
-      rightDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
-    }
+    leftDisplay.textContent = `${leftName} ${getPips(leftWins, leftLost, gamesTotal, suddenDeathWinner === leftSide)}`;
+    rightDisplay.textContent = `${rightName} ${getPips(rightWins, rightLost, gamesTotal, suddenDeathWinner === rightSide)}`;
   } else {
-    if (!reversed) {
-      leftDisplay.textContent = homeNameInput;
-      rightDisplay.textContent = awayNameInput;
-    } else {
-      leftDisplay.textContent = awayNameInput;
-      rightDisplay.textContent = homeNameInput;
-    }
+    leftDisplay.textContent = leftName;
+    rightDisplay.textContent = rightName;
   }
 }
   // Builds summary text for the match summary section
@@ -1058,8 +1059,7 @@ body.locked .timeout-button {
   }
 
   const compact = gameScores.map((g, i) => {
-    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
-    const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
+    const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
     const homeInitial = g.homeName[0] || '?';
     const awayInitial = g.awayName[0] || '?';
@@ -1080,7 +1080,7 @@ body.locked .timeout-button {
       loserScore = homeScore;
     }
 
-    return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    return `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   }).join(', ');
 
   summaryDiv.innerHTML = compact;
@@ -1194,17 +1194,13 @@ function playHorn() {
   window.addEventListener("resize", checkOrientation);
   window.addEventListener("load", checkOrientation);
 
-function getPips(wins, isLoser = false, totalGames = 0) {
-  const total = Math.max(totalGames, wins);
-  const pipCount = Math.min(total, 7); // cap at 7 for layout safety
+function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = false) {
+  const pipCount = Math.min(Math.max(totalGames, wins), 7);
   let pips = '';
 
-  // Handle sudden death win (last game was SD and this player didn't lose)
-  const isWinnerInSuddenDeath = lastGameWasSuddenDeath && !isLoser;
-
   for (let i = 0; i < wins; i++) {
-    if (isWinnerInSuddenDeath && i === wins - 1) {
-      pips += '⭐'; // last pip is gold for SD win
+    if (isSuddenDeathWinner && i === wins - 1) {
+      pips += '⭐'; // Gold star pip for sudden death win
     } else {
       pips += '●';
     }
