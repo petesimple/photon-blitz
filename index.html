@@ -962,31 +962,22 @@ body.locked .timeout-button {
 
   function swapSides() {
   const scoreboard = document.querySelector('.scoreboard');
-  const sides = scoreboard.querySelectorAll('.score-side');
-  if (sides.length === 2) {
-    const [left, right] = sides;
-    scoreboard.insertBefore(right, left);
-  }
+  scoreboard.classList.toggle('reverse');
 
-  // Swap inputs
+  // Swap player names
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap storage
-  const storedHome = localStorage.getItem('homeName');
-  const storedAway = localStorage.getItem('awayName');
-  localStorage.setItem('homeName', storedAway || 'Player 2');
-  localStorage.setItem('awayName', storedHome || 'Player 1');
-
-  // Swap score
+  // Swap scores
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // Swap games
+  // Swap games won
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
+  // Update UI
   updateNameDisplays();
   updateSummary();
 }
