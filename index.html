@@ -351,6 +351,15 @@ body.locked #scoreboardMask {
   z-index: 998;
   pointer-events: none;
 }
+    body.locked #scoreboardMask::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 20px;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(1,5,24,1), rgba(1,5,24,0));
+}
     #gearBack {
   display: none;
 }
