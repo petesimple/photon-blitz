@@ -1047,43 +1047,31 @@ body.locked .timeout-button {
     updateCompactSummary();
   }
 
-    function updateCompactSummary() {
-  const summaryDiv = document.getElementById('compactSummary');
-  if (!gameScores.length) {
-    summaryDiv.textContent = '';
-    return;
+    const compact = gameScores.map((g, i) => {
+  const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
+  const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
+
+  const homeInitial = g.homeName[0] || '?';
+  const awayInitial = g.awayName[0] || '?';
+  const homeScore = g.homeScore;
+  const awayScore = g.awayScore;
+
+  let winnerInitial, loserInitial, winnerScore, loserScore;
+
+  if (homeScore > awayScore) {
+    winnerInitial = homeInitial;
+    loserInitial = awayInitial;
+    winnerScore = homeScore;
+    loserScore = awayScore;
+  } else {
+    winnerInitial = awayInitial;
+    loserInitial = homeInitial;
+    winnerScore = awayScore;
+    loserScore = homeScore;
   }
 
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-
-  const compact = gameScores.map((g, i) => {
-    const homeInitial = g.homeName[0] || '?';
-    const awayInitial = g.awayName[0] || '?';
-    const homeScore = g.homeScore;
-    const awayScore = g.awayScore;
-
-    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
-    const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
-
-    let winnerInitial, loserInitial, winnerScore, loserScore;
-
-    if (homeScore > awayScore) {
-      winnerInitial = reversed ? awayInitial : homeInitial;
-      loserInitial = reversed ? homeInitial : awayInitial;
-      winnerScore = Math.max(homeScore, awayScore);
-      loserScore = Math.min(homeScore, awayScore);
-    } else {
-      winnerInitial = reversed ? homeInitial : awayInitial;
-      loserInitial = reversed ? awayInitial : homeInitial;
-      winnerScore = Math.max(homeScore, awayScore);
-      loserScore = Math.min(homeScore, awayScore);
-    }
-
-    return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
-  }).join(', ');
-
-  summaryDiv.innerHTML = compact;
-}
+  return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+}).join(', ');
 
   // Loads saved player names from localStorage on page load
   function loadNames() {
