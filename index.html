@@ -346,12 +346,10 @@ body.locked #scoreboardMask {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 200px; /* Match or slightly exceed .scoreboard height + spacing */
   background: linear-gradient(to bottom right, #010518, #012B58);
-  z-index: 998; /* Below the scoreboard (z-index: 999) */
+  z-index: 998;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, transparent 0px, black 200px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 200px);
 }
     #gearBack {
   display: none;
