@@ -1014,7 +1014,7 @@ body.locked .timeout-button {
   const compact = gameScores.map((score, i) => {
     const match = score.match(/^(.*?) (\d+) - (\d+) (.*?)$/);
     if (!match) return '';
-    
+
     const [, name1, raw1, raw2, name2] = match;
     const s1 = parseInt(raw1, 10);
     const s2 = parseInt(raw2, 10);
@@ -1024,10 +1024,13 @@ body.locked .timeout-button {
     const winnerScore = s1 > s2 ? s1 : s2;
     const loserScore = s1 > s2 ? s2 : s1;
 
-    return `G${i + 1} ${winnerName[0]}${winnerScore}–${loserScore}${loserName[0]}`;
+    const isSuddenDeath = i === gameScores.length - 1 && lastGameWasSuddenDeath;
+    const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
+
+    return `G${i + 1}${dagger} ${winnerName[0]}${winnerScore}–${loserScore}${loserName[0]}`;
   }).join(', ');
 
-  summaryDiv.textContent = compact;
+  summaryDiv.innerHTML = compact;
 }
 
   // Loads saved player names from localStorage on page load
