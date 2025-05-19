@@ -958,12 +958,12 @@ body.locked .timeout-button {
 }
 
   function swapSides() {
-  // Swap DOM elements for visual layout
+  // Swap DOM elements (visual layout)
   const scoreboard = document.querySelector('.scoreboard');
   const sides = scoreboard.querySelectorAll('.score-side');
   if (sides.length === 2) {
     const [left, right] = sides;
-    scoreboard.insertBefore(right, left); // swap their order visually
+    left.parentNode.insertBefore(right, left); // clean DOM reorder
   }
 
   // Swap name input values
@@ -971,7 +971,7 @@ body.locked .timeout-button {
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap localStorage values for names
+  // Swap name values in localStorage
   const storedHome = localStorage.getItem('homeName');
   const storedAway = localStorage.getItem('awayName');
   localStorage.setItem('homeName', storedAway || 'Player 2');
@@ -985,7 +985,7 @@ body.locked .timeout-button {
   // Swap game wins
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // Update displays
+  // Refresh name and pip display
   updateNameDisplays();
   updateSummary();
 }
