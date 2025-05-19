@@ -840,15 +840,21 @@ body.locked .timeout-button {
   const leftScore = reversed ? awayScoreValue : homeScoreValue;
   const rightScore = reversed ? homeScoreValue : awayScoreValue;
 
+  // Determine initial of sudden death winner using pre-swap team
+  let suddenDeathWinnerInitial = null;
+  if (lastGameWasSuddenDeath) {
+    suddenDeathWinnerInitial = preSwapWinner === 'home'
+      ? (homeName[0] || '?')
+      : (awayName[0] || '?');
+  }
+
   gameScores.push({
     leftName,
     rightName,
     leftScore,
     rightScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinnerInitial: lastGameWasSuddenDeath
-      ? (leftScore > rightScore ? (leftName[0] || '?') : (rightName[0] || '?'))
-      : null
+    suddenDeathWinnerInitial
   });
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
