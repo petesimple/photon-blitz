@@ -837,10 +837,11 @@ body.locked .timeout-button {
   awayName,
   homeScore: homeScoreValue,
   awayScore: awayScoreValue,
-  wasSuddenDeath: lastGameWasSuddenDeath
+  wasSuddenDeath: lastGameWasSuddenDeath,
+  suddenDeathWinner: lastGameWasSuddenDeath ? (homeScoreValue > awayScoreValue ? 'home' : 'away') : null
 });
 
-  updateNameDisplays(preSwapWinner, preSwapLoser); // 🟨 use *before* swap
+  updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
   resetForNextGame(true);
   updateSummary();
