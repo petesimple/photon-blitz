@@ -992,22 +992,35 @@ body.locked .timeout-button {
 }
   // Updates name and score UI for each player
   function updateNameDisplays(preWinner = null, preLoser = null) {
-  const homeName = document.getElementById('homeName').value || 'Player 1';
-  const awayName = document.getElementById('awayName').value || 'Player 2';
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+
+  const homeNameInput = document.getElementById('homeName').value || 'Player 1';
+  const awayNameInput = document.getElementById('awayName').value || 'Player 2';
 
   const gamesTotal = homeGamesWon + awayGamesWon;
 
   const homeLost = lastGameWasSuddenDeath && preLoser === 'home';
   const awayLost = lastGameWasSuddenDeath && preLoser === 'away';
 
+  const leftDisplay = document.getElementById('homeDisplay');
+  const rightDisplay = document.getElementById('awayDisplay');
+
   if (gamesTotal > 0) {
-    document.getElementById('homeDisplay').textContent =
-      `${homeName} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
-    document.getElementById('awayDisplay').textContent =
-      `${awayName} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+    if (!reversed) {
+      leftDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+      rightDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+    } else {
+      leftDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+      rightDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+    }
   } else {
-    document.getElementById('homeDisplay').textContent = homeName;
-    document.getElementById('awayDisplay').textContent = awayName;
+    if (!reversed) {
+      leftDisplay.textContent = homeNameInput;
+      rightDisplay.textContent = awayNameInput;
+    } else {
+      leftDisplay.textContent = awayNameInput;
+      rightDisplay.textContent = homeNameInput;
+    }
   }
 }
   // Builds summary text for the match summary section
