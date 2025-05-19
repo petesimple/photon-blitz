@@ -1054,32 +1054,30 @@ body.locked .timeout-button {
     return;
   }
 
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-
   const compact = gameScores.map((g, i) => {
+    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
+    const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
+
     const homeInitial = g.homeName[0] || '?';
     const awayInitial = g.awayName[0] || '?';
     const homeScore = g.homeScore;
     const awayScore = g.awayScore;
 
-    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
-    const dagger = isSuddenDeath ? <span class="suddendeath">†</span> : '';
-
     let winnerInitial, loserInitial, winnerScore, loserScore;
 
     if (homeScore > awayScore) {
-      winnerInitial = reversed ? awayInitial : homeInitial;
-      loserInitial = reversed ? homeInitial : awayInitial;
-      winnerScore = Math.max(homeScore, awayScore);
-      loserScore = Math.min(homeScore, awayScore);
+      winnerInitial = homeInitial;
+      loserInitial = awayInitial;
+      winnerScore = homeScore;
+      loserScore = awayScore;
     } else {
-      winnerInitial = reversed ? homeInitial : awayInitial;
-      loserInitial = reversed ? awayInitial : homeInitial;
-      winnerScore = Math.max(homeScore, awayScore);
-      loserScore = Math.min(homeScore, awayScore);
+      winnerInitial = awayInitial;
+      loserInitial = homeInitial;
+      winnerScore = awayScore;
+      loserScore = homeScore;
     }
 
-    return G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial};
+    return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   }).join(', ');
 
   summaryDiv.innerHTML = compact;
