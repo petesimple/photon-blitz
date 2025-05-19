@@ -959,35 +959,25 @@ body.locked .timeout-button {
 
   // Swaps sides and updates win counters and displays
   function swapSides() {
-  // Swap name input values
+  // Swap name values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap game win counters
+  // Swap score values
+  [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
+  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+  // Swap game wins
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // Swap current score values
-  [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
-
-  // Swap localStorage values
+  // Swap localStorage
   const tempStoredHome = localStorage.getItem('homeName');
   localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
   localStorage.setItem('awayName', tempStoredHome || 'Player 1');
 
-  // Get the score-side elements only
-  const scoreboard = document.querySelector('.scoreboard');
-  const sides = scoreboard.querySelectorAll('.score-side');
-  if (sides.length === 2) {
-    const [homeSide, awaySide] = sides;
-    scoreboard.insertBefore(awaySide, scoreboard.firstElementChild); // Move awaySide to the start
-    scoreboard.appendChild(homeSide); // Move homeSide to the end
-  }
-
-  // Re-assign display scores after DOM change
-  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-
+  // Update display (includes pip logic and names)
   updateNameDisplays();
   updateSummary();
 }
