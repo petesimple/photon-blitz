@@ -1012,13 +1012,19 @@ body.locked .timeout-button {
   }
 
   const compact = gameScores.map((score, i) => {
-    // Extract scores and initial logic
     const match = score.match(/^(.*?) (\d+) - (\d+) (.*?)$/);
     if (!match) return '';
-    const [, p1, s1, s2, p2] = match;
-    const winner = s1 > s2 ? p1 : p2;
-    const loser = s1 > s2 ? p2 : p1;
-    return `G${i + 1} ${winner[0]}${s1}–${s2}${loser[0]}`;
+    
+    const [, name1, raw1, raw2, name2] = match;
+    const s1 = parseInt(raw1, 10);
+    const s2 = parseInt(raw2, 10);
+
+    const winnerName = s1 > s2 ? name1 : name2;
+    const loserName = s1 > s2 ? name2 : name1;
+    const winnerScore = s1 > s2 ? s1 : s2;
+    const loserScore = s1 > s2 ? s2 : s1;
+
+    return `G${i + 1} ${winnerName[0]}${winnerScore}–${loserScore}${loserName[0]}`;
   }).join(', ');
 
   summaryDiv.textContent = compact;
