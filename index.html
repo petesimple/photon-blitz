@@ -426,6 +426,17 @@ body.locked .timeout-button {
   max-width: 100%;
   word-break: break-word;
 }
+    /* Ensure spacing below scoreboard when locked and in landscape */
+@media screen and (orientation: landscape) {
+  body.locked .scoreboard {
+    margin-bottom: 220px; /* Enough space for controls to render cleanly */
+  }
+
+  #buttonsWrapper,
+  .timeout-button {
+    margin-top: 40px; /* Additional spacing in landscape */
+  }
+}
   </style>
 </head>
 <body>
