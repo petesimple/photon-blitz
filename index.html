@@ -654,7 +654,7 @@ body.locked .timeout-button {
   const minutes = String(Math.floor(time / 600));
   const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
   const tenths = String(time % 10);
-  timerEl.textContent = ${minutes}:${seconds}.${tenths};
+  timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
 
   // Trigger Blitz mode at exactly 1:00 remaining
   const blitzWrapper = document.getElementById('blitzWrapper');
