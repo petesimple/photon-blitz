@@ -800,7 +800,7 @@ body.locked .timeout-button {
   // Handles end-of-game logic and saves result
   function endGame() {
   if (suddenDeath) {
-    lastGameWasSuddenDeath = true; // ✅ game ended in sudden death
+    lastGameWasSuddenDeath = true;
     if (homeScoreValue !== awayScoreValue) {
       suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
     } else {
@@ -821,9 +821,12 @@ body.locked .timeout-button {
   const awayName = document.getElementById('awayName').value || 'Player 2';
   gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
 
+  // ✅ Make sure the pips display BEFORE swapping sides
+  updateNameDisplays(); // <--- add this here
+
   swapSides();
   resetForNextGame();
-  updateSummary();
+  updateSummary(); // optional redundancy
 }
 
   // Resets scoreboard for the next game
