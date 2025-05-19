@@ -340,16 +340,18 @@ body.locked #scrollSpacer {
     display: none;
   }
 
-  body.locked #scoreboardMask {
+body.locked #scoreboardMask {
   display: block;
   position: fixed;
-  top: 190px; /* this should match scoreboard height + top offset */
+  top: 0;
   left: 0;
-  height: calc(100vh - 190px);
   width: 100vw;
+  height: 100vh;
   background: linear-gradient(to bottom right, #010518, #012B58);
-  z-index: 998; /* BELOW the scoreboard, ABOVE all other content */
+  z-index: 998; /* Below the scoreboard (z-index: 999) */
   pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0px, black 200px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 200px);
 }
     #gearBack {
   display: none;
