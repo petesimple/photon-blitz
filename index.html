@@ -1058,29 +1058,34 @@ body.locked .timeout-button {
     return;
   }
 
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+
   const compact = gameScores.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
-    const homeInitial = g.homeName[0] || '?';
-    const awayInitial = g.awayName[0] || '?';
-    const homeScore = g.homeScore;
-    const awayScore = g.awayScore;
+    let leftInitial, rightInitial, leftScore, rightScore;
 
-    let winnerInitial, loserInitial, winnerScore, loserScore;
-
-    if (homeScore > awayScore) {
-      winnerInitial = homeInitial;
-      loserInitial = awayInitial;
-      winnerScore = homeScore;
-      loserScore = awayScore;
+    // Mirror visual layout
+    if (reversed) {
+      leftInitial = g.awayName[0] || '?';
+      rightInitial = g.homeName[0] || '?';
+      leftScore = g.awayScore;
+      rightScore = g.homeScore;
     } else {
-      winnerInitial = awayInitial;
-      loserInitial = homeInitial;
-      winnerScore = awayScore;
-      loserScore = homeScore;
+      leftInitial = g.homeName[0] || '?';
+      rightInitial = g.awayName[0] || '?';
+      leftScore = g.homeScore;
+      rightScore = g.awayScore;
     }
 
-    return `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    let entry;
+    if (leftScore > rightScore) {
+      entry = `G${i + 1} ${dagger}${leftInitial}${leftScore}–${rightScore}${rightInitial}`;
+    } else {
+      entry = `G${i + 1} ${dagger}${rightInitial}${rightScore}–${leftScore}${leftInitial}`;
+    }
+
+    return entry;
   }).join(', ');
 
   summaryDiv.innerHTML = compact;
