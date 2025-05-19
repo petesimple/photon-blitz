@@ -1007,11 +1007,11 @@ body.locked .timeout-button {
 
   if (gamesTotal > 0) {
     if (!reversed) {
-      leftDisplay.textContent = ${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)};
-      rightDisplay.textContent = ${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)};
+      leftDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
+      rightDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
     } else {
-      leftDisplay.textContent = ${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)};
-      rightDisplay.textContent = ${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)};
+      leftDisplay.textContent = `${awayNameInput} ${getPips(awayGamesWon, awayLost, gamesTotal)}`;
+      rightDisplay.textContent = `${homeNameInput} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
     }
   } else {
     if (!reversed) {
