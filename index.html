@@ -1158,10 +1158,29 @@ function playHorn() {
 
 function getPips(wins, isLoser = false, totalGames = 0) {
   const total = Math.max(totalGames, wins);
-  const filled = '●'.repeat(wins);
-  const empty = '○'.repeat(Math.max(0, total - wins));
-  const skull = isLoser ? ' ☠️' : '';
-  return filled + empty + skull;
+  const pipCount = Math.min(total, 7); // cap at 7 for layout safety
+  let pips = '';
+
+  // Handle sudden death win (last game was SD and this player didn't lose)
+  const isWinnerInSuddenDeath = lastGameWasSuddenDeath && !isLoser;
+
+  for (let i = 0; i < wins; i++) {
+    if (isWinnerInSuddenDeath && i === wins - 1) {
+      pips += '⭐'; // last pip is gold for SD win
+    } else {
+      pips += '●';
+    }
+  }
+
+  const emptySlots = pipCount - wins;
+
+  if (isLoser && emptySlots > 0) {
+    pips += '☠️' + '○'.repeat(emptySlots - 1);
+  } else {
+    pips += '○'.repeat(emptySlots);
+  }
+
+  return pips;
 }
     
 </script>
