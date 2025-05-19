@@ -1065,8 +1065,7 @@ body.locked .timeout-button {
   }
 
   document.getElementById('summaryText').innerHTML = summary;
-  updateCompactSummary();
-}
+
     function updateCompactSummary() {
   const summaryDiv = document.getElementById('compactSummary');
   if (!gameScores.length) {
@@ -1076,15 +1075,25 @@ body.locked .timeout-button {
 
   const compact = gameScores.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
-
     const leftInitial = g.leftName[0] || '?';
     const rightInitial = g.rightName[0] || '?';
 
     let entry;
-    if (g.leftScore > g.rightScore) {
-      entry = `G${i + 1} ${dagger}${leftInitial}${g.leftScore}–${g.rightScore}${rightInitial}`;
+
+    if (g.wasSuddenDeath && g.suddenDeathWinnerInitial) {
+      // Place dagger before the winning initial
+      if (g.leftScore > g.rightScore) {
+        entry = `G${i + 1} ${dagger}${leftInitial}${g.leftScore}–${g.rightScore}${rightInitial}`;
+      } else {
+        entry = `G${i + 1} ${dagger}${rightInitial}${g.rightScore}–${g.leftScore}${leftInitial}`;
+      }
     } else {
-      entry = `G${i + 1} ${dagger}${rightInitial}${g.rightScore}–${g.leftScore}${leftInitial}`;
+      // Regular game, no dagger
+      if (g.leftScore > g.rightScore) {
+        entry = `G${i + 1} ${leftInitial}${g.leftScore}–${g.rightScore}${rightInitial}`;
+      } else {
+        entry = `G${i + 1} ${rightInitial}${g.rightScore}–${g.leftScore}${leftInitial}`;
+      }
     }
 
     return entry;
