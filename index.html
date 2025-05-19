@@ -977,17 +977,19 @@ body.locked .timeout-button {
   localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
   localStorage.setItem('awayName', tempStoredHome || 'Player 1');
 
-  // Update display (includes pip logic and names)
+  // ✅ Swap visual DOM layout
+  const scoreboard = document.querySelector('.scoreboard');
+  const sides = scoreboard.querySelectorAll('.score-side');
+  if (sides.length === 2) {
+    const [homeSide, awaySide] = sides;
+    scoreboard.insertBefore(awaySide, scoreboard.firstElementChild);
+    scoreboard.appendChild(homeSide);
+  }
+
+  // Update display
   updateNameDisplays();
   updateSummary();
 }
-  // Save player names to local storage and update UI
-  function saveNames() {
-    localStorage.setItem('homeName', document.getElementById('homeName').value);
-    localStorage.setItem('awayName', document.getElementById('awayName').value);
-    updateNameDisplays();
-    updateSummary();
-  }
 
   // Updates name and score UI for each player
   function updateNameDisplays(preWinner = null, preLoser = null) {
