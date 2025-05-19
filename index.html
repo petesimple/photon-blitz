@@ -829,7 +829,13 @@ body.locked .timeout-button {
 
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
-  gameScores.push(`${homeName} ${homeScoreValue} - ${awayScoreValue} ${awayName}`);
+  gameScores.push({
+  homeName,
+  awayName,
+  homeScore: homeScoreValue,
+  awayScore: awayScoreValue,
+  wasSuddenDeath: lastGameWasSuddenDeath
+});
 
   updateNameDisplays(preSwapWinner, preSwapLoser); // 🟨 use *before* swap
   swapSides();
@@ -1042,30 +1048,21 @@ body.locked .timeout-button {
     return;
   }
 
-  const compact = gameScores.map((score, i) => {
-    const match = score.match(/^(.*?) (\d+) - (\d+) (.*?)$/);
-    if (!match) return '';
+  const currentHome = document.getElementById('homeName').value || 'Player 1';
+  const currentAway = document.getElementById('awayName').value || 'Player 2';
 
-    const [, name1, raw1, raw2, name2] = match;
-    const s1 = parseInt(raw1, 10);
-    const s2 = parseInt(raw2, 10);
+  const compact = gameScores.map((g, i) => {
+    // Determine who won
+    const homeWon = g.homeScore > g.awayScore;
+    const winnerInitial = homeWon ? (g.homeName[0] || '?') : (g.awayName[0] || '?');
+    const loserInitial = homeWon ? (g.awayName[0] || '?') : (g.homeName[0] || '?');
+    const winnerScore = Math.max(g.homeScore, g.awayScore);
+    const loserScore = Math.min(g.homeScore, g.awayScore);
 
-    const currentHome = document.getElementById('homeName').value || 'Player 1';
-    const currentAway = document.getElementById('awayName').value || 'Player 2';
-
-// Map winner/loser name to side (home or away) using stored result
-const winnerSide = s1 > s2 ? 'home' : 'away';
-const loserSide = winnerSide === 'home' ? 'away' : 'home';
-
-const winnerInitial = (winnerSide === 'home' ? currentHome : currentAway)[0];
-const loserInitial = (loserSide === 'home' ? currentHome : currentAway)[0];
-    const winnerScore = s1 > s2 ? s1 : s2;
-    const loserScore = s1 > s2 ? s2 : s1;
-
-    const isSuddenDeath = i === gameScores.length - 1 && lastGameWasSuddenDeath;
+    const isSuddenDeath = i === gameScores.length - 1 && g.wasSuddenDeath;
     const dagger = isSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
-    return `G${i + 1}${dagger} ${winnerName[0]}${winnerScore}–${loserScore}${loserName[0]}`;
+    return `G${i + 1}${dagger} ${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   }).join(', ');
 
   summaryDiv.innerHTML = compact;
