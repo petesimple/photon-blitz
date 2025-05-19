@@ -1025,28 +1025,30 @@ body.locked .timeout-button {
 }
   // Builds summary text for the match summary section
   function updateSummary() {
-    const homeName = document.getElementById('homeName').value || 'Player 1';
-    const awayName = document.getElementById('awayName').value || 'Player 2';
-    let summary = '';
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
+  let summary = '';
 
-    if (homeGamesWon > awayGamesWon) {
-      summary += <span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>;
-    } else if (awayGamesWon > homeGamesWon) {
-      summary += Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>;
-    } else {
-      summary += Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>;
-    }
-
-    summary += Matches Played: ${matchesPlayed}<br><br>;
-
-    if (gameScores.length > 0) {
-      summary += '<strong>Game Scores:</strong><br>' + gameScores.map((s, i) => Game ${i + 1}: ${s}).join('<br>');
-    }
-
-    document.getElementById('summaryText').innerHTML = summary;
-    updateCompactSummary();
+  if (homeGamesWon > awayGamesWon) {
+    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+  } else if (awayGamesWon > homeGamesWon) {
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+  } else {
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
   }
 
+  summary += `Matches Played: ${matchesPlayed}<br><br>`;
+
+  if (gameScores.length > 0) {
+    summary += `<strong>Game Scores:</strong><br>` +
+      gameScores.map((s, i) =>
+        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
+      ).join('<br>');
+  }
+
+  document.getElementById('summaryText').innerHTML = summary;
+  updateCompactSummary();
+}
     function updateCompactSummary() {
   const summaryDiv = document.getElementById('compactSummary');
   if (!gameScores.length) {
