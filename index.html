@@ -446,9 +446,7 @@ body.locked .timeout-button {
     margin-top: 40px; /* Additional spacing in landscape */
   }
 }
-    .scoreboard.reversed {
-  flex-direction: row-reverse;
-}
+    
   </style>
 </head>
 <body>
@@ -962,31 +960,43 @@ body.locked .timeout-button {
 
   function swapSides() {
   const scoreboard = document.querySelector('.scoreboard');
-  scoreboard.classList.toggle('reversed');
+  const sides = scoreboard.querySelectorAll('.score-side');
+  if (sides.length === 2) {
+    const [left, right] = sides;
+    scoreboard.insertBefore(right, left);
+  }
 
-  // Swap input values
+  // Swap inputs
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap names in localStorage
+  // Swap storage
   const storedHome = localStorage.getItem('homeName');
   const storedAway = localStorage.getItem('awayName');
   localStorage.setItem('homeName', storedAway || 'Player 2');
   localStorage.setItem('awayName', storedHome || 'Player 1');
 
-  // Swap score values
+  // Swap score
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // Swap game wins
+  // Swap games
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
   updateNameDisplays();
   updateSummary();
 }
 
+    function saveNames() {
+  const homeName = document.getElementById('homeName').value;
+  const awayName = document.getElementById('awayName').value;
+  localStorage.setItem('homeName', homeName);
+  localStorage.setItem('awayName', awayName);
+  updateNameDisplays();
+  updateSummary();
+}
   // Updates name and score UI for each player
   function updateNameDisplays(preWinner = null, preLoser = null) {
   const homeName = document.getElementById('homeName').value || 'Player 1';
