@@ -1050,8 +1050,15 @@ body.locked .timeout-button {
     const s1 = parseInt(raw1, 10);
     const s2 = parseInt(raw2, 10);
 
-    const winnerName = s1 > s2 ? name1 : name2;
-    const loserName = s1 > s2 ? name2 : name1;
+    const currentHome = document.getElementById('homeName').value || 'Player 1';
+    const currentAway = document.getElementById('awayName').value || 'Player 2';
+
+// Map winner/loser name to side (home or away) using stored result
+const winnerSide = s1 > s2 ? 'home' : 'away';
+const loserSide = winnerSide === 'home' ? 'away' : 'home';
+
+const winnerInitial = (winnerSide === 'home' ? currentHome : currentAway)[0];
+const loserInitial = (loserSide === 'home' ? currentHome : currentAway)[0];
     const winnerScore = s1 > s2 ? s1 : s2;
     const loserScore = s1 > s2 ? s2 : s1;
 
