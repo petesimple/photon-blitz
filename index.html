@@ -957,29 +957,25 @@ body.locked .timeout-button {
   timerEl.classList.add('timer-small'); // 👈 Add this line
 }
 
-  // Swaps sides and updates win counters and displays
   function swapSides() {
-  // Get DOM elements
-  const homeSide = document.getElementById('homeSide');
-  const awaySide = document.getElementById('awaySide');
+  // Swap DOM elements for visual layout
   const scoreboard = document.querySelector('.scoreboard');
-
-  // Swap the DOM elements visually
-  const homeClone = homeSide.cloneNode(true);
-  const awayClone = awaySide.cloneNode(true);
-
-  // Replace in DOM
-  scoreboard.replaceChild(awayClone, homeSide);
-  scoreboard.replaceChild(homeClone, awaySide);
-
-  // Swap ID attributes so next time this still works
-  homeClone.id = 'awaySide';
-  awayClone.id = 'homeSide';
+  const sides = scoreboard.querySelectorAll('.score-side');
+  if (sides.length === 2) {
+    const [left, right] = sides;
+    scoreboard.insertBefore(right, left); // swap their order visually
+  }
 
   // Swap name input values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+
+  // Swap localStorage values for names
+  const storedHome = localStorage.getItem('homeName');
+  const storedAway = localStorage.getItem('awayName');
+  localStorage.setItem('homeName', storedAway || 'Player 2');
+  localStorage.setItem('awayName', storedHome || 'Player 1');
 
   // Swap score values
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
@@ -989,12 +985,7 @@ body.locked .timeout-button {
   // Swap game wins
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // Swap localStorage name values
-  const tempStoredHome = localStorage.getItem('homeName');
-  localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
-  localStorage.setItem('awayName', tempStoredHome || 'Player 1');
-
-  // Refresh UI
+  // Update displays
   updateNameDisplays();
   updateSummary();
 }
