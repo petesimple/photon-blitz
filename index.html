@@ -992,14 +992,15 @@ body.locked .timeout-button {
   }
 
   // Updates name and score UI for each player
-  function updateNameDisplays() {
+  function updateNameDisplays(preWinner = null, preLoser = null) {
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  const homeLost = lastGameWasSuddenDeath && suddenDeathLoser === 'home';
-  const awayLost = lastGameWasSuddenDeath && suddenDeathLoser === 'away';
-
   const gamesTotal = homeGamesWon + awayGamesWon;
+
+  const homeLost = lastGameWasSuddenDeath && preLoser === 'home';
+  const awayLost = lastGameWasSuddenDeath && preLoser === 'away';
+
   if (gamesTotal > 0) {
     document.getElementById('homeDisplay').textContent =
       `${homeName} ${getPips(homeGamesWon, homeLost, gamesTotal)}`;
