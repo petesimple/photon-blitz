@@ -959,7 +959,24 @@ body.locked .timeout-button {
 
   // Swaps sides and updates win counters and displays
   function swapSides() {
-  // Swap name values
+  // Get DOM elements
+  const homeSide = document.getElementById('homeSide');
+  const awaySide = document.getElementById('awaySide');
+  const scoreboard = document.querySelector('.scoreboard');
+
+  // Swap the DOM elements visually
+  const homeClone = homeSide.cloneNode(true);
+  const awayClone = awaySide.cloneNode(true);
+
+  // Replace in DOM
+  scoreboard.replaceChild(awayClone, homeSide);
+  scoreboard.replaceChild(homeClone, awaySide);
+
+  // Swap ID attributes so next time this still works
+  homeClone.id = 'awaySide';
+  awayClone.id = 'homeSide';
+
+  // Swap name input values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
@@ -972,21 +989,12 @@ body.locked .timeout-button {
   // Swap game wins
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // Swap localStorage
+  // Swap localStorage name values
   const tempStoredHome = localStorage.getItem('homeName');
   localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
   localStorage.setItem('awayName', tempStoredHome || 'Player 1');
 
-  // ✅ Swap visual DOM layout
-  const scoreboard = document.querySelector('.scoreboard');
-  const sides = scoreboard.querySelectorAll('.score-side');
-  if (sides.length === 2) {
-    const [homeSide, awaySide] = sides;
-    scoreboard.insertBefore(awaySide, scoreboard.firstElementChild);
-    scoreboard.appendChild(homeSide);
-  }
-
-  // Update display
+  // Refresh UI
   updateNameDisplays();
   updateSummary();
 }
