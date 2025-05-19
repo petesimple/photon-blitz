@@ -948,17 +948,23 @@ body.locked .timeout-button {
   // Swap current score values
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
 
-  // Swap localStorage values too (to persist across reloads)
+  // Swap localStorage values
   const tempStoredHome = localStorage.getItem('homeName');
   localStorage.setItem('homeName', localStorage.getItem('awayName') || 'Player 2');
   localStorage.setItem('awayName', tempStoredHome || 'Player 1');
 
-  updateNameDisplays();
-  updateSummary();
+  // Swap DOM positions visually
+  const scoreboard = document.querySelector('.scoreboard');
+  const [homeSide, , awaySide] = scoreboard.children;
+  scoreboard.insertBefore(awaySide, scoreboard.firstElementChild); // move awaySide to first
+  scoreboard.appendChild(homeSide); // move homeSide to last
 
-  // Update visible score numbers
+  // Re-assign display scores after DOM change
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+  updateNameDisplays();
+  updateSummary();
 }
 
   // Save player names to local storage and update UI
