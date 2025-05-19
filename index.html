@@ -787,7 +787,7 @@ body.locked .timeout-button {
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
     if (timeoutCounter > 0) {
-      timerEl.textContent = Timeout: ${timeoutCounter};
+      timerEl.textContent = `Timeout: ${timeoutCounter}`;
     } else {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
