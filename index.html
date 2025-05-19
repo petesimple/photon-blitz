@@ -961,20 +961,15 @@ body.locked .timeout-button {
 }
 
   function swapSides() {
-  // Swap DOM elements (visual layout)
   const scoreboard = document.querySelector('.scoreboard');
-  const sides = scoreboard.querySelectorAll('.score-side');
-  if (sides.length === 2) {
-    const [left, right] = sides;
-    left.parentNode.insertBefore(right, left); // clean DOM reorder
-  }
+  scoreboard.classList.toggle('reversed');
 
-  // Swap name input values
+  // Swap input values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap name values in localStorage
+  // Swap names in localStorage
   const storedHome = localStorage.getItem('homeName');
   const storedAway = localStorage.getItem('awayName');
   localStorage.setItem('homeName', storedAway || 'Player 2');
@@ -988,7 +983,6 @@ body.locked .timeout-button {
   // Swap game wins
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // Refresh name and pip display
   updateNameDisplays();
   updateSummary();
 }
