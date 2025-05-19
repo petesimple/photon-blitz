@@ -341,16 +341,16 @@ body.locked #scrollSpacer {
   }
 
   body.locked #scoreboardMask {
-    display: block;
-    position: fixed;
-    top: 30px; /* start just below the scoreboard */
-    left: 0;
-    height: calc(100vh - 320px);
-    width: 100vw;
-    background: linear-gradient(to bottom right, #010518, #012B58);
-    z-index: 998; /* BELOW the scoreboard, ABOVE the content */
-    pointer-events: none;
-  }
+  display: block;
+  position: fixed;
+  top: 190px; /* this should match scoreboard height + top offset */
+  left: 0;
+  height: calc(100vh - 190px);
+  width: 100vw;
+  background: linear-gradient(to bottom right, #010518, #012B58);
+  z-index: 998; /* BELOW the scoreboard, ABOVE all other content */
+  pointer-events: none;
+}
     #gearBack {
   display: none;
 }
