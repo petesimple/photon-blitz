@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Photon Blitz Score System</title>
-  
+
   <!-- PWA metadata -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#00eaff" />
@@ -122,8 +122,6 @@
   opacity: 0;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   animation: flash 1s infinite;
-  cursor: pointer;
-  pointer-events: auto; /* ✅ important */
 }
 
 #blitzWrapper.active {
@@ -451,29 +449,25 @@ body.locked .timeout-button {
     .scoreboard.reverse {
   flex-direction: row-reverse;
 }
-    .suddendeath {
-  color: #ffcc00;
-  font-weight: bold;
-}
   </style>
 </head>
 <body>
   <div id="scoreboardMask"></div>
   <!-- App logo: visible at top unless scoreboard is locked -->
-  
+
   <div class="scoreboard">
     <div class="score-side">
       <div id="homeDisplay" class="score-name">Player 1</div>
       <div id="homeScoreDisplay" class="score-number">0</div>
     </div>
-  
+
     <div class="score-center">
       <div id="logoWrapper">
         <img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
       </div>
-      <div id="blitzWrapper" onclick="startTimeout()">
-  <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" />
-  <div id="blitzBanner">BLITZ ⚡</div>
+      <div id="blitzWrapper">
+  <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
+  <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
 </div>
             <div id="compactSummary" class="compact-summary"></div>
             <div id="timer">3:00.0</div>
@@ -484,9 +478,9 @@ body.locked .timeout-button {
       <div id="awayScoreDisplay" class="score-number">0</div>
     </div>
   </div>
-  
+
 <div id="scrollSpacer"></div>
-  
+
   <div id="rotatePrompt">Please rotate your device to landscape mode.</div>
   <!-- Timeout control button: pauses for 10 seconds -->
   <div class="timeout-button">
@@ -502,7 +496,8 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.8.1 (time)</div>
+  <div id="versionTag">ver-1.4 (☠️⭐)</div>
+  <div id="versionTag">v1.6.0B (deathproof2)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -521,11 +516,11 @@ body.locked .timeout-button {
     <!-- Layout toggle button -->
 <!--<button onclick="switchToPortrait()">Switch to Portrait Mode</button>-->
   <!-- REMOVED PORTRAIT MODE BUTTON FOR LATER RELEASES--> 
-    
+
     <!-- Back gear in menu -->
 <div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
-    
-    
+
+
     <!-- Input fields for updating team/player names -->
     <div class="name-container">
       <input type="text" id="homeName" class="name-input" placeholder="Player 1" />
@@ -533,7 +528,7 @@ body.locked .timeout-button {
     </div>
 
     <button class="menu-action" onclick="saveNames()">Update Names</button>
-    
+
 <!-- Score Correction -->
 <h3>Adjust Scores</h3>
 <div class="time-controls" style="justify-content: space-between;">
@@ -559,7 +554,7 @@ body.locked .timeout-button {
     <button onclick="adjustGames('away', -1)">–1</button>
   </div>
 </div>
-    
+
     <!-- Action buttons for match control -->
 
 <button class="menu-action" onclick="restartGame()">Restart Game</button>
@@ -570,7 +565,7 @@ body.locked .timeout-button {
     <!-- Elegant Time Adjustment Controls -->
 <div style="margin-top: 30px; padding: 15px; border: 2px solid #00ffff50; border-radius: 12px; background: rgba(0,255,255,0.05);">
   <h3 style="margin-bottom: 10px; color: #00ffff;">Adjust Match Timer</h3>
-  
+
   <div class="time-controls">
     <strong>Add Time</strong>
   </div>
@@ -603,9 +598,9 @@ body.locked .timeout-button {
 
   <!-- Set horn sound --> 
     <audio id="hornSound" src="horn.mp3" preload="auto"></audio>
-  
+
   <script>
-    
+
   // Set the initial time to 3 minutes (in tenths of seconds)
   let time = 1800;
 
@@ -708,52 +703,34 @@ body.locked .timeout-button {
   announcedTimes.add(sec);
 }
 }
-    
+
   // Starts or pauses the timer
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
-  // Always clear timeout visuals if resuming main timer
   if (timeoutInterval) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
-    timeoutActive = false;
-    document.getElementById('logoWrapper').classList.remove('hidden');
-    document.getElementById('timeoutWrapper').classList.remove('active');
-    timerEl.classList.remove('timer-small');
     updateTimer();
   }
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running');
+    timerEl.classList.remove('running'); // 🟥 Stopped = red
   } else {
-    if (suddenDeath) return;
-
+    // ✅ Only announce "Play Puck" once per game
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
     }
 
     timerInterval = setInterval(() => {
-  time--;
-
-  if (time <= 0) {
-    time = 0;
-    clearInterval(timerInterval);
-    running = false;
-    updateTimer(); // Ensure display is updated at 0
-    if (homeScoreValue === awayScoreValue) {
-      startSuddenDeath();
-    } else {
-      endGame();
-    }
-  } else {
-    updateTimer();
-  }
-}, 100);
-
-    timerEl.classList.add('running');
+      if (time > 0) {
+        time--;
+        updateTimer();
+      }
+    }, 100);
+    timerEl.classList.add('running'); // 🟩 Running = green
   }
 
   running = !running;
@@ -784,37 +761,29 @@ body.locked .timeout-button {
 }
 
   // Starts a 10-second timeout period
-  let cancelTimeoutRef = null;
+  function startTimeout() {
+  if (timeoutActive) return; // 🚫 Prevent multiple timeouts
 
-function startTimeout() {
-  if (timeoutActive) return;
-
-  timeoutActive = true;
-  if (running) toggleTimer(); // Pause game
+  timeoutActive = true; // ✅ Lock future triggers
+  if (running) toggleTimer(); // ⏸ Pause the game if it's running
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
-  const logoWrapper = document.getElementById('logoWrapper');
-  const timeoutWrapper = document.getElementById('timeoutWrapper');
-
-  logoWrapper.classList.add('hidden');
-  timeoutWrapper.classList.add('active');
-
-  timerEl.textContent = `Timeout: ${timeoutCounter}`;
+  timerEl.textContent = `Timeout: 10`;
   timerEl.classList.add('timer-small');
 
-  cancelTimeoutRef = function cancelTimeout() {
-    clearInterval(timeoutInterval);
-    timeoutInterval = null;
-    timeoutActive = false;
-    logoWrapper.classList.remove('hidden');
-    timeoutWrapper.classList.remove('active');
-    timerEl.classList.remove('timer-small');
-    updateTimer();
-    timerEl.removeEventListener('click', cancelTimeoutRef);
+  // Add a one-time listener to cancel timeout on tap
+  const cancelTimeout = () => {
+    if (timeoutActive) {
+      clearInterval(timeoutInterval);
+      timeoutInterval = null;
+      timeoutActive = false;
+      timerEl.classList.remove('timer-small');
+      updateTimer();
+    }
+    timerEl.removeEventListener('click', cancelTimeout);
   };
-
-  timerEl.addEventListener('click', cancelTimeoutRef);
+  timerEl.addEventListener('click', cancelTimeout);
 
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
@@ -824,12 +793,10 @@ function startTimeout() {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
       timeoutActive = false;
-      logoWrapper.classList.remove('hidden');
-      timeoutWrapper.classList.remove('active');
       timerEl.classList.remove('timer-small');
       updateTimer();
-      toggleTimer(); // Resume game
-      timerEl.removeEventListener('click', cancelTimeoutRef);
+      toggleTimer(); // ▶️ Resume the game
+      timerEl.removeEventListener('click', cancelTimeout);
     }
   }, 1000);
 }
@@ -866,35 +833,14 @@ function startTimeout() {
 
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
-
-  // Capture visual layout at the time the game ends
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const leftName = reversed ? awayName : homeName;
-  const rightName = reversed ? homeName : awayName;
-  const leftScore = reversed ? awayScoreValue : homeScoreValue;
-  const rightScore = reversed ? homeScoreValue : awayScoreValue;
-
-  // Determine initial of sudden death winner using pre-swap team
-  let suddenDeathWinnerInitial = null;
-  if (lastGameWasSuddenDeath) {
-    suddenDeathWinnerInitial = preSwapWinner === 'home'
-      ? (homeName[0] || '?')
-      : (awayName[0] || '?');
-  }
-
-  // Push full visual + logical data to gameScores
   gameScores.push({
-    homeName,
-    awayName,
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
-    wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinnerInitial,
-    leftName,
-    rightName,
-    leftScore,
-    rightScore
-  });
+  homeName,
+  awayName,
+  homeScore: homeScoreValue,
+  awayScore: awayScoreValue,
+  wasSuddenDeath: lastGameWasSuddenDeath,
+  suddenDeathWinner: lastGameWasSuddenDeath ? (homeScoreValue > awayScoreValue ? 'home' : 'away') : null
+});
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
@@ -948,7 +894,7 @@ function startTimeout() {
   function restartGame(keepMenuOpen = false) {
   const timerEl = document.getElementById('timer');
   timerEl.classList.remove('timer-small');
-  
+
   homeScoreValue = 0;
   awayScoreValue = 0;
   time = 1800;
@@ -962,7 +908,7 @@ function startTimeout() {
   document.getElementById('homeScoreDisplay').textContent = 0;
   document.getElementById('awayScoreDisplay').textContent = 0;
   clearInterval(timerInterval);
-  
+
   if (!keepMenuOpen) {
     document.getElementById('menu').classList.remove('active');
     document.getElementById('buttonsWrapper').style.display = 'flex';
@@ -1082,38 +1028,30 @@ function startTimeout() {
 }
   // Builds summary text for the match summary section
   function updateSummary() {
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
   let summary = '';
-  let leftWins = 0;
-  let rightWins = 0;
 
-  gameScores.forEach(g => {
-    if (g.leftScore > g.rightScore) leftWins++;
-    else rightWins++;
-  });
-
-  if (leftWins > rightWins) {
-    summary += `<span class='winner'>Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)</span><br>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)<br>`;
-  } else if (rightWins > leftWins) {
-    summary += `Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)<br><span class='winner'>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)</span><br>`;
+  if (homeGamesWon > awayGamesWon) {
+    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+  } else if (awayGamesWon > homeGamesWon) {
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
   } else {
-    summary += `Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)<br>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)<br>`;
+    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
   }
 
-  summary += `Matches Played: ${gameScores.length}<br><br>`;
+  summary += `Matches Played: ${matchesPlayed}<br><br>`;
 
   if (gameScores.length > 0) {
-    summary += `<strong>Game Scores:</strong><br>` + gameScores.map((g, i) => {
-      const dagger = g.wasSuddenDeath ? ' †' : '';
-      return `Game ${i + 1}: ${g.leftName} ${g.leftScore} – ${g.rightScore} ${g.rightName}${dagger}`;
-    }).join('<br>');
+    summary += `<strong>Game Scores:</strong><br>` +
+      gameScores.map((s, i) =>
+        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
+      ).join('<br>');
   }
 
   document.getElementById('summaryText').innerHTML = summary;
-
-  // Also refresh compact summary
   updateCompactSummary();
 }
-
     function updateCompactSummary() {
   const summaryDiv = document.getElementById('compactSummary');
   if (!gameScores.length) {
@@ -1122,30 +1060,28 @@ function startTimeout() {
   }
 
   const compact = gameScores.map((g, i) => {
-    const homeInitial = g.homeName?.[0] || '?';
-    const awayInitial = g.awayName?.[0] || '?';
+    const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
-    let winnerInitial, winnerScore, loserScore, loserInitial, dagger = '';
-    
-    if (g.homeScore > g.awayScore) {
-  winnerInitial = homeInitial;
-  winnerScore = g.homeScore;
-  loserScore = g.awayScore;
-  loserInitial = awayInitial;
-}   else {
-  winnerInitial = awayInitial;
-  winnerScore = g.awayScore;
-  loserScore = g.homeScore;
-  loserInitial = homeInitial;
-}
+    const homeInitial = g.homeName[0] || '?';
+    const awayInitial = g.awayName[0] || '?';
+    const homeScore = g.homeScore;
+    const awayScore = g.awayScore;
 
-    // Show dagger only if the sudden death winner matches winnerInitial
-    if (g.wasSuddenDeath && g.suddenDeathWinnerInitial === winnerInitial) {
-      dagger = `<span class="suddendeath">†</span>`;
+    let winnerInitial, loserInitial, winnerScore, loserScore;
+
+    if (homeScore > awayScore) {
+      winnerInitial = homeInitial;
+      loserInitial = awayInitial;
+      winnerScore = homeScore;
+      loserScore = awayScore;
+    } else {
+      winnerInitial = awayInitial;
+      loserInitial = homeInitial;
+      winnerScore = awayScore;
+      loserScore = homeScore;
     }
 
-    const entry = `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
-    return entry;
+    return `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   }).join(', ');
 
   summaryDiv.innerHTML = compact;
@@ -1160,25 +1096,9 @@ function startTimeout() {
     updateSummary();
   }
 
-  // ⬅️ all your function definitions above...
-
-// Add timer click handler to toggle or cancel timeout
-document.getElementById('timer').addEventListener('click', (e) => {
-  e.stopPropagation();
-
-  // If timeout is active, cancel it
-  if (timeoutActive && typeof cancelTimeoutRef === 'function') {
-    cancelTimeoutRef(); // 🛑 Clear the timeout manually
-    return;
-  }
-
-  // Otherwise, toggle the main timer
-  toggleTimer();
-});
-
-// Run initial load
-loadNames();
-updateTimer();
+  // Run initial load
+  loadNames();
+  updateTimer();
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
   const logo = document.getElementById('mainLogo');
@@ -1197,8 +1117,15 @@ updateTimer();
     return;
   }
 
+  if (e.target.id === 'timer') {
+    toggleTimer();
+    return;
+  }
 });
-    
+    document.getElementById('timer').addEventListener('click', (e) => {
+  e.stopPropagation(); // prevent scoreboard click fallback
+  toggleTimer();       // toggle the match timer
+});
   // Toggles the "locked" class on body to fix scoreboard at top
   function toggleLock(checkbox) {
     const scoreboard = document.querySelector('.scoreboard');
@@ -1290,7 +1217,7 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
 
   return pips;
 }
-    
+
 </script>
 </body>
 </html>
