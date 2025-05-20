@@ -802,7 +802,21 @@ function endGame() {
   let preSwapWinner = null;
   let preSwapLoser = null;
 
-  // Determine winner and loser logically before swap
+  // Determine if sudden death applies
+  if (suddenDeath) {
+    lastGameWasSuddenDeath = true;
+    if (homeScoreValue !== awayScoreValue) {
+      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
+    } else {
+      suddenDeathLoser = null;
+    }
+  } else {
+    matchesPlayed++;
+    lastGameWasSuddenDeath = false;
+    suddenDeathLoser = null;
+  }
+
+  // Determine pre-swap winner/loser
   if (homeScoreValue > awayScoreValue) {
     homeGamesWon++;
     preSwapWinner = 'home';
@@ -813,36 +827,24 @@ function endGame() {
     preSwapLoser = 'home';
   }
 
-  // Handle sudden death state
-  if (suddenDeath) {
-    lastGameWasSuddenDeath = true;
-    suddenDeathLoser = preSwapLoser;
-  } else {
-    matchesPlayed++;
-    lastGameWasSuddenDeath = false;
-    suddenDeathLoser = null;
-  }
-
   playHorn();
 
-  // Capture logical identities BEFORE swap
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
-  const homeScore = homeScoreValue;
-  const awayScore = awayScoreValue;
 
-  // Track visual layout at time of match (before swap)
+  // 🔒 Capture visual layout BEFORE swapping
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
   const rightName = reversed ? homeName : awayName;
-  const leftScore = reversed ? awayScore : homeScore;
-  const rightScore = reversed ? homeScore : awayScore;
+  const leftScore = reversed ? awayScoreValue : homeScoreValue;
+  const rightScore = reversed ? homeScoreValue : awayScoreValue;
 
+  // Store game data using visual orientation
   const gameData = {
     homeName,
     awayName,
-    homeScore,
-    awayScore,
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null,
     leftName,
@@ -851,18 +853,13 @@ function endGame() {
     rightScore
   };
 
-  // Store in first open slot
+  // Save to one of three available slots
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  // Update UI with pips before swap
-  updateNameDisplays(preSwapWinner, preSwapLoser, gameData.suddenDeathWinner);
-
-  // Now swap sides for next round
-  swapSides();
-
-  // Prepare for next game
+  updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
+  swapSides(); // Visually rotate after logging the game
   resetForNextGame(true);
   updateSummary();
 }
