@@ -805,36 +805,18 @@ function endGame() {
   const awayScore = awayScoreValue;
 
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-
-  // Determine visual left/right names and scores based on current layout
   const leftName = reversed ? awayName : homeName;
   const rightName = reversed ? homeName : awayName;
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
 
-  // Determine actual winner/loser names and scores
-  let winnerName, loserName, winnerScore, loserScore;
-  if (homeScore > awayScore) {
-    winnerName = homeName;
-    loserName = awayName;
-    winnerScore = homeScore;
-    loserScore = awayScore;
-  } else {
-    winnerName = awayName;
-    loserName = homeName;
-    winnerScore = awayScore;
-    loserScore = homeScore;
-  }
+  const leftInitial = leftName.charAt(0).toUpperCase();
+  const rightInitial = rightName.charAt(0).toUpperCase();
 
-  // Determine visual winner/loser initials: 'L' if winner was left side, 'R' if right
-  let winnerInitial, loserInitial;
-  if (winnerName === leftName) {
-    winnerInitial = 'L';
-    loserInitial = 'R';
-  } else {
-    winnerInitial = 'R';
-    loserInitial = 'L';
-  }
+  const winnerName = homeScore > awayScore ? homeName : awayName;
+  const loserName = homeScore > awayScore ? awayName : homeName;
+  const winnerScore = Math.max(homeScore, awayScore);
+  const loserScore = Math.min(homeScore, awayScore);
 
   const gameData = {
     homeName,
@@ -842,17 +824,19 @@ function endGame() {
     homeScore,
     awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null,
+    suddenDeathWinner: lastGameWasSuddenDeath
+      ? (homeScore > awayScore ? 'home' : 'away')
+      : null,
     leftName,
     rightName,
     leftScore,
     rightScore,
+    leftInitial,
+    rightInitial,
     winnerName,
     loserName,
     winnerScore,
-    loserScore,
-    winnerInitial,
-    loserInitial
+    loserScore
   };
 
   if (!game1) game1 = gameData;
@@ -860,7 +844,7 @@ function endGame() {
   else game3 = gameData;
 
   updateNameDisplays();
-  swapSides(); // Now safe to swap after snapshot is taken
+  swapSides();
   resetForNextGame(true);
   updateSummary();
 }
@@ -1084,8 +1068,8 @@ function updateCompactSummary() {
   }
 
   const parts = games.map((g, i) => {
-    const isSD = g.wasSuddenDeath ? '†' : '';
-    return `G${i + 1} ${isSD}${g.winnerInitial}${g.winnerScore}–${g.loserScore}${g.loserInitial}`;
+    const sdMarker = g.wasSuddenDeath ? '†' : '';
+    return `G${i + 1} ${sdMarker}${g.leftInitial}${g.leftScore}–${g.rightScore}${g.rightInitial}`;
   });
 
   container.textContent = parts.join(', ');
