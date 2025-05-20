@@ -1066,14 +1066,22 @@ function endGame() {
   function updateSummary() {
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+
+  const leftName = reversed ? awayName : homeName;
+  const rightName = reversed ? homeName : awayName;
+  const leftWins = reversed ? awayGamesWon : homeGamesWon;
+  const rightWins = reversed ? homeGamesWon : awayGamesWon;
+
   let summary = '';
 
-  if (homeGamesWon > awayGamesWon) {
-    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
-  } else if (awayGamesWon > homeGamesWon) {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+  if (leftWins > rightWins) {
+    summary += `<span class='winner'>${leftName} (${leftWins} Wins)</span><br>${rightName} (${rightWins} Wins)<br>`;
+  } else if (rightWins > leftWins) {
+    summary += `${leftName} (${leftWins} Wins)<br><span class='winner'>${rightName} (${rightWins} Wins)</span><br>`;
   } else {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+    summary += `${leftName} (${leftWins} Wins)<br>${rightName} (${rightWins} Wins)<br>`;
   }
 
   summary += `Matches Played: ${matchesPlayed}<br><br>`;
