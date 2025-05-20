@@ -1076,10 +1076,7 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    const winnerInitial = g.winnerName.charAt(0).toUpperCase();
-    const loserInitial = g.loserName.charAt(0).toUpperCase();
-
-    return `G${i + 1} ${isSD}${winnerInitial}${g.winnerScore}–${g.loserScore}${loserInitial}`;
+    return `G${i + 1} ${isSD}${g.winnerInitial}${g.winnerScore}–${g.loserScore}${g.loserInitial}`;
   });
 
   container.textContent = parts.join(', ');
