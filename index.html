@@ -711,18 +711,23 @@ body.locked .timeout-button {
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
-  // Stop timeout timer if it's active
+  // Stop timeout countdown if it’s running
   if (timeoutInterval) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
+    timeoutActive = false;
+    timerEl.classList.remove('timer-small');
     updateTimer();
   }
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running'); // 🟥 Timer paused = red
+    timerEl.classList.remove('running'); // 🟥 Paused
   } else {
-    // ✅ Announce "Play Puck" only once per game
+    // Don't start the timer if in sudden death
+    if (suddenDeath) return;
+
+    // ✅ Say "Play Puck" only once per game
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
@@ -730,16 +735,16 @@ body.locked .timeout-button {
 
     timerInterval = setInterval(() => {
       if (time > 0) {
-        time--;              // ✅ FIXED: decrement time properly
+        time--;
         updateTimer();
       } else {
         clearInterval(timerInterval);
         running = false;
-        updateTimer(); // just in case
+        updateTimer(); // Final display update at 0
       }
     }, 100);
 
-    timerEl.classList.add('running'); // 🟩 Timer running = green
+    timerEl.classList.add('running'); // 🟩 Running
   }
 
   running = !running;
