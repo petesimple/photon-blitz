@@ -805,13 +805,14 @@ function endGame() {
   const awayScore = awayScoreValue;
 
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const leftName = reversed ? awayName : homeName;
-  const rightName = reversed ? homeName : awayName;
+  const leftInput = document.getElementById('homeName').value;
+  const rightInput = document.getElementById('awayName').value;
+  const leftName = reversed ? rightInput : leftInput;
+  const rightName = reversed ? leftInput : rightInput;
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
 
   let winnerName, loserName, winnerScore, loserScore;
-
   if (homeScore > awayScore) {
     winnerName = homeName;
     loserName = awayName;
@@ -824,9 +825,19 @@ function endGame() {
     loserScore = homeScore;
   }
 
-  // 🟢 FIX: Capture initials before swap
-  const winnerInitial = winnerName.charAt(0).toUpperCase();
-  const loserInitial = loserName.charAt(0).toUpperCase();
+  // Determine winner/loser initials based on layout
+  let winnerInitial, loserInitial;
+  if (winnerName === leftName && loserName === rightName) {
+    winnerInitial = 'L';
+    loserInitial = 'R';
+  } else if (winnerName === rightName && loserName === leftName) {
+    winnerInitial = 'R';
+    loserInitial = 'L';
+  } else {
+    // fallback
+    winnerInitial = winnerName.charAt(0).toUpperCase();
+    loserInitial = loserName.charAt(0).toUpperCase();
+  }
 
   const gameData = {
     homeName,
@@ -844,7 +855,7 @@ function endGame() {
     winnerScore,
     loserScore,
     winnerInitial,
-    loserInitial // 🔐 Persisted!
+    loserInitial
   };
 
   if (!game1) game1 = gameData;
