@@ -1060,8 +1060,18 @@ function updateCompactSummary() {
 
     const winnerInitial = g.winnerName.charAt(0).toUpperCase();
     const loserInitial = g.loserName.charAt(0).toUpperCase();
-    const winnerScore = g.winnerName === g.homeName ? g.homeScore : g.awayScore;
-    const loserScore = g.loserName === g.homeName ? g.homeScore : g.awayScore;
+    let winnerScore, loserScore;
+if (g.winnerName === g.homeName && g.loserName === g.awayName) {
+  winnerScore = g.homeScore;
+  loserScore = g.awayScore;
+} else if (g.winnerName === g.awayName && g.loserName === g.homeName) {
+  winnerScore = g.awayScore;
+  loserScore = g.homeScore;
+} else {
+  // Fallback for mismatch (just in case)
+  winnerScore = Math.max(g.homeScore, g.awayScore);
+  loserScore = Math.min(g.homeScore, g.awayScore);
+}
 
     return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   });
