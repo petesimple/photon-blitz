@@ -1085,11 +1085,10 @@ body.locked .timeout-button {
   }
 
   const compact = gameScores.map((g, i) => {
-    const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
     const leftInitial = g.leftName?.[0] || '?';
     const rightInitial = g.rightName?.[0] || '?';
 
-    let winnerInitial, winnerScore, loserScore, loserInitial;
+    let winnerInitial, winnerScore, loserScore, loserInitial, dagger = '';
 
     if (g.leftScore > g.rightScore) {
       winnerInitial = leftInitial;
@@ -1101,6 +1100,11 @@ body.locked .timeout-button {
       winnerScore = g.rightScore;
       loserScore = g.leftScore;
       loserInitial = leftInitial;
+    }
+
+    // Show dagger only if the sudden death winner matches winnerInitial
+    if (g.wasSuddenDeath && g.suddenDeathWinnerInitial === winnerInitial) {
+      dagger = `<span class="suddendeath">†</span>`;
     }
 
     const entry = `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
