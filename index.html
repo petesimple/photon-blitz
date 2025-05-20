@@ -1104,6 +1104,16 @@ function endGame() {
   loadNames();
   updateTimer();
 
+    document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
+  e.stopPropagation();
+  scoreVisual('left');
+});
+
+document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
+  e.stopPropagation();
+  scoreVisual('right');
+});
+
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
   const logo = document.getElementById('mainLogo');
   if (logo && logo.contains(e.target)) {
