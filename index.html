@@ -1060,11 +1060,13 @@ body.locked .timeout-button {
   if (gameScores.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
       gameScores.map((s, i) =>
-        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
+        `Game ${i + 1}: ${s.leftName} ${s.leftScore} – ${s.rightScore} ${s.rightName}${s.wasSuddenDeath ? ' †' : ''}`
       ).join('<br>');
   }
 
   document.getElementById('summaryText').innerHTML = summary;
+  updateCompactSummary(); // 🔄 update the compact summary as well
+}
 
     function updateCompactSummary() {
   const summaryDiv = document.getElementById('compactSummary');
