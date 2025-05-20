@@ -1058,22 +1058,20 @@ function updateCompactSummary() {
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
 
-    const winnerInitial = g.winnerName.charAt(0).toUpperCase();
-    const loserInitial = g.loserName.charAt(0).toUpperCase();
-    let winnerScore, loserScore;
-if (g.winnerName === g.homeName && g.loserName === g.awayName) {
-  winnerScore = g.homeScore;
-  loserScore = g.awayScore;
-} else if (g.winnerName === g.awayName && g.loserName === g.homeName) {
-  winnerScore = g.awayScore;
-  loserScore = g.homeScore;
-} else {
-  // Fallback for mismatch (just in case)
-  winnerScore = Math.max(g.homeScore, g.awayScore);
-  loserScore = Math.min(g.homeScore, g.awayScore);
-}
+    const leftInitial = g.leftName.charAt(0).toUpperCase();
+    const rightInitial = g.rightName.charAt(0).toUpperCase();
 
-    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    const leftScore = g.leftScore;
+    const rightScore = g.rightScore;
+
+    let summary;
+    if (leftScore > rightScore) {
+      summary = `${isSD}${leftInitial}${leftScore}–${rightScore}${rightInitial}`;
+    } else {
+      summary = `${isSD}${rightInitial}${rightScore}–${leftScore}${leftInitial}`;
+    }
+
+    return `G${i + 1} ${summary}`;
   });
 
   container.textContent = parts.join(', ');
