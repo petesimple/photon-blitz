@@ -853,13 +853,13 @@ body.locked .timeout-button {
   }
 
   gameScores.push({
-    leftName,
-    rightName,
-    leftScore,
-    rightScore,
-    wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinnerInitial
-  });
+  homeName,
+  awayName,
+  homeScore: homeScoreValue,
+  awayScore: awayScoreValue,
+  wasSuddenDeath: lastGameWasSuddenDeath,
+  suddenDeathWinnerInitial
+});
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
@@ -1081,24 +1081,22 @@ body.locked .timeout-button {
 
   const compact = gameScores.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
-    const leftInitial = g.leftName[0] || '?';
-    const rightInitial = g.rightName[0] || '?';
+    const homeInitial = g.homeName?.[0] || '?';
+    const awayInitial = g.awayName?.[0] || '?';
 
     let entry;
 
     if (g.wasSuddenDeath && g.suddenDeathWinnerInitial) {
-      // Place dagger before the winning initial
-      if (g.leftScore > g.rightScore) {
-        entry = `G${i + 1} ${dagger}${leftInitial}${g.leftScore}–${g.rightScore}${rightInitial}`;
+      if (g.homeScore > g.awayScore) {
+        entry = `G${i + 1} ${dagger}${homeInitial}${g.homeScore}–${g.awayScore}${awayInitial}`;
       } else {
-        entry = `G${i + 1} ${dagger}${rightInitial}${g.rightScore}–${g.leftScore}${leftInitial}`;
+        entry = `G${i + 1} ${dagger}${awayInitial}${g.awayScore}–${g.homeScore}${homeInitial}`;
       }
     } else {
-      // Regular game, no dagger
-      if (g.leftScore > g.rightScore) {
-        entry = `G${i + 1} ${leftInitial}${g.leftScore}–${g.rightScore}${rightInitial}`;
+      if (g.homeScore > g.awayScore) {
+        entry = `G${i + 1} ${homeInitial}${g.homeScore}–${g.awayScore}${awayInitial}`;
       } else {
-        entry = `G${i + 1} ${rightInitial}${g.rightScore}–${g.leftScore}${leftInitial}`;
+        entry = `G${i + 1} ${awayInitial}${g.awayScore}–${g.homeScore}${homeInitial}`;
       }
     }
 
