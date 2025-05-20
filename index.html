@@ -802,20 +802,7 @@ function endGame() {
   let preSwapWinner = null;
   let preSwapLoser = null;
 
-  // Handle sudden death state
-  if (suddenDeath) {
-    lastGameWasSuddenDeath = true;
-    if (homeScoreValue !== awayScoreValue) {
-      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
-    } else {
-      suddenDeathLoser = null;
-    }
-  } else {
-    matchesPlayed++;
-    lastGameWasSuddenDeath = false;
-    suddenDeathLoser = null;
-  }
-
+  // Determine winner and loser logically before swap
   if (homeScoreValue > awayScoreValue) {
     homeGamesWon++;
     preSwapWinner = 'home';
@@ -826,23 +813,36 @@ function endGame() {
     preSwapLoser = 'home';
   }
 
+  // Handle sudden death state
+  if (suddenDeath) {
+    lastGameWasSuddenDeath = true;
+    suddenDeathLoser = preSwapLoser;
+  } else {
+    matchesPlayed++;
+    lastGameWasSuddenDeath = false;
+    suddenDeathLoser = null;
+  }
+
   playHorn();
 
+  // Capture logical identities BEFORE swap
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
+  const homeScore = homeScoreValue;
+  const awayScore = awayScoreValue;
 
-  // Track visual layout at time of match
+  // Track visual layout at time of match (before swap)
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
   const rightName = reversed ? homeName : awayName;
-  const leftScore = reversed ? awayScoreValue : homeScoreValue;
-  const rightScore = reversed ? homeScoreValue : awayScoreValue;
+  const leftScore = reversed ? awayScore : homeScore;
+  const rightScore = reversed ? homeScore : awayScore;
 
   const gameData = {
     homeName,
     awayName,
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
+    homeScore,
+    awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null,
     leftName,
@@ -851,15 +851,20 @@ function endGame() {
     rightScore
   };
 
-  // Store in the first available slot
+  // Store in first open slot
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
+  // Update UI with pips before swap
+  updateNameDisplays(preSwapWinner, preSwapLoser, gameData.suddenDeathWinner);
+
+  // Now swap sides for next round
   swapSides();
+
+  // Prepare for next game
   resetForNextGame(true);
-  updateSummary(); // should be updated to use game1, game2, game3
+  updateSummary();
 }
 
   // Resets scoreboard for the next game
@@ -1082,23 +1087,23 @@ function endGame() {
   const compact = games.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
-    const homeInitial = g.homeName[0] || '?';
-    const awayInitial = g.awayName[0] || '?';
-    const homeScore = g.homeScore;
-    const awayScore = g.awayScore;
+    const leftInitial = g.leftName[0] || '?';
+    const rightInitial = g.rightName[0] || '?';
+    const leftScore = g.leftScore;
+    const rightScore = g.rightScore;
 
     let winnerInitial, loserInitial, winnerScore, loserScore;
 
-    if (homeScore > awayScore) {
-      winnerInitial = homeInitial;
-      loserInitial = awayInitial;
-      winnerScore = homeScore;
-      loserScore = awayScore;
+    if (leftScore > rightScore) {
+      winnerInitial = leftInitial;
+      loserInitial = rightInitial;
+      winnerScore = leftScore;
+      loserScore = rightScore;
     } else {
-      winnerInitial = awayInitial;
-      loserInitial = homeInitial;
-      winnerScore = awayScore;
-      loserScore = homeScore;
+      winnerInitial = rightInitial;
+      loserInitial = leftInitial;
+      winnerScore = rightScore;
+      loserScore = leftScore;
     }
 
     return `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
