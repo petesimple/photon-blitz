@@ -1052,15 +1052,22 @@ function updateCompactSummary() {
     return;
   }
 
-  // For each game, we pick the left/right values we saved
   const parts = games.map((g, i) => {
-    // Determine winner initial & formatting
-    const homeInit = g.homeName.charAt(0);
-    const awayInit = g.awayName.charAt(0);
     const isSD = g.wasSuddenDeath ? '†' : '';
 
-    // Build “r1–0s” style: use left/right
-    return `G${i+1} ${isSD}${g.leftName.charAt(0)}${g.leftScore}–${g.rightScore}${g.rightName.charAt(0)}`;
+    // Determine winner initials based on actual score, not side
+    let leftInitial = g.leftName.charAt(0);
+    let rightInitial = g.rightName.charAt(0);
+    let leftScore = g.leftScore;
+    let rightScore = g.rightScore;
+
+    // Swap initials if right side won (so winner always comes first)
+    if (rightScore > leftScore) {
+      [leftInitial, rightInitial] = [rightInitial, leftInitial];
+      [leftScore, rightScore] = [rightScore, leftScore];
+    }
+
+    return `G${i + 1} ${isSD}${leftInitial}${leftScore}–${rightScore}${rightInitial}`;
   });
 
   container.textContent = parts.join(', ');
