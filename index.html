@@ -1081,21 +1081,21 @@ body.locked .timeout-button {
 
   const compact = gameScores.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
-    const homeInitial = g.homeName?.[0] || '?';
-    const awayInitial = g.awayName?.[0] || '?';
+    const leftInitial = g.leftName?.[0] || '?';
+    const rightInitial = g.rightName?.[0] || '?';
 
     let winnerInitial, winnerScore, loserScore, loserInitial;
 
-    if (g.homeScore > g.awayScore) {
-      winnerInitial = homeInitial;
-      winnerScore = g.homeScore;
-      loserScore = g.awayScore;
-      loserInitial = awayInitial;
+    if (g.leftScore > g.rightScore) {
+      winnerInitial = leftInitial;
+      winnerScore = g.leftScore;
+      loserScore = g.rightScore;
+      loserInitial = rightInitial;
     } else {
-      winnerInitial = awayInitial;
-      winnerScore = g.awayScore;
-      loserScore = g.homeScore;
-      loserInitial = homeInitial;
+      winnerInitial = rightInitial;
+      winnerScore = g.rightScore;
+      loserScore = g.leftScore;
+      loserInitial = leftInitial;
     }
 
     const entry = `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
