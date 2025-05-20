@@ -824,6 +824,7 @@ function endGame() {
     loserScore = homeScore;
   }
 
+  // 🟢 FIX: Capture initials before swap
   const winnerInitial = winnerName.charAt(0).toUpperCase();
   const loserInitial = loserName.charAt(0).toUpperCase();
 
@@ -843,7 +844,7 @@ function endGame() {
     winnerScore,
     loserScore,
     winnerInitial,
-    loserInitial
+    loserInitial // 🔐 Persisted!
   };
 
   if (!game1) game1 = gameData;
