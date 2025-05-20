@@ -713,23 +713,23 @@ body.locked .timeout-button {
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
-  // Stop timeout countdown if it’s running
+  // Always clear timeout visuals if resuming main timer
   if (timeoutInterval) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
     timeoutActive = false;
+    document.getElementById('logoWrapper').classList.remove('hidden');
+    document.getElementById('timeoutWrapper').classList.remove('active');
     timerEl.classList.remove('timer-small');
     updateTimer();
   }
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running'); // 🟥 Paused
+    timerEl.classList.remove('running');
   } else {
-    // Don't start the timer if in sudden death
     if (suddenDeath) return;
 
-    // ✅ Say "Play Puck" only once per game
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
@@ -742,11 +742,11 @@ body.locked .timeout-button {
       } else {
         clearInterval(timerInterval);
         running = false;
-        updateTimer(); // Final display update at 0
+        updateTimer(); // Final zero check
       }
     }, 100);
 
-    timerEl.classList.add('running'); // 🟩 Running
+    timerEl.classList.add('running');
   }
 
   running = !running;
