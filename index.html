@@ -1084,22 +1084,21 @@ body.locked .timeout-button {
     const homeInitial = g.homeName?.[0] || '?';
     const awayInitial = g.awayName?.[0] || '?';
 
-    let entry;
+    let winnerInitial, winnerScore, loserScore, loserInitial;
 
-    if (g.wasSuddenDeath && g.suddenDeathWinnerInitial) {
-      if (g.homeScore > g.awayScore) {
-        entry = `G${i + 1} ${dagger}${homeInitial}${g.homeScore}–${g.awayScore}${awayInitial}`;
-      } else {
-        entry = `G${i + 1} ${dagger}${awayInitial}${g.awayScore}–${g.homeScore}${homeInitial}`;
-      }
+    if (g.homeScore > g.awayScore) {
+      winnerInitial = homeInitial;
+      winnerScore = g.homeScore;
+      loserScore = g.awayScore;
+      loserInitial = awayInitial;
     } else {
-      if (g.homeScore > g.awayScore) {
-        entry = `G${i + 1} ${homeInitial}${g.homeScore}–${g.awayScore}${awayInitial}`;
-      } else {
-        entry = `G${i + 1} ${awayInitial}${g.awayScore}–${g.homeScore}${homeInitial}`;
-      }
+      winnerInitial = awayInitial;
+      winnerScore = g.awayScore;
+      loserScore = g.homeScore;
+      loserInitial = homeInitial;
     }
 
+    const entry = `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
     return entry;
   }).join(', ');
 
