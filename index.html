@@ -780,17 +780,17 @@ body.locked .timeout-button {
   let cancelTimeoutRef = null;
 
 function startTimeout() {
-  if (timeoutActive) return; // 🚫 Prevent double timeouts
+  if (timeoutActive) return; // 🚫 Prevent multiple timeouts
 
   timeoutActive = true;
-  if (running) toggleTimer(); // ⏸ Pause game if needed
+  if (running) toggleTimer(); // ⏸ Pause game if it's running
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
 
-  // Define a reusable reference for cancel
+  // Define cancel logic and attach once
   cancelTimeoutRef = function cancelTimeout() {
     if (timeoutActive) {
       clearInterval(timeoutInterval);
