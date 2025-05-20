@@ -860,6 +860,8 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
+  matchesPlayed++;
+  
   updateNameDisplays();
   swapSides();
   resetForNextGame(true);
