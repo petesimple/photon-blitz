@@ -816,20 +816,36 @@ function endGame() {
 
   // Determine actual winner and loser
   let winnerName, loserName, winnerScore, loserScore;
+  let winnerInitial, loserInitial;
+  let suddenDeathWinner = null;
+  let preWinner = null;
+  let preLoser = null;
+
   if (homeScore > awayScore) {
     winnerName = homeName;
     loserName = awayName;
     winnerScore = homeScore;
     loserScore = awayScore;
+    homeGamesWon++;
+    preWinner = 'home';
+    preLoser = 'away';
   } else {
     winnerName = awayName;
     loserName = homeName;
     winnerScore = awayScore;
     loserScore = homeScore;
+    awayGamesWon++;
+    preWinner = 'away';
+    preLoser = 'home';
   }
 
-  const winnerInitial = winnerName.charAt(0).toUpperCase();
-  const loserInitial = loserName.charAt(0).toUpperCase();
+  winnerInitial = winnerName.charAt(0).toUpperCase();
+  loserInitial = loserName.charAt(0).toUpperCase();
+  suddenDeathWinner = lastGameWasSuddenDeath
+    ? homeScore > awayScore
+      ? 'home'
+      : 'away'
+    : null;
 
   const gameData = {
     homeName,
@@ -837,11 +853,7 @@ function endGame() {
     homeScore,
     awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath
-      ? homeScore > awayScore
-        ? 'home'
-        : 'away'
-      : null,
+    suddenDeathWinner,
     leftName,
     rightName,
     leftScore,
@@ -860,9 +872,7 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  matchesPlayed++;
-  
-  updateNameDisplays();
+  updateNameDisplays(preLoser, preWinner, suddenDeathWinner);
   swapSides();
   resetForNextGame(true);
   updateSummary();
