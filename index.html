@@ -1086,16 +1086,12 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    let winnerSide = null;
+    const winnerInitial = g.winnerInitial;
+    const loserInitial = g.loserInitial;
+    const winnerScore = g.winnerScore;
+    const loserScore = g.loserScore;
 
-    if (g.winnerName === g.leftName) {
-      winnerSide = 'L';
-    } else if (g.winnerName === g.rightName) {
-      winnerSide = 'R';
-    }
-
-    // Construct string like: G1 †L1–0R
-    return `G${i + 1} ${isSD}${g.leftInitial}${g.leftScore}–${g.rightScore}${g.rightInitial}`;
+    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   });
 
   container.textContent = parts.join(', ');
