@@ -1043,31 +1043,43 @@ function endGame() {
   updateCompactSummary();
 }
     // Rebuilds the compact “G1…G3” line
-const parts = games.map((g, i) => {
-  const isSD = g.wasSuddenDeath ? '†' : '';
+function updateCompactSummary() {
+  const container = document.getElementById('compactSummary');
+  const games = [game1, game2, game3].filter(Boolean);
 
-  const leftInitial = g.leftName.charAt(0).toUpperCase();
-  const rightInitial = g.rightName.charAt(0).toUpperCase();
-
-  const leftScore = g.leftScore;
-  const rightScore = g.rightScore;
-
-  let winnerInitial, winnerScore, loserScore, loserInitial;
-
-  if (leftScore > rightScore) {
-    winnerInitial = leftInitial;
-    winnerScore = leftScore;
-    loserScore = rightScore;
-    loserInitial = rightInitial;
-  } else {
-    winnerInitial = rightInitial;
-    winnerScore = rightScore;
-    loserScore = leftScore;
-    loserInitial = leftInitial;
+  if (games.length === 0) {
+    container.textContent = '';
+    return;
   }
 
-  return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
-});
+  const parts = games.map((g, i) => {
+    const isSD = g.wasSuddenDeath ? '†' : '';
+
+    const leftInitial = g.leftName.charAt(0).toUpperCase();
+    const rightInitial = g.rightName.charAt(0).toUpperCase();
+
+    const leftScore = g.leftScore;
+    const rightScore = g.rightScore;
+
+    let winnerInitial, winnerScore, loserScore, loserInitial;
+
+    if (leftScore > rightScore) {
+      winnerInitial = leftInitial;
+      winnerScore = leftScore;
+      loserScore = rightScore;
+      loserInitial = rightInitial;
+    } else {
+      winnerInitial = rightInitial;
+      winnerScore = rightScore;
+      loserScore = leftScore;
+      loserInitial = leftInitial;
+    }
+
+    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+  });
+
+  container.textContent = parts.join(', ');
+}
   // Loads saved player names from localStorage on page load
   function loadNames() {
     const savedHome = localStorage.getItem('homeName');
