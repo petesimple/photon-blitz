@@ -1052,29 +1052,36 @@ body.locked .timeout-button {
 }
   // Builds summary text for the match summary section
   function updateSummary() {
-  const homeName = document.getElementById('homeName').value || 'Player 1';
-  const awayName = document.getElementById('awayName').value || 'Player 2';
   let summary = '';
+  let leftWins = 0;
+  let rightWins = 0;
 
-  if (homeGamesWon > awayGamesWon) {
-    summary += `<span class='winner'>Home: ${homeName} (${homeGamesWon} Wins)</span><br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
-  } else if (awayGamesWon > homeGamesWon) {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br><span class='winner'>Away: ${awayName} (${awayGamesWon} Wins)</span><br>`;
+  gameScores.forEach(g => {
+    if (g.leftScore > g.rightScore) leftWins++;
+    else rightWins++;
+  });
+
+  if (leftWins > rightWins) {
+    summary += `<span class='winner'>Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)</span><br>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)<br>`;
+  } else if (rightWins > leftWins) {
+    summary += `Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)<br><span class='winner'>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)</span><br>`;
   } else {
-    summary += `Home: ${homeName} (${homeGamesWon} Wins)<br>Away: ${awayName} (${awayGamesWon} Wins)<br>`;
+    summary += `Left: ${gameScores.at(-1).leftName} (${leftWins} Wins)<br>Right: ${gameScores.at(-1).rightName} (${rightWins} Wins)<br>`;
   }
 
-  summary += `Matches Played: ${matchesPlayed}<br><br>`;
+  summary += `Matches Played: ${gameScores.length}<br><br>`;
 
   if (gameScores.length > 0) {
-    summary += `<strong>Game Scores:</strong><br>` +
-      gameScores.map((s, i) =>
-        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
-        ).join('<br>');
+    summary += `<strong>Game Scores:</strong><br>` + gameScores.map((g, i) => {
+      const dagger = g.wasSuddenDeath ? ' †' : '';
+      return `Game ${i + 1}: ${g.leftName} ${g.leftScore} – ${g.rightScore} ${g.rightName}${dagger}`;
+    }).join('<br>');
   }
 
   document.getElementById('summaryText').innerHTML = summary;
-  updateCompactSummary(); // 🔄 update the compact summary as well
+
+  // Also refresh compact summary
+  updateCompactSummary();
 }
 
     function updateCompactSummary() {
