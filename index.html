@@ -797,10 +797,14 @@ function endGame() {
   let preSwapWinner = null;
   let preSwapLoser = null;
 
+  // Capture scores BEFORE swap
+  const preHomeScore = homeScoreValue;
+  const preAwayScore = awayScoreValue;
+
   if (suddenDeath) {
     lastGameWasSuddenDeath = true;
-    if (homeScoreValue !== awayScoreValue) {
-      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
+    if (preHomeScore !== preAwayScore) {
+      suddenDeathLoser = preHomeScore < preAwayScore ? 'home' : 'away';
     } else {
       suddenDeathLoser = null;
     }
@@ -810,7 +814,7 @@ function endGame() {
     suddenDeathLoser = null;
   }
 
-  if (homeScoreValue > awayScoreValue) {
+  if (preHomeScore > preAwayScore) {
     homeGamesWon++;
     preSwapWinner = 'home';
     preSwapLoser = 'away';
@@ -828,8 +832,8 @@ function endGame() {
   const thisGame = {
     homeName,
     awayName,
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
+    homeScore: preHomeScore,
+    awayScore: preAwayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null
   };
