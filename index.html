@@ -780,25 +780,30 @@ body.locked .timeout-button {
   let cancelTimeoutRef = null;
 
 function startTimeout() {
-  if (timeoutActive) return; // 🚫 Prevent multiple timeouts
+  if (timeoutActive) return;
 
   timeoutActive = true;
-  if (running) toggleTimer(); // ⏸ Pause game if it's running
+  if (running) toggleTimer(); // Pause game
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
+  const logoWrapper = document.getElementById('logoWrapper');
+  const timeoutWrapper = document.getElementById('timeoutWrapper');
+
+  logoWrapper.classList.add('hidden');
+  timeoutWrapper.classList.add('active');
+
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
 
-  // Define cancel logic and attach once
   cancelTimeoutRef = function cancelTimeout() {
-    if (timeoutActive) {
-      clearInterval(timeoutInterval);
-      timeoutInterval = null;
-      timeoutActive = false;
-      timerEl.classList.remove('timer-small');
-      updateTimer();
-    }
+    clearInterval(timeoutInterval);
+    timeoutInterval = null;
+    timeoutActive = false;
+    logoWrapper.classList.remove('hidden');
+    timeoutWrapper.classList.remove('active');
+    timerEl.classList.remove('timer-small');
+    updateTimer();
     timerEl.removeEventListener('click', cancelTimeoutRef);
   };
 
@@ -812,9 +817,11 @@ function startTimeout() {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
       timeoutActive = false;
+      logoWrapper.classList.remove('hidden');
+      timeoutWrapper.classList.remove('active');
       timerEl.classList.remove('timer-small');
       updateTimer();
-      toggleTimer(); // ▶️ Resume match
+      toggleTimer(); // Resume game
       timerEl.removeEventListener('click', cancelTimeoutRef);
     }
   }, 1000);
