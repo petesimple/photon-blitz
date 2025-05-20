@@ -489,9 +489,9 @@ body.locked .timeout-button {
 
   <!-- Core control buttons for scoring and timer -->
   <div id="buttonsWrapper" class="buttons" style="display: flex;">
-    <button onclick="score('home')">Player 1</button> <!-- Score point for Home -->
-    <button onclick="toggleTimer()">⏯</button>   <!-- Start/Pause timer -->
-    <button onclick="score('away')">Player 2</button> <!-- Score point for Away -->
+        <button onclick="scoreVisual('left')">Player 1</button>
+        <button onclick="toggleTimer()">⏯</button>
+        <button onclick="scoreVisual('right')">Player 2</button>
   </div>
 
   <!-- Settings (gear) icon to open config panel -->
@@ -1228,6 +1228,14 @@ function getLogicalSide(side) {
     return side === 'home' ? 'away' : 'home';
   }
   return side;
+}
+
+    function scoreVisual(visualSide) {
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  const actualSide = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+  score(actualSide);
 }
     
 </script>
