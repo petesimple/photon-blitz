@@ -805,13 +805,14 @@ function endGame() {
   const awayScore = awayScoreValue;
 
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const leftInput = document.getElementById('homeName').value;
-  const rightInput = document.getElementById('awayName').value;
-  const leftName = reversed ? rightInput : leftInput;
-  const rightName = reversed ? leftInput : rightInput;
+
+  // Determine visual left/right names and scores based on current layout
+  const leftName = reversed ? awayName : homeName;
+  const rightName = reversed ? homeName : awayName;
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
 
+  // Determine actual winner/loser names and scores
   let winnerName, loserName, winnerScore, loserScore;
   if (homeScore > awayScore) {
     winnerName = homeName;
@@ -825,18 +826,14 @@ function endGame() {
     loserScore = homeScore;
   }
 
-  // Determine winner/loser initials based on layout
+  // Determine visual winner/loser initials: 'L' if winner was left side, 'R' if right
   let winnerInitial, loserInitial;
-  if (winnerName === leftName && loserName === rightName) {
+  if (winnerName === leftName) {
     winnerInitial = 'L';
     loserInitial = 'R';
-  } else if (winnerName === rightName && loserName === leftName) {
+  } else {
     winnerInitial = 'R';
     loserInitial = 'L';
-  } else {
-    // fallback
-    winnerInitial = winnerName.charAt(0).toUpperCase();
-    loserInitial = loserName.charAt(0).toUpperCase();
   }
 
   const gameData = {
@@ -863,7 +860,7 @@ function endGame() {
   else game3 = gameData;
 
   updateNameDisplays();
-  swapSides();
+  swapSides(); // Now safe to swap after snapshot is taken
   resetForNextGame(true);
   updateSummary();
 }
