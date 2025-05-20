@@ -736,15 +736,22 @@ body.locked .timeout-button {
     }
 
     timerInterval = setInterval(() => {
-      if (time > 0) {
-        time--;
-        updateTimer();
-      } else {
-        clearInterval(timerInterval);
-        running = false;
-        updateTimer(); // Final zero check
-      }
-    }, 100);
+  time--;
+
+  if (time <= 0) {
+    time = 0;
+    clearInterval(timerInterval);
+    running = false;
+    updateTimer(); // Ensure display is updated at 0
+    if (homeScoreValue === awayScoreValue) {
+      startSuddenDeath();
+    } else {
+      endGame();
+    }
+  } else {
+    updateTimer();
+  }
+}, 100);
 
     timerEl.classList.add('running');
   }
