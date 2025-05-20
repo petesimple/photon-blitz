@@ -618,7 +618,7 @@ body.locked .timeout-button {
   let playPuckAnnounced = false;
   let timeoutActive = false;
   let lastGameWasSuddenDeath = false;
-  let suddenDeathLoser = null;
+  let suddenDeathLoser = null;  
 
   // Predefined times in seconds to call out remaining time
   const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -792,19 +792,21 @@ body.locked .timeout-button {
   }, 1000);
 }
 
-  // Handles end-of-game logic and saves result
+  // Game data slots (global)
+let game1 = null;
+let game2 = null;
+let game3 = null;
+
+// Updated endGame function using fixed slots
 function endGame() {
   let preSwapWinner = null;
   let preSwapLoser = null;
 
-  // Capture scores BEFORE swap
-  const preHomeScore = homeScoreValue;
-  const preAwayScore = awayScoreValue;
-
+  // Handle sudden death state
   if (suddenDeath) {
     lastGameWasSuddenDeath = true;
-    if (preHomeScore !== preAwayScore) {
-      suddenDeathLoser = preHomeScore < preAwayScore ? 'home' : 'away';
+    if (homeScoreValue !== awayScoreValue) {
+      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
     } else {
       suddenDeathLoser = null;
     }
@@ -814,7 +816,7 @@ function endGame() {
     suddenDeathLoser = null;
   }
 
-  if (preHomeScore > preAwayScore) {
+  if (homeScoreValue > awayScoreValue) {
     homeGamesWon++;
     preSwapWinner = 'home';
     preSwapLoser = 'away';
@@ -829,21 +831,35 @@ function endGame() {
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  const thisGame = {
+  // Track visual layout at time of match
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  const leftName = reversed ? awayName : homeName;
+  const rightName = reversed ? homeName : awayName;
+  const leftScore = reversed ? awayScoreValue : homeScoreValue;
+  const rightScore = reversed ? homeScoreValue : awayScoreValue;
+
+  const gameData = {
     homeName,
     awayName,
-    homeScore: preHomeScore,
-    awayScore: preAwayScore,
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null
+    suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null,
+    leftName,
+    rightName,
+    leftScore,
+    rightScore
   };
 
-  gameScores.push(thisGame);
+  // Store in the first available slot
+  if (!game1) game1 = gameData;
+  else if (!game2) game2 = gameData;
+  else game3 = gameData;
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
   resetForNextGame(true);
-  updateSummary();
+  updateSummary(); // should be updated to use game1, game2, game3
 }
 
   // Resets scoreboard for the next game
