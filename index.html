@@ -1043,36 +1043,31 @@ function endGame() {
   updateCompactSummary();
 }
     // Rebuilds the compact “G1…G3” line
-function updateCompactSummary() {
-  const container = document.getElementById('compactSummary');
-  const games = [game1, game2, game3].filter(Boolean);
+const parts = games.map((g, i) => {
+  const isSD = g.wasSuddenDeath ? '†' : '';
 
-  if (games.length === 0) {
-    container.textContent = '';
-    return;
+  const leftInitial = g.leftName.charAt(0).toUpperCase();
+  const rightInitial = g.rightName.charAt(0).toUpperCase();
+
+  const leftScore = g.leftScore;
+  const rightScore = g.rightScore;
+
+  let winnerInitial, winnerScore, loserScore, loserInitial;
+
+  if (leftScore > rightScore) {
+    winnerInitial = leftInitial;
+    winnerScore = leftScore;
+    loserScore = rightScore;
+    loserInitial = rightInitial;
+  } else {
+    winnerInitial = rightInitial;
+    winnerScore = rightScore;
+    loserScore = leftScore;
+    loserInitial = leftInitial;
   }
 
-  const parts = games.map((g, i) => {
-    const isSD = g.wasSuddenDeath ? '†' : '';
-
-    const leftInitial = g.leftName.charAt(0).toUpperCase();
-    const rightInitial = g.rightName.charAt(0).toUpperCase();
-
-    const leftScore = g.leftScore;
-    const rightScore = g.rightScore;
-
-    const winnerFirst = rightScore > leftScore;
-
-    const lInit = winnerFirst ? rightInitial : leftInitial;
-    const lScore = winnerFirst ? rightScore : leftScore;
-    const rScore = winnerFirst ? leftScore : rightScore;
-    const rInit = winnerFirst ? leftInitial : rightInitial;
-
-    return `G${i + 1} ${isSD}${lInit}${lScore}–${rScore}${rInit}`;
-  });
-
-  container.textContent = parts.join(', ');
-}
+  return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+});
   // Loads saved player names from localStorage on page load
   function loadNames() {
     const savedHome = localStorage.getItem('homeName');
