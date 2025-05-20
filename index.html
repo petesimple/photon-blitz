@@ -1116,25 +1116,21 @@ document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
   const logo = document.getElementById('mainLogo');
+
+  // If the logo was clicked, trigger timeout
   if (logo && logo.contains(e.target)) {
     startTimeout();
     return;
   }
 
-  if (e.target.id === 'homeScoreDisplay') {
-    score('home');
-    return;
-  }
-
-  if (e.target.id === 'awayScoreDisplay') {
-    score('away');
-    return;
-  }
-
+  // If timer was clicked, toggle it
   if (e.target.id === 'timer') {
     toggleTimer();
     return;
   }
+
+  // All scoring is now handled by direct listeners on #homeScoreDisplay and #awayScoreDisplay
+  // No fallback scoring logic needed here
 });
     document.getElementById('timer').addEventListener('click', (e) => {
   e.stopPropagation(); // prevent scoreboard click fallback
