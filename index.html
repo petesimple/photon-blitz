@@ -1144,9 +1144,25 @@ function startTimeout() {
     updateSummary();
   }
 
-  // Run initial load
-  loadNames();
-  updateTimer();
+  // ⬅️ all your function definitions above...
+
+// Add timer click handler to toggle or cancel timeout
+document.getElementById('timer').addEventListener('click', (e) => {
+  e.stopPropagation();
+
+  // If timeout is active, cancel it
+  if (timeoutActive && typeof cancelTimeoutRef === 'function') {
+    cancelTimeoutRef(); // 🛑 Clear the timeout manually
+    return;
+  }
+
+  // Otherwise, toggle the main timer
+  toggleTimer();
+});
+
+// Run initial load
+loadNames();
+updateTimer();
 
     document.querySelector('.scoreboard').addEventListener('click', (e) => {
   const logo = document.getElementById('mainLogo');
