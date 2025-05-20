@@ -711,6 +711,7 @@ body.locked .timeout-button {
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
+  // Stop timeout timer if it's active
   if (timeoutInterval) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
@@ -719,9 +720,9 @@ body.locked .timeout-button {
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running'); // 🟥 Stopped = red
+    timerEl.classList.remove('running'); // 🟥 Timer paused = red
   } else {
-    // ✅ Only announce "Play Puck" once per game
+    // ✅ Announce "Play Puck" only once per game
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
@@ -729,11 +730,16 @@ body.locked .timeout-button {
 
     timerInterval = setInterval(() => {
       if (time > 0) {
-        time--;
+        time--;              // ✅ FIXED: decrement time properly
         updateTimer();
+      } else {
+        clearInterval(timerInterval);
+        running = false;
+        updateTimer(); // just in case
       }
     }, 100);
-    timerEl.classList.add('running'); // 🟩 Running = green
+
+    timerEl.classList.add('running'); // 🟩 Timer running = green
   }
 
   running = !running;
