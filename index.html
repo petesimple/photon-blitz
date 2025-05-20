@@ -824,6 +824,9 @@ function endGame() {
     loserScore = homeScore;
   }
 
+  const winnerInitial = winnerName.charAt(0).toUpperCase();
+  const loserInitial = loserName.charAt(0).toUpperCase();
+
   const gameData = {
     homeName,
     awayName,
@@ -838,7 +841,9 @@ function endGame() {
     winnerName,
     loserName,
     winnerScore,
-    loserScore
+    loserScore,
+    winnerInitial,
+    loserInitial
   };
 
   if (!game1) game1 = gameData;
