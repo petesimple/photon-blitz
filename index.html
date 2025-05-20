@@ -1182,11 +1182,7 @@ updateTimer();
   }
 
 });
-    document.getElementById('timer').addEventListener('click', (e) => {
-  e.stopPropagation(); // prevent scoreboard click fallback
-  if (timeoutActive) return; // ⛔ Don't toggle during timeout
-  toggleTimer(); // ✅ Otherwise, toggle the match timer
-});
+    
   // Toggles the "locked" class on body to fix scoreboard at top
   function toggleLock(checkbox) {
     const scoreboard = document.querySelector('.scoreboard');
