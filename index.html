@@ -1230,7 +1230,7 @@ function getLogicalSide(side) {
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
   const actualSide = (visualSide === 'left')
     ? (reversed ? 'away' : 'home')
-    : (reversed ? 'away' : 'home');
+    : (reversed ? 'home' : 'away');
   score(actualSide);
 }
     
