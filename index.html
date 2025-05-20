@@ -1088,12 +1088,14 @@ body.locked .timeout-button {
     const homeInitial = g.homeName?.[0] || '?';
     const awayInitial = g.awayName?.[0] || '?';
 
-if (g.homeScore > g.awayScore) {
+    let winnerInitial, winnerScore, loserScore, loserInitial, dagger = '';
+    
+    if (g.homeScore > g.awayScore) {
   winnerInitial = homeInitial;
   winnerScore = g.homeScore;
   loserScore = g.awayScore;
   loserInitial = awayInitial;
-} else {
+}   else {
   winnerInitial = awayInitial;
   winnerScore = g.awayScore;
   loserScore = g.homeScore;
