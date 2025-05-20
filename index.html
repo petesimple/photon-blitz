@@ -804,19 +804,32 @@ function endGame() {
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  // Snapshot layout before swap
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
   const rightName = reversed ? homeName : awayName;
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
-
   const leftInitial = leftName.charAt(0).toUpperCase();
   const rightInitial = rightName.charAt(0).toUpperCase();
 
-  const winnerName = homeScore > awayScore ? homeName : awayName;
-  const loserName = homeScore > awayScore ? awayName : homeName;
-  const winnerScore = Math.max(homeScore, awayScore);
-  const loserScore = Math.min(homeScore, awayScore);
+  // Determine actual winner and loser
+  let winnerName, loserName, winnerScore, loserScore;
+  if (homeScore > awayScore) {
+    winnerName = homeName;
+    loserName = awayName;
+    winnerScore = homeScore;
+    loserScore = awayScore;
+  } else {
+    winnerName = awayName;
+    loserName = homeName;
+    winnerScore = awayScore;
+    loserScore = homeScore;
+  }
+
+  const winnerInitial = winnerName.charAt(0).toUpperCase();
+  const loserInitial = loserName.charAt(0).toUpperCase();
 
   const gameData = {
     homeName,
@@ -825,7 +838,9 @@ function endGame() {
     awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner: lastGameWasSuddenDeath
-      ? (homeScore > awayScore ? 'home' : 'away')
+      ? homeScore > awayScore
+        ? 'home'
+        : 'away'
       : null,
     leftName,
     rightName,
@@ -836,7 +851,9 @@ function endGame() {
     winnerName,
     loserName,
     winnerScore,
-    loserScore
+    loserScore,
+    winnerInitial,
+    loserInitial
   };
 
   if (!game1) game1 = gameData;
@@ -1068,8 +1085,17 @@ function updateCompactSummary() {
   }
 
   const parts = games.map((g, i) => {
-    const sdMarker = g.wasSuddenDeath ? '†' : '';
-    return `G${i + 1} ${sdMarker}${g.leftInitial}${g.leftScore}–${g.rightScore}${g.rightInitial}`;
+    const isSD = g.wasSuddenDeath ? '†' : '';
+    let winnerSide = null;
+
+    if (g.winnerName === g.leftName) {
+      winnerSide = 'L';
+    } else if (g.winnerName === g.rightName) {
+      winnerSide = 'R';
+    }
+
+    // Construct string like: G1 †L1–0R
+    return `G${i + 1} ${isSD}${g.leftInitial}${g.leftScore}–${g.rightScore}${g.rightInitial}`;
   });
 
   container.textContent = parts.join(', ');
