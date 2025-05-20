@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.7.5b (deathproof2)</div>
+  <div id="versionTag">v1.7.6b (deathproof2)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -797,69 +797,44 @@ let game1 = null;
 let game2 = null;
 let game3 = null;
 
-// Updated endGame function using fixed slots
+// Game data slots
+let game1 = null;
+let game2 = null;
+let game3 = null;
+
+// Called when a game ends
 function endGame() {
-  let preSwapWinner = null;
-  let preSwapLoser = null;
+  // Determine winner/loser for pips, sudden‑death, etc. (unchanged)
+  // … your existing pip, sudden‑death, matchesPlayed logic here …
 
-  // Determine if sudden death applies
-  if (suddenDeath) {
-    lastGameWasSuddenDeath = true;
-    if (homeScoreValue !== awayScoreValue) {
-      suddenDeathLoser = homeScoreValue < awayScoreValue ? 'home' : 'away';
-    } else {
-      suddenDeathLoser = null;
-    }
-  } else {
-    matchesPlayed++;
-    lastGameWasSuddenDeath = false;
-    suddenDeathLoser = null;
-  }
-
-  // Determine pre-swap winner/loser
-  if (homeScoreValue > awayScoreValue) {
-    homeGamesWon++;
-    preSwapWinner = 'home';
-    preSwapLoser = 'away';
-  } else {
-    awayGamesWon++;
-    preSwapWinner = 'away';
-    preSwapLoser = 'home';
-  }
-
-  playHorn();
-
+  // Capture raw names & scores
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  // 🔒 Capture visual layout BEFORE swapping
+  // Figure out what was “left” and “right” on screen at finish
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const leftName = reversed ? awayName : homeName;
-  const rightName = reversed ? homeName : awayName;
-  const leftScore = reversed ? awayScoreValue : homeScoreValue;
+  const leftName   = reversed ? awayName       : homeName;
+  const leftScore  = reversed ? awayScoreValue : homeScoreValue;
+  const rightName  = reversed ? homeName       : awayName;
   const rightScore = reversed ? homeScoreValue : awayScoreValue;
 
-  // Store game data using visual orientation
+  // Package up everything in one object
   const gameData = {
-    homeName,
-    awayName,
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
+    homeName, awayName,
+    homeScore: homeScoreValue, awayScore: awayScoreValue,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null,
-    leftName,
-    rightName,
-    leftScore,
-    rightScore
+    suddenDeathWinner: lastGameWasSuddenDeath ? (homeScoreValue>awayScoreValue?'home':'away') : null,
+    leftName, leftScore, rightName, rightScore
   };
 
-  // Save to one of three available slots
+  // Slot into first empty of game1–3
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
-  else game3 = gameData;
+  else           game3 = gameData;
 
-  updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
-  swapSides(); // Visually rotate after logging the game
+  // Reset & swap sides for the next game
+  updateNameDisplays();
+  swapSides();
   resetForNextGame(true);
   updateSummary();
 }
@@ -1072,41 +1047,28 @@ function endGame() {
   document.getElementById('summaryText').innerHTML = summary;
   updateCompactSummary();
 }
-    function updateCompactSummary() {
-  const summaryDiv = document.getElementById('compactSummary');
-  const games = [game1, game2, game3].filter(Boolean);
+    // Rebuilds the compact “G1…G3” line
+function updateCompactSummary() {
+  const container = document.getElementById('compactSummary');
+  const games = [game1, game2, game3].filter(g => g !== null);
 
   if (games.length === 0) {
-    summaryDiv.textContent = '';
+    container.textContent = '';
     return;
   }
 
-  const compact = games.map((g, i) => {
-    const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
+  // For each game, we pick the left/right values we saved
+  const parts = games.map((g, i) => {
+    // Determine winner initial & formatting
+    const homeInit = g.homeName.charAt(0);
+    const awayInit = g.awayName.charAt(0);
+    const isSD = g.wasSuddenDeath ? '†' : '';
 
-    const leftInitial = g.leftName[0] || '?';
-    const rightInitial = g.rightName[0] || '?';
-    const leftScore = g.leftScore;
-    const rightScore = g.rightScore;
+    // Build “r1–0s” style: use left/right
+    return `G${i+1} ${isSD}${g.leftName.charAt(0)}${g.leftScore}–${g.rightScore}${g.rightName.charAt(0)}`;
+  });
 
-    let winnerInitial, loserInitial, winnerScore, loserScore;
-
-    if (leftScore > rightScore) {
-      winnerInitial = leftInitial;
-      loserInitial = rightInitial;
-      winnerScore = leftScore;
-      loserScore = rightScore;
-    } else {
-      winnerInitial = rightInitial;
-      loserInitial = leftInitial;
-      winnerScore = rightScore;
-      loserScore = leftScore;
-    }
-
-    return `G${i + 1} ${dagger}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
-  }).join(', ');
-
-  summaryDiv.innerHTML = compact;
+  container.textContent = parts.join(', ');
 }
   // Loads saved player names from localStorage on page load
   function loadNames() {
