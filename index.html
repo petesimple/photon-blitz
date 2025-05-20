@@ -1056,10 +1056,11 @@ function endGame() {
 
   summary += `Matches Played: ${matchesPlayed}<br><br>`;
 
-  if (gameScores.length > 0) {
+  const games = [game1, game2, game3].filter(Boolean);
+  if (games.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
-      gameScores.map((s, i) =>
-        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
+      games.map((g, i) =>
+        `Game ${i + 1}: ${g.homeName} ${g.homeScore} – ${g.awayScore} ${g.awayName}${g.wasSuddenDeath ? ' †' : ''}`
       ).join('<br>');
   }
 
@@ -1068,12 +1069,14 @@ function endGame() {
 }
     function updateCompactSummary() {
   const summaryDiv = document.getElementById('compactSummary');
-  if (!gameScores.length) {
+  const games = [game1, game2, game3].filter(Boolean);
+
+  if (games.length === 0) {
     summaryDiv.textContent = '';
     return;
   }
 
-  const compact = gameScores.map((g, i) => {
+  const compact = games.map((g, i) => {
     const dagger = g.wasSuddenDeath ? `<span class="suddendeath">†</span>` : '';
 
     const homeInitial = g.homeName[0] || '?';
