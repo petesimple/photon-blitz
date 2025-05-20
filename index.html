@@ -799,35 +799,38 @@ let game3 = null;
 
 // Called when a game ends
 function endGame() {
-  // Determine winner/loser for pips, sudden‑death, etc. (unchanged)
-  // … your existing pip, sudden‑death, matchesPlayed logic here …
-
   // Capture raw names & scores
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
 
-  // Figure out what was “left” and “right” on screen at finish
+  // Determine winner and loser by score
+  const homeScore = homeScoreValue;
+  const awayScore = awayScoreValue;
+
+  const winnerName = homeScore > awayScore ? homeName : awayName;
+  const loserName = homeScore > awayScore ? awayName : homeName;
+
+  // Also determine visual positions
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
   const leftName   = reversed ? awayName       : homeName;
   const leftScore  = reversed ? awayScoreValue : homeScoreValue;
   const rightName  = reversed ? homeName       : awayName;
   const rightScore = reversed ? homeScoreValue : awayScoreValue;
 
-  // Package up everything in one object
   const gameData = {
     homeName, awayName,
-    homeScore: homeScoreValue, awayScore: awayScoreValue,
+    homeScore, awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath ? (homeScoreValue>awayScoreValue?'home':'away') : null,
-    leftName, leftScore, rightName, rightScore
+    suddenDeathWinner: lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null,
+    leftName, leftScore, rightName, rightScore,
+    winnerName, loserName // ✅ include actual player winner/loser
   };
 
   // Slot into first empty of game1–3
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
-  else           game3 = gameData;
+  else            game3 = gameData;
 
-  // Reset & swap sides for the next game
   updateNameDisplays();
   swapSides();
   resetForNextGame(true);
@@ -1055,25 +1058,10 @@ function updateCompactSummary() {
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
 
-    const leftInitial = g.leftName.charAt(0).toUpperCase();
-    const rightInitial = g.rightName.charAt(0).toUpperCase();
-
-    const leftScore = g.leftScore;
-    const rightScore = g.rightScore;
-
-    let winnerInitial, winnerScore, loserScore, loserInitial;
-
-    if (leftScore > rightScore) {
-      winnerInitial = leftInitial;
-      winnerScore = leftScore;
-      loserScore = rightScore;
-      loserInitial = rightInitial;
-    } else {
-      winnerInitial = rightInitial;
-      winnerScore = rightScore;
-      loserScore = leftScore;
-      loserInitial = leftInitial;
-    }
+    const winnerInitial = g.winnerName.charAt(0).toUpperCase();
+    const loserInitial = g.loserName.charAt(0).toUpperCase();
+    const winnerScore = g.winnerName === g.homeName ? g.homeScore : g.awayScore;
+    const loserScore = g.loserName === g.homeName ? g.homeScore : g.awayScore;
 
     return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   });
