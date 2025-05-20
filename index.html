@@ -1181,10 +1181,6 @@ updateTimer();
     return;
   }
 
-  if (e.target.id === 'timer') {
-    toggleTimer();
-    return;
-  }
 });
     document.getElementById('timer').addEventListener('click', (e) => {
   e.stopPropagation(); // prevent scoreboard click fallback
