@@ -1071,16 +1071,10 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-
-    // Use actual names to determine initials
     const winnerInitial = g.winnerName.charAt(0).toUpperCase();
     const loserInitial = g.loserName.charAt(0).toUpperCase();
 
-    // Look up score values by matching name
-    const winnerScore = g.winnerName === g.homeName ? g.homeScore : g.awayScore;
-    const loserScore = g.loserName === g.homeName ? g.homeScore : g.awayScore;
-
-    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    return `G${i + 1} ${isSD}${winnerInitial}${g.winnerScore}–${g.loserScore}${loserInitial}`;
   });
 
   container.textContent = parts.join(', ');
