@@ -801,7 +801,7 @@ body.locked .timeout-button {
 }
 
   // Handles end-of-game logic and saves result
-  function endGame() {
+function endGame() {
   let preSwapWinner = null;
   let preSwapLoser = null;
 
@@ -832,14 +832,17 @@ body.locked .timeout-button {
 
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
-  gameScores.push({
-  homeName,
-  awayName,
-  homeScore: homeScoreValue,
-  awayScore: awayScoreValue,
-  wasSuddenDeath: lastGameWasSuddenDeath,
-  suddenDeathWinner: lastGameWasSuddenDeath ? (homeScoreValue > awayScoreValue ? 'home' : 'away') : null
-});
+
+  const thisGame = {
+    homeName,
+    awayName,
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
+    wasSuddenDeath: lastGameWasSuddenDeath,
+    suddenDeathWinner: lastGameWasSuddenDeath ? preSwapWinner : null
+  };
+
+  gameScores.push(thisGame);
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
