@@ -1069,8 +1069,8 @@ body.locked .timeout-button {
   if (gameScores.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
       gameScores.map((s, i) =>
-        `Game ${i + 1}: ${s.leftName} ${s.leftScore} – ${s.rightScore} ${s.rightName}${s.wasSuddenDeath ? ' †' : ''}`
-      ).join('<br>');
+        `Game ${i + 1}: ${s.homeName} ${s.homeScore} – ${s.awayScore} ${s.awayName}${s.wasSuddenDeath ? ' †' : ''}`
+        ).join('<br>');
   }
 
   document.getElementById('summaryText').innerHTML = summary;
@@ -1085,22 +1085,20 @@ body.locked .timeout-button {
   }
 
   const compact = gameScores.map((g, i) => {
-    const leftInitial = g.leftName?.[0] || '?';
-    const rightInitial = g.rightName?.[0] || '?';
+    const homeInitial = g.homeName?.[0] || '?';
+    const awayInitial = g.awayName?.[0] || '?';
 
-    let winnerInitial, winnerScore, loserScore, loserInitial, dagger = '';
-
-    if (g.leftScore > g.rightScore) {
-      winnerInitial = leftInitial;
-      winnerScore = g.leftScore;
-      loserScore = g.rightScore;
-      loserInitial = rightInitial;
-    } else {
-      winnerInitial = rightInitial;
-      winnerScore = g.rightScore;
-      loserScore = g.leftScore;
-      loserInitial = leftInitial;
-    }
+if (g.homeScore > g.awayScore) {
+  winnerInitial = homeInitial;
+  winnerScore = g.homeScore;
+  loserScore = g.awayScore;
+  loserInitial = awayInitial;
+} else {
+  winnerInitial = awayInitial;
+  winnerScore = g.awayScore;
+  loserScore = g.homeScore;
+  loserInitial = homeInitial;
+}
 
     // Show dagger only if the sudden death winner matches winnerInitial
     if (g.wasSuddenDeath && g.suddenDeathWinnerInitial === winnerInitial) {
