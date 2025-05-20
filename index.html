@@ -799,37 +799,51 @@ let game3 = null;
 
 // Called when a game ends
 function endGame() {
-  // Capture raw names & scores
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
-
-  // Determine winner and loser by score
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  const winnerName = homeScore > awayScore ? homeName : awayName;
-  const loserName = homeScore > awayScore ? awayName : homeName;
-
-  // Also determine visual positions
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const leftName   = reversed ? awayName       : homeName;
-  const leftScore  = reversed ? awayScoreValue : homeScoreValue;
-  const rightName  = reversed ? homeName       : awayName;
-  const rightScore = reversed ? homeScoreValue : awayScoreValue;
+  const leftName = reversed ? awayName : homeName;
+  const rightName = reversed ? homeName : awayName;
+  const leftScore = reversed ? awayScore : homeScore;
+  const rightScore = reversed ? homeScore : awayScore;
+
+  let winnerName, loserName, winnerScore, loserScore;
+
+  if (homeScore > awayScore) {
+    winnerName = homeName;
+    loserName = awayName;
+    winnerScore = homeScore;
+    loserScore = awayScore;
+  } else {
+    winnerName = awayName;
+    loserName = homeName;
+    winnerScore = awayScore;
+    loserScore = homeScore;
+  }
 
   const gameData = {
-    homeName, awayName,
-    homeScore, awayScore,
+    homeName,
+    awayName,
+    homeScore,
+    awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner: lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null,
-    leftName, leftScore, rightName, rightScore,
-    winnerName, loserName // ✅ include actual player winner/loser
+    leftName,
+    rightName,
+    leftScore,
+    rightScore,
+    winnerName,
+    loserName,
+    winnerScore,
+    loserScore
   };
 
-  // Slot into first empty of game1–3
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
-  else            game3 = gameData;
+  else game3 = gameData;
 
   updateNameDisplays();
   swapSides();
