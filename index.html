@@ -770,19 +770,21 @@ body.locked .timeout-button {
 }
 
   // Starts a 10-second timeout period
-  function startTimeout() {
-  if (timeoutActive) return; // 🚫 Prevent multiple timeouts
+  let cancelTimeoutRef = null;
 
-  timeoutActive = true; // ✅ Lock future triggers
-  if (running) toggleTimer(); // ⏸ Pause the game if it's running
+function startTimeout() {
+  if (timeoutActive) return; // 🚫 Prevent double timeouts
+
+  timeoutActive = true;
+  if (running) toggleTimer(); // ⏸ Pause game if needed
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
-  timerEl.textContent = `Timeout: 10`;
+  timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
 
-  // Add a one-time listener to cancel timeout on tap
-  const cancelTimeout = () => {
+  // Define a reusable reference for cancel
+  cancelTimeoutRef = function cancelTimeout() {
     if (timeoutActive) {
       clearInterval(timeoutInterval);
       timeoutInterval = null;
@@ -790,9 +792,10 @@ body.locked .timeout-button {
       timerEl.classList.remove('timer-small');
       updateTimer();
     }
-    timerEl.removeEventListener('click', cancelTimeout);
+    timerEl.removeEventListener('click', cancelTimeoutRef);
   };
-  timerEl.addEventListener('click', cancelTimeout);
+
+  timerEl.addEventListener('click', cancelTimeoutRef);
 
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
@@ -804,8 +807,8 @@ body.locked .timeout-button {
       timeoutActive = false;
       timerEl.classList.remove('timer-small');
       updateTimer();
-      toggleTimer(); // ▶️ Resume the game
-      timerEl.removeEventListener('click', cancelTimeout);
+      toggleTimer(); // ▶️ Resume match
+      timerEl.removeEventListener('click', cancelTimeoutRef);
     }
   }, 1000);
 }
