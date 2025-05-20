@@ -852,14 +852,19 @@ body.locked .timeout-button {
       : (awayName[0] || '?');
   }
 
+  // Push full visual + logical data to gameScores
   gameScores.push({
-  homeName,
-  awayName,
-  homeScore: homeScoreValue,
-  awayScore: awayScoreValue,
-  wasSuddenDeath: lastGameWasSuddenDeath,
-  suddenDeathWinnerInitial
-});
+    homeName,
+    awayName,
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
+    wasSuddenDeath: lastGameWasSuddenDeath,
+    suddenDeathWinnerInitial,
+    leftName,
+    rightName,
+    leftScore,
+    rightScore
+  });
 
   updateNameDisplays(preSwapWinner, preSwapLoser, lastGameWasSuddenDeath ? preSwapWinner : null);
   swapSides();
