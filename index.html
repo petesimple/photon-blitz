@@ -1219,7 +1219,15 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
 
   return pips;
 }
-
+    
+function getLogicalSide(side) {
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  if (reversed) {
+    return side === 'home' ? 'away' : 'home';
+  }
+  return side;
+}
+    
 </script>
 </body>
 </html>
