@@ -861,6 +861,8 @@ function endGame() {
   updateSummary();
   updateCompactSummary();
 
+  updateNameDisplays(homeWon ? 'away' : 'home', homeWon ? 'home' : 'away', suddenDeathWinner);
+  
   console.log('G1:', game1);
   console.log('G2:', game2);
   console.log('G3:', game3);
