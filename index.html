@@ -810,13 +810,6 @@ function endGame() {
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  // Initialize persistent player identities on first game only
-  if (!players.A || !players.B) {
-    players.A = { name: homeName, wins: 0 };
-    players.B = { name: awayName, wins: 0 };
-  }
-
-  // Determine layout
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
@@ -826,37 +819,28 @@ function endGame() {
   const leftInitial = leftName.charAt(0).toUpperCase();
   const rightInitial = rightName.charAt(0).toUpperCase();
 
-  let winnerName, loserName;
-  let winnerScore, loserScore;
-  let winnerInitial, loserInitial;
-  let preWinnerSide, preLoserSide;
+  // Determine winner/loser before swapping
+  const isLeftWinner = leftScore > rightScore;
+  const winnerName = isLeftWinner ? leftName : rightName;
+  const loserName = isLeftWinner ? rightName : leftName;
+  const winnerScore = isLeftWinner ? leftScore : rightScore;
+  const loserScore = isLeftWinner ? rightScore : leftScore;
+  const winnerInitial = isLeftWinner ? leftInitial : rightInitial;
+  const loserInitial = isLeftWinner ? rightInitial : leftInitial;
+  const preWinnerSide = isLeftWinner
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+  const preLoserSide = isLeftWinner
+    ? (reversed ? 'home' : 'away')
+    : (reversed ? 'away' : 'home');
 
-  if (leftScore > rightScore) {
-    winnerName = leftName;
-    loserName = rightName;
-    winnerScore = leftScore;
-    loserScore = rightScore;
-    winnerInitial = leftInitial;
-    loserInitial = rightInitial;
-    preWinnerSide = reversed ? 'away' : 'home';
-    preLoserSide = reversed ? 'home' : 'away';
-  } else {
-    winnerName = rightName;
-    loserName = leftName;
-    winnerScore = rightScore;
-    loserScore = leftScore;
-    winnerInitial = rightInitial;
-    loserInitial = leftInitial;
-    preWinnerSide = reversed ? 'home' : 'away';
-    preLoserSide = reversed ? 'away' : 'home';
+  // Track persistent player identity
+  if (!players.A || !players.B) {
+    players.A = { name: homeName, wins: 0 };
+    players.B = { name: awayName, wins: 0 };
   }
-
-  // Attribute win to persistent player identity
-  if (winnerName === players.A.name) {
-    players.A.wins++;
-  } else if (winnerName === players.B.name) {
-    players.B.wins++;
-  }
+  if (winnerName === players.A.name) players.A.wins++;
+  if (winnerName === players.B.name) players.B.wins++;
 
   matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath ? preWinnerSide : null;
@@ -887,7 +871,7 @@ function endGame() {
   else game3 = gameData;
 
   updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
-  swapSides();
+  swapSides(); // does not interfere with stored game data now
   resetForNextGame(true);
   updateSummary();
 }
