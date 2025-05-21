@@ -1089,42 +1089,38 @@ function updateCompactSummary() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  // Fetch raw name inputs
-  const nameA = players.A.name;
-  const nameB = players.B.name;
+  const leftInput = reversed ? document.getElementById('awayName') : document.getElementById('homeName');
+  const rightInput = reversed ? document.getElementById('homeName') : document.getElementById('awayName');
 
-  // Decide which goes on left/right
-  const leftName  = reversed ? nameB : nameA;
-  const rightName = reversed ? nameA : nameB;
+  const leftName = leftInput.value || 'Player 1';
+  const rightName = rightInput.value || 'Player 2';
 
-  // Wins are stored on players.A.wins / players.B.wins
-  const leftWins  = reversed ? players.B.wins : players.A.wins;
-  const rightWins = reversed ? players.A.wins : players.B.wins;
+  const getWins = (name) => {
+    if (players.A?.name === name) return players.A.wins;
+    if (players.B?.name === name) return players.B.wins;
+    return 0;
+  };
 
-  // Last-game sudden-death loser: if they lost in SD, mark that pip
-  const sdLoser = lastGameWasSuddenDeath ? suddenDeathLoser : null;
-  const leftLost  = sdLoser === (reversed ? 'B' : 'A');
-  const rightLost = sdLoser === (reversed ? 'A' : 'B');
+  const leftWins = getWins(leftName);
+  const rightWins = getWins(rightName);
 
-  // Total games played
-  const total = players.A.wins + players.B.wins;
+  // Check sudden death info
+  const total = leftWins + rightWins;
+  const leftLost = lastGameWasSuddenDeath && suddenDeathLoser === 'left';
+  const rightLost = lastGameWasSuddenDeath && suddenDeathLoser === 'right';
 
-  // SUDDEN_DEATH winner side string for gold star
-  let sdWinnerSide = null;
-  if (lastGameWasSuddenDeath) {
-    sdWinnerSide = (players.A.wins > players.B.wins ? (reversed ? 'right' : 'left')
-                                                  : (reversed ? 'left'  : 'right'));
-  }
+  const suddenWinner = lastGameWasSuddenDeath
+    ? (leftWins > rightWins ? 'left' : 'right')
+    : null;
 
-  // Render
-  const leftDisplay  = document.getElementById('homeDisplay');
+  const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
   if (total > 0) {
-    leftDisplay.textContent  = `${leftName} ${getPips(leftWins,  leftLost,  total, sdWinnerSide==='left')}`;
-    rightDisplay.textContent = `${rightName} ${getPips(rightWins, rightLost, total, sdWinnerSide==='right')}`;
+    leftDisplay.textContent = `${leftName} ${getPips(leftWins, leftLost, total, suddenWinner === 'left')}`;
+    rightDisplay.textContent = `${rightName} ${getPips(rightWins, rightLost, total, suddenWinner === 'right')}`;
   } else {
-    leftDisplay.textContent  = leftName;
+    leftDisplay.textContent = leftName;
     rightDisplay.textContent = rightName;
   }
 }
