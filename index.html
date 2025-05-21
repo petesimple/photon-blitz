@@ -1100,39 +1100,29 @@ function updateCompactSummary() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  const leftInput = reversed ? document.getElementById('awayName') : document.getElementById('homeName');
-  const rightInput = reversed ? document.getElementById('homeName') : document.getElementById('awayName');
+  // Determine which player is on which side visually
+  const leftPlayer = reversed ? players.B : players.A;
+  const rightPlayer = reversed ? players.A : players.B;
 
-  const leftName = leftInput.value || 'Player 1';
-  const rightName = rightInput.value || 'Player 2';
+  const totalGames = players.A.wins + players.B.wins;
 
-  const getWins = (name) => {
-    if (players.A?.name === name) return players.A.wins;
-    if (players.B?.name === name) return players.B.wins;
-    return 0;
-  };
+  const leftLostSD = lastGameWasSuddenDeath && suddenDeathLoser === (reversed ? 'B' : 'A');
+  const rightLostSD = lastGameWasSuddenDeath && suddenDeathLoser === (reversed ? 'A' : 'B');
 
-  const leftWins = getWins(leftName);
-  const rightWins = getWins(rightName);
-
-  // Check sudden death info
-  const total = leftWins + rightWins;
-  const leftLost = lastGameWasSuddenDeath && suddenDeathLoser === 'left';
-  const rightLost = lastGameWasSuddenDeath && suddenDeathLoser === 'right';
-
-  const suddenWinner = lastGameWasSuddenDeath
-    ? (leftWins > rightWins ? 'left' : 'right')
-    : null;
+  const leftSDWin = lastGameWasSuddenDeath && leftPlayer.wins > rightPlayer.wins;
+  const rightSDWin = lastGameWasSuddenDeath && rightPlayer.wins > leftPlayer.wins;
 
   const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
-  if (total > 0) {
-    leftDisplay.textContent = `${leftName} ${getPips(leftWins, leftLost, total, suddenWinner === 'left')}`;
-    rightDisplay.textContent = `${rightName} ${getPips(rightWins, rightLost, total, suddenWinner === 'right')}`;
+  if (totalGames > 0) {
+    leftDisplay.textContent =
+      `${leftPlayer.name} ${getPips(leftPlayer.wins, leftLostSD, totalGames, leftSDWin)}`;
+    rightDisplay.textContent =
+      `${rightPlayer.name} ${getPips(rightPlayer.wins, rightLostSD, totalGames, rightSDWin)}`;
   } else {
-    leftDisplay.textContent = leftName;
-    rightDisplay.textContent = rightName;
+    leftDisplay.textContent = leftPlayer.name;
+    rightDisplay.textContent = rightPlayer.name;
   }
 }
   // Builds summary text for the match summary section
