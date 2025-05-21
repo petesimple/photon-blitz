@@ -805,45 +805,53 @@ let players = {
     
 // Called when a game ends
 function endGame() {
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+
+  // Grab current UI values
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
-  const leftName = reversed ? awayName : homeName;
-  const rightName = reversed ? homeName : awayName;
-  const leftScore = reversed ? awayScore : homeScore;
-  const rightScore = reversed ? homeScore : awayScore;
-  const leftInitial = leftName.charAt(0).toUpperCase();
-  const rightInitial = rightName.charAt(0).toUpperCase();
+  console.log('🎯 [endGame()] BEGIN');
+  console.log('Home:', homeName, homeScore);
+  console.log('Away:', awayName, awayScore);
+  console.log('Reversed layout:', reversed);
 
-  // Determine winner/loser before swapping
-  const isLeftWinner = leftScore > rightScore;
-  const winnerName = isLeftWinner ? leftName : rightName;
-  const loserName = isLeftWinner ? rightName : leftName;
-  const winnerScore = isLeftWinner ? leftScore : rightScore;
-  const loserScore = isLeftWinner ? rightScore : leftScore;
-  const winnerInitial = isLeftWinner ? leftInitial : rightInitial;
-  const loserInitial = isLeftWinner ? rightInitial : leftInitial;
-  const preWinnerSide = isLeftWinner
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
-  const preLoserSide = isLeftWinner
-    ? (reversed ? 'home' : 'away')
-    : (reversed ? 'away' : 'home');
-
-  // Track persistent player identity
+  // Initialize persistent identity
   if (!players.A || !players.B) {
     players.A = { name: homeName, wins: 0 };
     players.B = { name: awayName, wins: 0 };
+    console.log('📌 Initialized players.A and players.B:', players);
   }
+
+  // Determine winner/loser absolutely (not visually)
+  let winnerName, loserName;
+  let winnerScore, loserScore;
+  let winnerInitial, loserInitial;
+
+  if (homeScore > awayScore) {
+    winnerName = homeName;
+    winnerScore = homeScore;
+    loserName = awayName;
+    loserScore = awayScore;
+  } else {
+    winnerName = awayName;
+    winnerScore = awayScore;
+    loserName = homeName;
+    loserScore = homeScore;
+  }
+
+  winnerInitial = winnerName.charAt(0).toUpperCase();
+  loserInitial = loserName.charAt(0).toUpperCase();
+
+  // Track win
   if (winnerName === players.A.name) players.A.wins++;
-  if (winnerName === players.B.name) players.B.wins++;
+  else if (winnerName === players.B.name) players.B.wins++;
 
   matchesPlayed++;
-  const suddenDeathWinner = lastGameWasSuddenDeath ? preWinnerSide : null;
+  const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
 
   const gameData = {
     homeName,
@@ -852,12 +860,6 @@ function endGame() {
     awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner,
-    leftName,
-    rightName,
-    leftScore,
-    rightScore,
-    leftInitial,
-    rightInitial,
     winnerName,
     loserName,
     winnerScore,
@@ -870,10 +872,21 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
-  swapSides(); // does not interfere with stored game data now
+  console.log('✅ Game recorded:', gameData);
+  console.log('🔁 Swapping sides...');
+
+  updateNameDisplays(); // show pips before swap
+  swapSides();          // visual only
+  console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
+
   resetForNextGame(true);
   updateSummary();
+
+  console.log('G1:', game1);
+  console.log('G2:', game2);
+  console.log('G3:', game3);
+  
+  console.log('🎯 [endGame()] COMPLETE');
 }
 
   // Resets scoreboard for the next game
