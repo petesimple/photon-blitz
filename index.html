@@ -1022,17 +1022,19 @@ function updateCompactSummary() {
 
   // 1️⃣ Capture the current game slot
   const currentGame = game1 && game2 ? game3
-                      : game1        ? game2
-                      :                game1;
+                        : game1        ? game2
+                        :                game1;
 
   if (currentGame) {
-    const homeName = document.getElementById('homeName').value || 'Player 1';
-    const awayName = document.getElementById('awayName').value || 'Player 2';
+    const homeName = document.getElementById('homeName').value || 'Player 1';
+    const awayName = document.getElementById('awayName').value || 'Player 2';
 
-    // Determine who won this game using actual score values
     const homeWon = homeScoreValue > awayScoreValue;
-    currentGame.winnerInitial = (homeWon ? homeName : awayName) === players.A.name ? 'A' : 'B';
-    currentGame.loserInitial  = (!homeWon ? homeName : awayName) === players.A.name ? 'A' : 'B';
+    const winnerName = homeWon ? homeName : awayName;
+    const loserName  = homeWon ? awayName : homeName;
+
+    currentGame.winnerInitial = (winnerName === players.A.name) ? 'A' : 'B';
+    currentGame.loserInitial  = (loserName  === players.A.name) ? 'A' : 'B';
     currentGame.winnerScore   = homeWon ? homeScoreValue : awayScoreValue;
     currentGame.loserScore    = homeWon ? awayScoreValue : homeScoreValue;
   }
@@ -1050,17 +1052,12 @@ function updateCompactSummary() {
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // 5️⃣ 🔄 Swap game win counters (affects pip display)
+  // 5️⃣ 🔄 Swap game win counters
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // 6️⃣ ✅ Sync win counters to player objects
-  const homeName = homeInput.value || 'Player 1';
-  const awayName = awayInput.value || 'Player 2';
-
-  if (players.A?.name === homeName) players.A.wins = homeGamesWon;
-  if (players.B?.name === homeName) players.B.wins = homeGamesWon;
-  if (players.A?.name === awayName) players.A.wins = awayGamesWon;
-  if (players.B?.name === awayName) players.B.wins = awayGamesWon;
+  // 6️⃣ Ensure players.A and players.B match the new names and win counts
+  players.A = { name: homeInput.value || 'Player 1', wins: homeGamesWon };
+  players.B = { name: awayInput.value || 'Player 2', wins: awayGamesWon };
 
   // 7️⃣ Update UI
   updateNameDisplays();
