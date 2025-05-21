@@ -1011,33 +1011,43 @@ function endGame() {
 
   function swapSides() {
   const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
-  const homeInput = document.getElementById('homeName');
-  const awayInput = document.getElementById('awayName');
+  const wasReversed = scoreboard.classList.contains('reverse');
 
-  // Capture pre-swap winner/loser data for summary fix
-  const homeName = homeInput.value || 'Player 1';
-  const awayName = awayInput.value || 'Player 2';
-  const preWinnerSide = (homeScoreValue > awayScoreValue) ? 'home' : 'away';
-  const preLoserSide = (homeScoreValue > awayScoreValue) ? 'away' : 'home';
+  // 1️⃣ Capture the *current* game slot (the one we just filled in endGame)
+  //    It'll be game1 if that’s empty, else game2 if empty, else game3.
+  const currentGame = game1 && game2 ? game3
+                      : game1          ? game2
+                      :                  game1;
 
-  // Store initials and scores BEFORE swap
-  const currentGame = !game1 ? game1 : !game2 ? game2 : game3;
   if (currentGame) {
-    currentGame.winnerInitial = preWinnerSide === 'home' ? homeName.charAt(0).toUpperCase() : awayName.charAt(0).toUpperCase();
-    currentGame.loserInitial = preLoserSide === 'home' ? homeName.charAt(0).toUpperCase() : awayName.charAt(0).toUpperCase();
-    currentGame.winnerScore = preWinnerSide === 'home' ? homeScoreValue : awayScoreValue;
-    currentGame.loserScore = preLoserSide === 'home' ? homeScoreValue : awayScoreValue;
+    // 2️⃣ Store the *pre‑swap* winner/loser & scores into that slot
+    //    We use the raw homeScoreValue/awayScoreValue, not flipped values.
+    const homeName = document.getElementById('homeName').value || 'Player 1';
+    const awayName = document.getElementById('awayName').value || 'Player 2';
+
+    // Determine who really won *this* game:
+    const homeWon = homeScoreValue > awayScoreValue;
+    currentGame.winnerInitial = (homeWon ? homeName : awayName).charAt(0).toUpperCase();
+    currentGame.loserInitial  = (!homeWon ? homeName : awayName).charAt(0).toUpperCase();
+    currentGame.winnerScore   = homeWon ? homeScoreValue : awayScoreValue;
+    currentGame.loserScore    = homeWon ? awayScoreValue : homeScoreValue;
+    // wasSuddenDeath etc. are already set in endGame
   }
 
-  // Perform the actual visual/layout swap
+  // 3️⃣ Now do the *visual* flip
   scoreboard.classList.toggle('reverse');
+
+  // Swap the name inputs
+  const homeInput = document.getElementById('homeName');
+  const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+
+  // Swap the *displayed* scores too
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // Refresh visuals
+  // 4️⃣ Finally update the UI
   updateNameDisplays();
   updateSummary();
 }
