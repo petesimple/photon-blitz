@@ -804,24 +804,19 @@ function endGame() {
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  // Snapshot layout
+  // Snapshot layout before swap
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
   const rightName = reversed ? homeName : awayName;
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
+  const leftInitial = leftName.charAt(0).toUpperCase();
+  const rightInitial = rightName.charAt(0).toUpperCase();
 
-  // Log everything
-  console.groupCollapsed(`⏱️ endGame() called (Game ${matchesPlayed+1})`);
-  console.log('reversed:', reversed);
-  console.log('homeName/homeScore:', homeName, homeScore);
-  console.log('awayName/awayScore:', awayName, awayScore);
-  console.log('leftName/leftScore:', leftName, leftScore);
-  console.log('rightName/rightScore:', rightName, rightScore);
+  let preWinnerSide, preLoserSide, winnerName, loserName;
+  let winnerScore, loserScore, winnerInitial, loserInitial;
 
-  // Determine winner by layout
-  let preWinnerSide, preLoserSide, winnerName, loserName, winnerScore, loserScore;
   if (leftScore > rightScore) {
     preWinnerSide = reversed ? 'away' : 'home';
     preLoserSide  = reversed ? 'home' : 'away';
@@ -829,6 +824,8 @@ function endGame() {
     loserName     = rightName;
     winnerScore   = leftScore;
     loserScore    = rightScore;
+    winnerInitial = leftInitial;
+    loserInitial  = rightInitial;
   } else {
     preWinnerSide = reversed ? 'home' : 'away';
     preLoserSide  = reversed ? 'away' : 'home';
@@ -836,23 +833,42 @@ function endGame() {
     loserName     = leftName;
     winnerScore   = rightScore;
     loserScore    = leftScore;
+    winnerInitial = rightInitial;
+    loserInitial  = leftInitial;
   }
-  console.log('preWinnerSide:', preWinnerSide);
-  console.log('winnerName:', winnerName, winnerScore);
-  console.groupEnd();
 
-  // Update win counts
   if (preWinnerSide === 'home') homeGamesWon++;
   else awayGamesWon++;
-  matchesPlayed++;
 
-  // Build gameData and store...
-  const gameData = { /* same as before */ };
+  const suddenDeathWinner = lastGameWasSuddenDeath ? preWinnerSide : null;
+
+  const gameData = {
+    homeName,
+    awayName,
+    homeScore,
+    awayScore,
+    wasSuddenDeath: lastGameWasSuddenDeath,
+    suddenDeathWinner,
+    leftName,
+    rightName,
+    leftScore,
+    rightScore,
+    leftInitial,
+    rightInitial,
+    winnerName,
+    loserName,
+    winnerScore,
+    loserScore,
+    winnerInitial,
+    loserInitial
+  };
+
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  updateNameDisplays(preLoserSide, preWinnerSide, lastGameWasSuddenDeath ? preWinnerSide : null);
+  matchesPlayed++;
+  updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
   swapSides();
   resetForNextGame(true);
   updateSummary();
