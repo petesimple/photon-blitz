@@ -1130,7 +1130,12 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    return `G${i + 1} ${isSD}${g.winnerInitial}${g.winnerScore}–${g.loserScore}${g.loserInitial}`;
+    const winnerInitial = (g.winnerName === players.A.name) ? 'A' : 'B';
+    const loserInitial = (g.loserName === players.A.name) ? 'A' : 'B';
+    const winnerScore = g.winnerScore;
+    const loserScore = g.loserScore;
+
+    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
   });
 
   container.textContent = parts.join(', ');
