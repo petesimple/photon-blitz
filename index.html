@@ -1011,19 +1011,33 @@ function endGame() {
 
   function swapSides() {
   const scoreboard = document.querySelector('.scoreboard');
-  scoreboard.classList.toggle('reverse');
-
-  // Swap player names
+  const reversed = scoreboard.classList.contains('reverse');
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
-  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap scores
+  // Capture pre-swap winner/loser data for summary fix
+  const homeName = homeInput.value || 'Player 1';
+  const awayName = awayInput.value || 'Player 2';
+  const preWinnerSide = (homeScoreValue > awayScoreValue) ? 'home' : 'away';
+  const preLoserSide = (homeScoreValue > awayScoreValue) ? 'away' : 'home';
+
+  // Store initials and scores BEFORE swap
+  const currentGame = !game1 ? game1 : !game2 ? game2 : game3;
+  if (currentGame) {
+    currentGame.winnerInitial = preWinnerSide === 'home' ? homeName.charAt(0).toUpperCase() : awayName.charAt(0).toUpperCase();
+    currentGame.loserInitial = preLoserSide === 'home' ? homeName.charAt(0).toUpperCase() : awayName.charAt(0).toUpperCase();
+    currentGame.winnerScore = preWinnerSide === 'home' ? homeScoreValue : awayScoreValue;
+    currentGame.loserScore = preLoserSide === 'home' ? homeScoreValue : awayScoreValue;
+  }
+
+  // Perform the actual visual/layout swap
+  scoreboard.classList.toggle('reverse');
+  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // Update UI
+  // Refresh visuals
   updateNameDisplays();
   updateSummary();
 }
