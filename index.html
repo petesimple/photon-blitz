@@ -804,6 +804,8 @@ let players = {
 };
     
 // Called when a game ends
+// Fixed endGame() and updateCompactSummary() with robust A/B tracking
+
 function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
@@ -818,32 +820,33 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
+  // Lock A/B assignment on first game
   if (!players.A || !players.B) {
     players.A = { name: homeName, wins: 0 };
     players.B = { name: awayName, wins: 0 };
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  const scoreMap = {};
-  scoreMap[homeName] = homeScore;
-  scoreMap[awayName] = awayScore;
+  // Determine winner/loser from absolute score
+  let winnerName, loserName, winnerScore, loserScore;
+  if (homeScore > awayScore) {
+    winnerName = homeName;
+    winnerScore = homeScore;
+    loserName = awayName;
+    loserScore = awayScore;
+  } else {
+    winnerName = awayName;
+    winnerScore = awayScore;
+    loserName = homeName;
+    loserScore = homeScore;
+  }
 
-  const nameToInitial = name => {
-    if (name === players.A.name) return 'A';
-    if (name === players.B.name) return 'B';
-    return name.charAt(0).toUpperCase();
-  };
-
-  let winnerName = homeScore > awayScore ? homeName : awayName;
-  let loserName = homeScore > awayScore ? awayName : homeName;
-  let winnerScore = Math.max(homeScore, awayScore);
-  let loserScore = Math.min(homeScore, awayScore);
-
-  const winnerInitial = nameToInitial(winnerName);
-  const loserInitial = nameToInitial(loserName);
+  // Lock initials to persistent A/B assignment
+  const winnerInitial = (winnerName === players.A.name) ? 'A' : 'B';
+  const loserInitial = (loserName === players.A.name) ? 'A' : 'B';
 
   if (winnerName === players.A.name) players.A.wins++;
-  if (winnerName === players.B.name) players.B.wins++;
+  else if (winnerName === players.B.name) players.B.wins++;
 
   matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
@@ -872,7 +875,6 @@ function endGame() {
   swapSides();
   console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
-  updateNameDisplays();
   resetForNextGame(true);
   updateSummary();
 
@@ -880,6 +882,23 @@ function endGame() {
   console.log('G2:', game2);
   console.log('G3:', game3);
   console.log('🎯 [endGame()] COMPLETE');
+}
+
+function updateCompactSummary() {
+  const container = document.getElementById('compactSummary');
+  const games = [game1, game2, game3].filter(Boolean);
+
+  if (games.length === 0) {
+    container.textContent = '';
+    return;
+  }
+
+  const parts = games.map((g, i) => {
+    const isSD = g.wasSuddenDeath ? '†' : '';
+    return `G${i + 1} ${isSD}${g.winnerInitial}${g.winnerScore}–${g.loserScore}${g.loserInitial}`;
+  });
+
+  container.textContent = parts.join(', ');
 }
 
   // Resets scoreboard for the next game
@@ -1118,28 +1137,8 @@ function endGame() {
   container.innerHTML = summary;
   updateCompactSummary();
 }
-    // Rebuilds the compact “G1…G3” line
-function updateCompactSummary() {
-  const container = document.getElementById('compactSummary');
-  const games = [game1, game2, game3].filter(Boolean);
+    // compact summary old location
 
-  if (games.length === 0) {
-    container.textContent = '';
-    return;
-  }
-
-  const parts = games.map((g, i) => {
-    const isSD = g.wasSuddenDeath ? '†' : '';
-
-    // FORCE initials based on persistent identity, not layout
-    const winnerInitial = (g.winnerName === players.A.name) ? 'A' : 'B';
-    const loserInitial = (g.loserName === players.A.name) ? 'A' : 'B';
-
-    return `G${i + 1} ${isSD}${winnerInitial}${g.winnerScore}–${g.loserScore}${loserInitial}`;
-  });
-
-  container.textContent = parts.join(', ');
-}
   // Loads saved player names from localStorage on page load
   function loadNames() {
     const savedHome = localStorage.getItem('homeName');
