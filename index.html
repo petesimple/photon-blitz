@@ -854,18 +854,23 @@ function endGame() {
     rightScore
   };
 
+  // 📝 Save to correct slot
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
+  // 🧠 Correctly assign win to player A or B (based on name BEFORE swap)
+  if (players.A?.name === winnerName) {
+    players.A.wins++;
+  } else if (players.B?.name === winnerName) {
+    players.B.wins++;
+  }
+
+  // ✅ Still track visual win counters for layout
   if (homeWon) {
     homeGamesWon++;
-    if (players.A?.name === homeName) players.A.wins = homeGamesWon;
-    if (players.B?.name === homeName) players.B.wins = homeGamesWon;
   } else {
     awayGamesWon++;
-    if (players.A?.name === awayName) players.A.wins = awayGamesWon;
-    if (players.B?.name === awayName) players.B.wins = awayGamesWon;
   }
 
   console.log('✅ Game recorded:', gameData);
@@ -877,7 +882,6 @@ function endGame() {
   updateSummary();
   updateCompactSummary();
 
-  // Pass side strings into updateNameDisplays
   const preWinner = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
   const preLoser  = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
 
@@ -885,10 +889,9 @@ function endGame() {
 
   console.log('[CHECK] players.A:', players.A);
   console.log('[CHECK] players.B:', players.B);
-  console.log('[CHECK] homeName:', document.getElementById('homeName').value);
-  console.log('[CHECK] awayName:', document.getElementById('awayName').value);
-  console.log('[CHECK] Reversed:', document.querySelector('.scoreboard').classList.contains('reverse'));
-  
+  console.log('[CHECK] homeName:', homeName);
+  console.log('[CHECK] awayName:', awayName);
+  console.log('[CHECK] Reversed:', reversed);
   console.log('G1:', game1);
   console.log('G2:', game2);
   console.log('G3:', game3);
