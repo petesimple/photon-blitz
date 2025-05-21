@@ -1103,9 +1103,14 @@ function updateCompactSummary() {
   const leftSide = reversed ? 'away' : 'home';
   const rightSide = reversed ? 'home' : 'away';
 
-  // Determine wins using player identity, not side
-  const leftWins = (players.A?.name === leftName) ? players.A.wins : players.B?.wins || 0;
-  const rightWins = (players.A?.name === rightName) ? players.A.wins : players.B?.wins || 0;
+  // Correctly resolve wins based on player name match
+  const leftWins =
+    (players.A?.name === leftName) ? players.A.wins :
+    (players.B?.name === leftName) ? players.B.wins : 0;
+
+  const rightWins =
+    (players.A?.name === rightName) ? players.A.wins :
+    (players.B?.name === rightName) ? players.B.wins : 0;
 
   const leftLost = reversed ? awayLost : homeLost;
   const rightLost = reversed ? homeLost : awayLost;
