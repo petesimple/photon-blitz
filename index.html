@@ -859,6 +859,7 @@ function endGame() {
 
   resetForNextGame(true);
   updateSummary();
+  updateCompactSummary();
 
   console.log('G1:', game1);
   console.log('G2:', game2);
@@ -868,6 +869,8 @@ function endGame() {
 
 function updateCompactSummary() {
   const container = document.getElementById('compactSummary');
+  if (!container) return;
+
   const games = [game1, game2, game3].filter(Boolean);
 
   if (games.length === 0) {
@@ -877,7 +880,7 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    const leftScore = g.leftScore ?? g.homeScore;  // fallback if leftScore not tracked
+    const leftScore = g.leftScore ?? g.homeScore;  // fallback if undefined
     const rightScore = g.rightScore ?? g.awayScore;
     return `G${i + 1} ${isSD}${leftScore}–${rightScore}`;
   });
