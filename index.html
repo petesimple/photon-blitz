@@ -852,6 +852,17 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
+  // ✅ Increment game wins BEFORE swapping sides
+  if (homeWon) {
+    homeGamesWon++;
+    if (players.A?.name === homeName) players.A.wins = homeGamesWon;
+    if (players.B?.name === homeName) players.B.wins = homeGamesWon;
+  } else {
+    awayGamesWon++;
+    if (players.A?.name === awayName) players.A.wins = awayGamesWon;
+    if (players.B?.name === awayName) players.B.wins = awayGamesWon;
+  }
+
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
   swapSides();
@@ -860,20 +871,8 @@ function endGame() {
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
-
-  // ⬅️ Add this before updateNameDisplays()
-if (homeScore > awayScore) {
-  homeGamesWon++;
-  if (players.A?.name === homeName) players.A.wins = homeGamesWon;
-  if (players.B?.name === homeName) players.B.wins = homeGamesWon;
-} else {
-  awayGamesWon++;
-  if (players.A?.name === awayName) players.A.wins = awayGamesWon;
-  if (players.B?.name === awayName) players.B.wins = awayGamesWon;
-}
-  
   updateNameDisplays(homeWon ? 'away' : 'home', homeWon ? 'home' : 'away', suddenDeathWinner);
-  
+
   console.log('G1:', game1);
   console.log('G2:', game2);
   console.log('G3:', game3);
