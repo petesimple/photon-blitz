@@ -808,7 +808,6 @@ function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  // Grab current UI values
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
   const homeScore = homeScoreValue;
@@ -819,32 +818,35 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Initialize persistent identity (permanent player slots)
+  // Initialize persistent identity
   if (!players.A || !players.B) {
     players.A = { name: homeName, wins: 0 };
     players.B = { name: awayName, wins: 0 };
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  // Determine who scored more
-  const winnerName = homeScore > awayScore ? homeName : awayName;
-  const loserName = homeScore > awayScore ? awayName : homeName;
-  const winnerScore = Math.max(homeScore, awayScore);
-  const loserScore = Math.min(homeScore, awayScore);
+  // Determine winner/loser
+  let winnerName, loserName, winnerScore, loserScore;
 
-  // Determine who won (A or B) and track wins correctly
-  let winnerInitial = '?';
-  let loserInitial = '?';
-
-  if (winnerName === players.A.name) {
-    players.A.wins++;
-    winnerInitial = 'A';
-    loserInitial = 'B';
-  } else if (winnerName === players.B.name) {
-    players.B.wins++;
-    winnerInitial = 'B';
-    loserInitial = 'A';
+  if (homeScore > awayScore) {
+    winnerName = homeName;
+    winnerScore = homeScore;
+    loserName = awayName;
+    loserScore = awayScore;
+  } else {
+    winnerName = awayName;
+    winnerScore = awayScore;
+    loserName = homeName;
+    loserScore = homeScore;
   }
+
+  // Determine winner/loser identity
+  const winnerId = (winnerName === players.A.name) ? 'A' : 'B';
+  const loserId = (loserName === players.A.name) ? 'A' : 'B';
+
+  // Track wins
+  if (winnerId === 'A') players.A.wins++;
+  else players.B.wins++;
 
   matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
@@ -860,8 +862,8 @@ function endGame() {
     loserName,
     winnerScore,
     loserScore,
-    winnerInitial,
-    loserInitial
+    winnerId,
+    loserId
   };
 
   if (!game1) game1 = gameData;
@@ -870,7 +872,8 @@ function endGame() {
 
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
-  updateNameDisplays();
+
+  updateNameDisplays(); // show pips before swap
   swapSides();
   console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
@@ -1131,12 +1134,7 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    const winnerInitial = g.winnerInitial;
-    const loserInitial = g.loserInitial;
-    const winnerScore = g.winnerScore;
-    const loserScore = g.loserScore;
-
-    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    return `G${i + 1} ${isSD}${g.winnerId}${g.winnerScore}–${g.loserScore}${g.loserId}`;
   });
 
   container.textContent = parts.join(', ');
