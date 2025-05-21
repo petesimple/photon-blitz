@@ -852,6 +852,16 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
+if (homeWon) {
+  homeGamesWon++;
+  if (players.A?.name === homeName) players.A.wins = homeGamesWon;
+  if (players.B?.name === homeName) players.B.wins = homeGamesWon;
+} else {
+  awayGamesWon++;
+  if (players.A?.name === awayName) players.A.wins = awayGamesWon;
+  if (players.B?.name === awayName) players.B.wins = awayGamesWon;
+}
+  
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
   swapSides();
