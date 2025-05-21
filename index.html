@@ -817,19 +817,25 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Determine winner and loser by actual score
   const homeWon = homeScore > awayScore;
   const winnerName = homeWon ? homeName : awayName;
+  const loserName  = homeWon ? awayName : homeName;
+
   const winnerScore = homeWon ? homeScore : awayScore;
-  const loserName = homeWon ? awayName : homeName;
-  const loserScore = homeWon ? awayScore : homeScore;
+  const loserScore  = homeWon ? awayScore : homeScore;
 
   matchesPlayed++;
+
   const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeWon ? 'home' : 'away')
+    ? (homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right'))
     : null;
 
-  // Store visual side scores for summary
+  const suddenDeathLoser = lastGameWasSuddenDeath
+    ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
+    : null;
+
+  window.suddenDeathLoser = suddenDeathLoser; // store globally so updateNameDisplays can use it
+
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
 
@@ -852,16 +858,16 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-if (homeWon) {
-  homeGamesWon++;
-  if (players.A?.name === homeName) players.A.wins = homeGamesWon;
-  if (players.B?.name === homeName) players.B.wins = homeGamesWon;
-} else {
-  awayGamesWon++;
-  if (players.A?.name === awayName) players.A.wins = awayGamesWon;
-  if (players.B?.name === awayName) players.B.wins = awayGamesWon;
-}
-  
+  if (homeWon) {
+    homeGamesWon++;
+    if (players.A?.name === homeName) players.A.wins = homeGamesWon;
+    if (players.B?.name === homeName) players.B.wins = homeGamesWon;
+  } else {
+    awayGamesWon++;
+    if (players.A?.name === awayName) players.A.wins = awayGamesWon;
+    if (players.B?.name === awayName) players.B.wins = awayGamesWon;
+  }
+
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
   swapSides();
@@ -870,7 +876,12 @@ if (homeWon) {
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
-  updateNameDisplays(homeWon ? 'away' : 'home', homeWon ? 'home' : 'away', suddenDeathWinner);
+
+  // Pass side strings into updateNameDisplays
+  const preWinner = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
+  const preLoser  = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
+
+  updateNameDisplays(preLoser, preWinner, suddenDeathWinner);
 
   console.log('G1:', game1);
   console.log('G2:', game2);
