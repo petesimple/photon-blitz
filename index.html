@@ -1089,7 +1089,7 @@ function updateCompactSummary() {
   const homeNameInput = document.getElementById('homeName').value || 'Player 1';
   const awayNameInput = document.getElementById('awayName').value || 'Player 2';
 
-  const gamesTotal = homeGamesWon + awayGamesWon;
+  const gamesTotal = (players.A?.wins || 0) + (players.B?.wins || 0);
 
   const homeLost = lastGameWasSuddenDeath && preLoser === 'home';
   const awayLost = lastGameWasSuddenDeath && preLoser === 'away';
@@ -1097,15 +1097,18 @@ function updateCompactSummary() {
   const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
-  // Determine actual sides based on visual layout
   const leftName = reversed ? awayNameInput : homeNameInput;
   const rightName = reversed ? homeNameInput : awayNameInput;
-  const leftWins = reversed ? awayGamesWon : homeGamesWon;
-  const rightWins = reversed ? homeGamesWon : awayGamesWon;
-  const leftLost = reversed ? awayLost : homeLost;
-  const rightLost = reversed ? homeLost : awayLost;
+
   const leftSide = reversed ? 'away' : 'home';
   const rightSide = reversed ? 'home' : 'away';
+
+  // Determine wins using player identity, not side
+  const leftWins = (players.A?.name === leftName) ? players.A.wins : players.B?.wins || 0;
+  const rightWins = (players.A?.name === rightName) ? players.A.wins : players.B?.wins || 0;
+
+  const leftLost = reversed ? awayLost : homeLost;
+  const rightLost = reversed ? homeLost : awayLost;
 
   if (gamesTotal > 0) {
     leftDisplay.textContent = `${leftName} ${getPips(leftWins, leftLost, gamesTotal, suddenDeathWinner === leftSide)}`;
