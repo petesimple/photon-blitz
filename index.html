@@ -1135,13 +1135,18 @@ function updateCompactSummary() {
 
   // Loads saved player names from localStorage on page load
   function loadNames() {
-    const savedHome = localStorage.getItem('homeName');
-    const savedAway = localStorage.getItem('awayName');
-    if (savedHome) document.getElementById('homeName').value = savedHome;
-    if (savedAway) document.getElementById('awayName').value = savedAway;
-    updateNameDisplays();
-    updateSummary();
-  }
+  const savedHome = localStorage.getItem('homeName');
+  const savedAway = localStorage.getItem('awayName');
+  if (savedHome) document.getElementById('homeName').value = savedHome;
+  if (savedAway) document.getElementById('awayName').value = savedAway;
+
+  // ✅ Initialize players from saved names
+  players.A = { name: savedHome || 'Player 1', wins: homeGamesWon };
+  players.B = { name: savedAway || 'Player 2', wins: awayGamesWon };
+
+  updateNameDisplays();
+  updateSummary();
+}
 
   // Run initial load
   loadNames();
