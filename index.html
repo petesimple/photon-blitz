@@ -532,12 +532,12 @@ body.locked .timeout-button {
 <h3>Adjust Scores</h3>
 <div class="time-controls" style="justify-content: space-between;">
   <div style="display: flex; gap: 10px;">
-    <button onclick="adjustScore('home', 1)">+1</button>
-    <button onclick="adjustScore('home', -1)">–1</button>
+    <button onclick="adjustScoreVisual('left', 1)">+1</button>
+    <button onclick="adjustScoreVisual('left', -1)">–1</button>
   </div>
   <div style="display: flex; gap: 10px;">
-    <button onclick="adjustScore('away', 1)">+1</button>
-    <button onclick="adjustScore('away', -1)">–1</button>
+    <button onclick="adjustScoreVisual('right', 1)">+1</button>
+    <button onclick="adjustScoreVisual('right', -1)">–1</button>
   </div>
 </div>
 
@@ -545,12 +545,12 @@ body.locked .timeout-button {
 <h3>Adjust Game Wins</h3>
 <div class="time-controls" style="justify-content: space-between;">
   <div style="display: flex; gap: 10px;">
-    <button onclick="adjustGames('home', 1)">+1</button>
-    <button onclick="adjustGames('home', -1)">–1</button>
+    <button onclick="adjustGamesVisual('left', 1)">+1</button>
+    <button onclick="adjustGamesVisual('left', -1)">–1</button>
   </div>
   <div style="display: flex; gap: 10px;">
-    <button onclick="adjustGames('away', 1)">+1</button>
-    <button onclick="adjustGames('away', -1)">–1</button>
+    <button onclick="adjustGamesVisual('right', 1)">+1</button>
+    <button onclick="adjustGamesVisual('right', -1)">–1</button>
   </div>
 </div>
 
@@ -1297,6 +1297,21 @@ function getLogicalSide(side) {
     ? (reversed ? 'away' : 'home')
     : (reversed ? 'home' : 'away');
   score(actualSide);
+}
+    function adjustScoreVisual(visualSide, delta) {
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  const logicalSide = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+  adjustScore(logicalSide, delta);
+}
+
+function adjustGamesVisual(visualSide, delta) {
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  const logicalSide = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+  adjustGames(logicalSide, delta);
 }
     
 </script>
