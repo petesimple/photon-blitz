@@ -819,50 +819,55 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Initialize persistent identity (A/B)
+  // Initialize player identity on Game 1 only
   if (!players.A || !players.B) {
-    players.A = { name: homeName, wins: 0 };
-    players.B = { name: awayName, wins: 0 };
+    players.A = {
+      name: homeName,
+      wins: 0,
+      originalSide: 'home',
+    };
+    players.B = {
+      name: awayName,
+      wins: 0,
+      originalSide: 'away',
+    };
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  // Determine winner/loser
+  // Determine winner/loser (based on current score values)
   let winnerName, loserName;
   let winnerScore, loserScore;
   let winnerInitial, loserInitial;
+  let preWinnerSide, preLoserSide;
 
   if (homeScore > awayScore) {
     winnerName = homeName;
     winnerScore = homeScore;
     loserName = awayName;
     loserScore = awayScore;
+    preWinnerSide = 'home';
+    preLoserSide = 'away';
   } else {
     winnerName = awayName;
     winnerScore = awayScore;
     loserName = homeName;
     loserScore = homeScore;
+    preWinnerSide = 'away';
+    preLoserSide = 'home';
   }
 
   winnerInitial = winnerName.charAt(0).toUpperCase();
   loserInitial = loserName.charAt(0).toUpperCase();
 
-  // Track win with guarded logic
-  if (
-    (winnerName === players.A.name && loserName === players.B.name) ||
-    (winnerName === players.A.name && players.B.name === null)
-  ) {
+  // Track win using original side identity
+  if (preWinnerSide === players.A.originalSide) {
     players.A.wins++;
-  } else if (
-    (winnerName === players.B.name && loserName === players.A.name) ||
-    (winnerName === players.B.name && players.A.name === null)
-  ) {
+  } else if (preWinnerSide === players.B.originalSide) {
     players.B.wins++;
-  } else {
-    console.warn('⚠️ Could not match winnerName to players.A/B:', winnerName);
   }
 
   matchesPlayed++;
-  const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
+  const suddenDeathWinner = lastGameWasSuddenDeath ? preWinnerSide : null;
 
   const gameData = {
     homeName,
@@ -886,8 +891,8 @@ function endGame() {
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
 
-  updateNameDisplays(); // show pips before swap
-  swapSides();          // visual only
+  updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
+  swapSides(); // visual only
   console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
   resetForNextGame(true);
@@ -896,7 +901,6 @@ function endGame() {
   console.log('G1:', game1);
   console.log('G2:', game2);
   console.log('G3:', game3);
-  
   console.log('🎯 [endGame()] COMPLETE');
 }
 
