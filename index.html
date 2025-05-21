@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.9.9.666 (👿)</div>
+  <div id="versionTag">v1.9.9.666.1 (eatpuck👿)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -1130,15 +1130,12 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    
-    // ✅ Use A/B identity based on original mapping
-    const winnerInitial = g.winnerName === players.A.name ? 'A' : 'B';
-    const loserInitial = g.loserName === players.A.name ? 'A' : 'B';
 
-    const winnerScore = g.winnerScore;
-    const loserScore = g.loserScore;
+    // FORCE initials based on persistent identity, not layout
+    const winnerInitial = (g.winnerName === players.A.name) ? 'A' : 'B';
+    const loserInitial = (g.loserName === players.A.name) ? 'A' : 'B';
 
-    return `G${i + 1} ${isSD}${winnerInitial}${winnerScore}–${loserScore}${loserInitial}`;
+    return `G${i + 1} ${isSD}${winnerInitial}${g.winnerScore}–${g.loserScore}${loserInitial}`;
   });
 
   container.textContent = parts.join(', ');
