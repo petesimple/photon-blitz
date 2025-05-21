@@ -1201,9 +1201,16 @@ document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
 function adjustGames(side, delta) {
   if (side === 'home') {
     homeGamesWon = Math.max(0, homeGamesWon + delta);
+    if (players.A?.name === document.getElementById('homeName').value) {
+      players.A.wins = homeGamesWon;
+    }
   } else {
     awayGamesWon = Math.max(0, awayGamesWon + delta);
+    if (players.B?.name === document.getElementById('awayName').value) {
+      players.B.wins = awayGamesWon;
+    }
   }
+
   updateNameDisplays();
   updateSummary();
 }
