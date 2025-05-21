@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.9.9.666.4 (eatcrow)</div>
+  <div id="versionTag">v1.9.9.666.5 (eatcrow)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -803,9 +803,6 @@ let players = {
   B: null
 };
     
-// Called when a game ends
-// Fixed endGame() and updateCompactSummary() with robust A/B tracking
-
 function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
@@ -827,7 +824,7 @@ function endGame() {
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  // Determine winner/loser from absolute score
+  // Determine winner/loser based on actual score (not layout)
   let winnerName, loserName, winnerScore, loserScore;
   if (homeScore > awayScore) {
     winnerName = homeName;
@@ -841,10 +838,11 @@ function endGame() {
     loserScore = homeScore;
   }
 
-  // Lock initials to persistent A/B assignment
-  const winnerInitial = (winnerName === players.A.name) ? 'A' : 'B';
-  const loserInitial = (loserName === players.A.name) ? 'A' : 'B';
+  // Robust identity lock BEFORE swap
+  const winnerInitial = winnerName === players.A.name ? 'A' : 'B';
+  const loserInitial  = loserName  === players.A.name ? 'A' : 'B';
 
+  // Track win to persistent player
   if (winnerName === players.A.name) players.A.wins++;
   else if (winnerName === players.B.name) players.B.wins++;
 
@@ -872,7 +870,7 @@ function endGame() {
 
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
-  swapSides();
+  swapSides(); // only visual
   console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
   resetForNextGame(true);
