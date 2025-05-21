@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.9.7 (logs)</div>
+  <div id="versionTag">v1.9.8 (logs)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -819,14 +819,14 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Initialize persistent identity
+  // Initialize persistent identity (A/B)
   if (!players.A || !players.B) {
     players.A = { name: homeName, wins: 0 };
     players.B = { name: awayName, wins: 0 };
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  // Determine winner/loser absolutely (not visually)
+  // Determine winner/loser
   let winnerName, loserName;
   let winnerScore, loserScore;
   let winnerInitial, loserInitial;
@@ -846,9 +846,20 @@ function endGame() {
   winnerInitial = winnerName.charAt(0).toUpperCase();
   loserInitial = loserName.charAt(0).toUpperCase();
 
-  // Track win
-  if (winnerName === players.A.name) players.A.wins++;
-  else if (winnerName === players.B.name) players.B.wins++;
+  // Track win with guarded logic
+  if (
+    (winnerName === players.A.name && loserName === players.B.name) ||
+    (winnerName === players.A.name && players.B.name === null)
+  ) {
+    players.A.wins++;
+  } else if (
+    (winnerName === players.B.name && loserName === players.A.name) ||
+    (winnerName === players.B.name && players.A.name === null)
+  ) {
+    players.B.wins++;
+  } else {
+    console.warn('⚠️ Could not match winnerName to players.A/B:', winnerName);
+  }
 
   matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
