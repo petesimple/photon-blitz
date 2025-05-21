@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.9.9.2 (cursed)</div>
+  <div id="versionTag">v1.9.9.3 (cakeisalie)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -808,7 +808,7 @@ function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  // Grab current UI values BEFORE swap
+  // Grab current UI values
   const homeName = document.getElementById('homeName').value || 'Player 1';
   const awayName = document.getElementById('awayName').value || 'Player 2';
   const homeScore = homeScoreValue;
@@ -819,43 +819,35 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Initialize players on first game
+  // Initialize persistent identity (permanent player slots)
   if (!players.A || !players.B) {
     players.A = { name: homeName, wins: 0 };
     players.B = { name: awayName, wins: 0 };
     console.log('📌 Initialized players.A and players.B:', players);
   }
 
-  // Determine absolute winner (not visual side)
-  let winnerName, loserName;
-  let winnerScore, loserScore;
+  // Determine who scored more
+  const winnerName = homeScore > awayScore ? homeName : awayName;
+  const loserName = homeScore > awayScore ? awayName : homeName;
+  const winnerScore = Math.max(homeScore, awayScore);
+  const loserScore = Math.min(homeScore, awayScore);
 
-  if (homeScore > awayScore) {
-    winnerName = homeName;
-    winnerScore = homeScore;
-    loserName = awayName;
-    loserScore = awayScore;
-  } else {
-    winnerName = awayName;
-    winnerScore = awayScore;
-    loserName = homeName;
-    loserScore = homeScore;
+  // Determine who won (A or B) and track wins correctly
+  let winnerInitial = '?';
+  let loserInitial = '?';
+
+  if (winnerName === players.A.name) {
+    players.A.wins++;
+    winnerInitial = 'A';
+    loserInitial = 'B';
+  } else if (winnerName === players.B.name) {
+    players.B.wins++;
+    winnerInitial = 'B';
+    loserInitial = 'A';
   }
 
-  // Assign win to original A/B player identity
-  if (winnerName === players.A.name) players.A.wins++;
-  else if (winnerName === players.B.name) players.B.wins++;
-
-  // Store initials (for summaries)
-  const winnerInitial = winnerName.charAt(0).toUpperCase();
-  const loserInitial = loserName.charAt(0).toUpperCase();
-
   matchesPlayed++;
-
-  // Determine sudden death winner (by logical home/away)
-  const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeScore > awayScore ? 'home' : 'away')
-    : null;
+  const suddenDeathWinner = lastGameWasSuddenDeath ? (homeScore > awayScore ? 'home' : 'away') : null;
 
   const gameData = {
     homeName,
@@ -878,9 +870,8 @@ function endGame() {
 
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
-
-  updateNameDisplays(); // Update pips before the swap
-  swapSides();          // Only changes visual layout
+  updateNameDisplays();
+  swapSides();
   console.log('🔄 Swap complete. Now reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
   resetForNextGame(true);
