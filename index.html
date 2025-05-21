@@ -1055,9 +1055,15 @@ function updateCompactSummary() {
   // 5️⃣ 🔄 Swap game win counters
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // 6️⃣ Ensure players.A and players.B match the new names and win counts
-  players.A = { name: homeInput.value || 'Player 1', wins: homeGamesWon };
-  players.B = { name: awayInput.value || 'Player 2', wins: awayGamesWon };
+  // 6️⃣ Safely update player object values
+  if (players.A) {
+    players.A.name = homeInput.value || 'Player 1';
+    players.A.wins = homeGamesWon;
+  }
+  if (players.B) {
+    players.B.name = awayInput.value || 'Player 2';
+    players.B.wins = awayGamesWon;
+  }
 
   // 7️⃣ Update UI
   updateNameDisplays();
