@@ -1052,8 +1052,14 @@ function updateCompactSummary() {
     function saveNames() {
   const homeName = document.getElementById('homeName').value;
   const awayName = document.getElementById('awayName').value;
+
   localStorage.setItem('homeName', homeName);
   localStorage.setItem('awayName', awayName);
+
+  // ✅ Initialize players A and B
+  players.A = { name: homeName, wins: homeGamesWon };
+  players.B = { name: awayName, wins: awayGamesWon };
+
   updateNameDisplays();
   updateSummary();
 }
