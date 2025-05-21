@@ -1023,9 +1023,6 @@ function endGame() {
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // Swap games won
-  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
-
   // Update UI
   updateNameDisplays();
   updateSummary();
