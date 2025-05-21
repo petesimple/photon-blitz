@@ -883,6 +883,12 @@ function endGame() {
 
   updateNameDisplays(preLoser, preWinner, suddenDeathWinner);
 
+  console.log('[CHECK] players.A:', players.A);
+  console.log('[CHECK] players.B:', players.B);
+  console.log('[CHECK] homeName:', document.getElementById('homeName').value);
+  console.log('[CHECK] awayName:', document.getElementById('awayName').value);
+  console.log('[CHECK] Reversed:', document.querySelector('.scoreboard').classList.contains('reverse'));
+  
   console.log('G1:', game1);
   console.log('G2:', game2);
   console.log('G3:', game3);
