@@ -1022,39 +1022,40 @@ function updateCompactSummary() {
   const scoreboard = document.querySelector('.scoreboard');
   const wasReversed = scoreboard.classList.contains('reverse');
 
-  // Capture current names and scores
+  // 1️⃣ Capture the current game slot
+  const currentGame = game1 && game2 ? game3
+                      : game1        ? game2
+                      :                game1;
+
+  if (currentGame) {
+    const homeName = document.getElementById('homeName').value || 'Player 1';
+    const awayName = document.getElementById('awayName').value || 'Player 2';
+
+    // Determine who won this game using actual score values
+    const homeWon = homeScoreValue > awayScoreValue;
+    currentGame.winnerInitial = (homeWon ? homeName : awayName) === players.A.name ? 'A' : 'B';
+    currentGame.loserInitial  = (!homeWon ? homeName : awayName) === players.A.name ? 'A' : 'B';
+    currentGame.winnerScore   = homeWon ? homeScoreValue : awayScoreValue;
+    currentGame.loserScore    = homeWon ? awayScoreValue : homeScoreValue;
+  }
+
+  // 2️⃣ Perform the visual flip
+  scoreboard.classList.toggle('reverse');
+
+  // 3️⃣ Swap name input values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
-
-  // 💾 Swap input values (what the user sees and what endGame() reads)
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // 🔄 Swap the internal scores
+  // 4️⃣ Swap current score values
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // 🔄 Flip A/B assignment if it matches the names visually
-  if (players.A && players.B) {
-    const nameA = players.A.name;
-    const nameB = players.B.name;
+  // ✅ Do NOT swap players.A and players.B anymore
+  // That broke AB consistency across games
 
-    const newHome = homeInput.value;
-    const newAway = awayInput.value;
-
-    const currentLayoutMatchesAB = (newHome === nameA && newAway === nameB);
-    const currentLayoutMatchesBA = (newHome === nameB && newAway === nameA);
-
-    if (currentLayoutMatchesBA) {
-      [players.A, players.B] = [players.B, players.A]; // 👈 Fix identity mapping
-      console.log('🔁 Swapped persistent players.A and B to match visual sides');
-    }
-  }
-
-  // Toggle visual layout
-  scoreboard.classList.toggle('reverse');
-
-  // Update UI
+  // 5️⃣ Update UI
   updateNameDisplays();
   updateSummary();
 }
