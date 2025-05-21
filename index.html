@@ -817,40 +817,21 @@ function endGame() {
   console.log('Away:', awayName, awayScore);
   console.log('Reversed layout:', reversed);
 
-  // Initialize A/B mapping once
-  if (!players.A || !players.B) {
-    players.A = { name: homeName, wins: 0 };
-    players.B = { name: awayName, wins: 0 };
-    console.log('📌 Initialized players.A and players.B:', players);
-  }
-
-  // Determine the winner *before* any visual swapping
-  let winnerName, winnerScore, loserName, loserScore;
-
-  if (homeScore > awayScore) {
-    winnerName = homeName;
-    winnerScore = homeScore;
-    loserName = awayName;
-    loserScore = awayScore;
-  } else {
-    winnerName = awayName;
-    winnerScore = awayScore;
-    loserName = homeName;
-    loserScore = homeScore;
-  }
-
-  // Assign winner/loser initials using persistent identity
-  const winnerInitial = (winnerName === players.A.name) ? 'A' : 'B';
-  const loserInitial = (loserName === players.A.name) ? 'A' : 'B';
-
-  // Track wins using persistent identity
-  if (winnerInitial === 'A') players.A.wins++;
-  if (winnerInitial === 'B') players.B.wins++;
+  // Determine winner and loser by actual score
+  const homeWon = homeScore > awayScore;
+  const winnerName = homeWon ? homeName : awayName;
+  const winnerScore = homeWon ? homeScore : awayScore;
+  const loserName = homeWon ? awayName : homeName;
+  const loserScore = homeWon ? awayScore : homeScore;
 
   matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeScore > awayScore ? 'home' : 'away')
+    ? (homeWon ? 'home' : 'away')
     : null;
+
+  // Store visual side scores for summary
+  const leftScore = reversed ? awayScore : homeScore;
+  const rightScore = reversed ? homeScore : awayScore;
 
   const gameData = {
     homeName,
@@ -860,11 +841,11 @@ function endGame() {
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner,
     winnerName,
-    loserName,
     winnerScore,
+    loserName,
     loserScore,
-    winnerInitial,
-    loserInitial
+    leftScore,
+    rightScore
   };
 
   if (!game1) game1 = gameData;
@@ -889,16 +870,16 @@ function updateCompactSummary() {
   const container = document.getElementById('compactSummary');
   const games = [game1, game2, game3].filter(Boolean);
 
-  if (games.length === 0 || !players.A || !players.B) {
+  if (games.length === 0) {
     container.textContent = '';
     return;
   }
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    const winnerInitial = (g.winnerName === players.A.name) ? 'A' : 'B';
-    const loserInitial = (g.loserName === players.A.name) ? 'A' : 'B';
-    return `G${i + 1} ${isSD}${winnerInitial}${g.winnerScore}–${g.loserScore}${loserInitial}`;
+    const leftScore = g.leftScore ?? g.homeScore;  // fallback if leftScore not tracked
+    const rightScore = g.rightScore ?? g.awayScore;
+    return `G${i + 1} ${isSD}${leftScore}–${rightScore}`;
   });
 
   container.textContent = parts.join(', ');
