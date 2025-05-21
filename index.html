@@ -814,37 +814,39 @@ function endGame() {
   const leftInitial = leftName.charAt(0).toUpperCase();
   const rightInitial = rightName.charAt(0).toUpperCase();
 
-  // Determine actual winner and loser
+  // Determine actual winner/loser based on layout-side scores
   let winnerName, loserName, winnerScore, loserScore;
   let winnerInitial, loserInitial;
   let suddenDeathWinner = null;
   let preWinner = null;
   let preLoser = null;
 
-  if (homeScore > awayScore) {
-    winnerName = homeName;
-    loserName = awayName;
-    winnerScore = homeScore;
-    loserScore = awayScore;
-    homeGamesWon++;
-    preWinner = 'home';
-    preLoser = 'away';
+  if (leftScore > rightScore) {
+    winnerName = leftName;
+    loserName = rightName;
+    winnerScore = leftScore;
+    loserScore = rightScore;
+    winnerInitial = leftInitial;
+    loserInitial = rightInitial;
+    preWinner = reversed ? 'away' : 'home';
+    preLoser = reversed ? 'home' : 'away';
+    if (preWinner === 'home') homeGamesWon++;
+    else awayGamesWon++;
   } else {
-    winnerName = awayName;
-    loserName = homeName;
-    winnerScore = awayScore;
-    loserScore = homeScore;
-    awayGamesWon++;
-    preWinner = 'away';
-    preLoser = 'home';
+    winnerName = rightName;
+    loserName = leftName;
+    winnerScore = rightScore;
+    loserScore = leftScore;
+    winnerInitial = rightInitial;
+    loserInitial = leftInitial;
+    preWinner = reversed ? 'home' : 'away';
+    preLoser = reversed ? 'away' : 'home';
+    if (preWinner === 'home') homeGamesWon++;
+    else awayGamesWon++;
   }
 
-  winnerInitial = winnerName.charAt(0).toUpperCase();
-  loserInitial = loserName.charAt(0).toUpperCase();
   suddenDeathWinner = lastGameWasSuddenDeath
-    ? homeScore > awayScore
-      ? 'home'
-      : 'away'
+    ? preWinner
     : null;
 
   const gameData = {
@@ -868,13 +870,11 @@ function endGame() {
     loserInitial
   };
 
-  // Store in first available slot
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  matchesPlayed++; // ✅ increment properly
-
+  matchesPlayed++;
   updateNameDisplays(preLoser, preWinner, suddenDeathWinner);
   swapSides();
   resetForNextGame(true);
