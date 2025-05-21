@@ -1147,6 +1147,7 @@ function updateCompactSummary() {
   const B = players.B;
   let summary = '';
 
+  // Display winner based on actual A/B wins
   if (A.wins > B.wins) {
     summary += `<span class='winner'>${A.name} (${A.wins} Wins)</span><br>${B.name} (${B.wins} Wins)<br>`;
   } else if (B.wins > A.wins) {
@@ -1161,7 +1162,7 @@ function updateCompactSummary() {
   if (games.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
       games.map((g, i) =>
-        `Game ${i + 1}: ${g.homeName} ${g.homeScore} – ${g.awayScore} ${g.awayName}${g.wasSuddenDeath ? ' †' : ''}`
+        `Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
       ).join('<br>');
   }
 
