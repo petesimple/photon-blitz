@@ -861,6 +861,17 @@ function endGame() {
   updateSummary();
   updateCompactSummary();
 
+  // ⬅️ Add this before updateNameDisplays()
+if (homeScore > awayScore) {
+  homeGamesWon++;
+  if (players.A?.name === homeName) players.A.wins = homeGamesWon;
+  if (players.B?.name === homeName) players.B.wins = homeGamesWon;
+} else {
+  awayGamesWon++;
+  if (players.A?.name === awayName) players.A.wins = awayGamesWon;
+  if (players.B?.name === awayName) players.B.wins = awayGamesWon;
+}
+  
   updateNameDisplays(homeWon ? 'away' : 'home', homeWon ? 'home' : 'away', suddenDeathWinner);
   
   console.log('G1:', game1);
