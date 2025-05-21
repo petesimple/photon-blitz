@@ -1082,40 +1082,45 @@ function updateCompactSummary() {
   updateSummary();
 }
   // Updates name and score UI for each player
-  function updateNameDisplays(preLoser = null, preWinner = null, suddenDeathWinner = null) {
+  function updateNameDisplays() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
-  
-  // Raw inputs
-  const homeNameRaw = document.getElementById('homeName').value || 'Player 1';
-  const awayNameRaw = document.getElementById('awayName').value || 'Player 2';
-  
-  // Map to left/right based on reversal
-  const leftName  = reversed ? awayNameRaw : homeNameRaw;
-  const rightName = reversed ? homeNameRaw : awayNameRaw;
-  
-  // Pull wins from your game counters
-  const leftWins  = reversed ? awayGamesWon : homeGamesWon;
-  const rightWins = reversed ? homeGamesWon : awayGamesWon;
-  
-  // Figure out if the *last* game was SD loss on that side
-  const leftSide  = reversed ? 'away' : 'home';
-  const rightSide = reversed ? 'home' : 'away';
-  const leftLost  = lastGameWasSuddenDeath && preLoser === leftSide;
-  const rightLost = lastGameWasSuddenDeath && preLoser === rightSide;
-  
-  // Total games played = sum of wins
-  const gamesTotal = homeGamesWon + awayGamesWon;
-  
-  // Write out the display
+
+  // Fetch raw name inputs
+  const nameA = players.A.name;
+  const nameB = players.B.name;
+
+  // Decide which goes on left/right
+  const leftName  = reversed ? nameB : nameA;
+  const rightName = reversed ? nameA : nameB;
+
+  // Wins are stored on players.A.wins / players.B.wins
+  const leftWins  = reversed ? players.B.wins : players.A.wins;
+  const rightWins = reversed ? players.A.wins : players.B.wins;
+
+  // Last-game sudden-death loser: if they lost in SD, mark that pip
+  const sdLoser = lastGameWasSuddenDeath ? suddenDeathLoser : null;
+  const leftLost  = sdLoser === (reversed ? 'B' : 'A');
+  const rightLost = sdLoser === (reversed ? 'A' : 'B');
+
+  // Total games played
+  const total = players.A.wins + players.B.wins;
+
+  // SUDDEN_DEATH winner side string for gold star
+  let sdWinnerSide = null;
+  if (lastGameWasSuddenDeath) {
+    sdWinnerSide = (players.A.wins > players.B.wins ? (reversed ? 'right' : 'left')
+                                                  : (reversed ? 'left'  : 'right'));
+  }
+
+  // Render
   const leftDisplay  = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
-  
-  if (gamesTotal > 0) {
-    leftDisplay.textContent  = `${leftName}  ${getPips(leftWins,  leftLost,  gamesTotal, suddenDeathWinner === leftSide)}`;
-    rightDisplay.textContent = `${rightName}  ${getPips(rightWins, rightLost, gamesTotal, suddenDeathWinner === rightSide)}`;
+
+  if (total > 0) {
+    leftDisplay.textContent  = `${leftName} ${getPips(leftWins,  leftLost,  total, sdWinnerSide==='left')}`;
+    rightDisplay.textContent = `${rightName} ${getPips(rightWins, rightLost, total, sdWinnerSide==='right')}`;
   } else {
-    // no games yet
     leftDisplay.textContent  = leftName;
     rightDisplay.textContent = rightName;
   }
