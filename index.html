@@ -797,6 +797,12 @@ let game1 = null;
 let game2 = null;
 let game3 = null;
 
+//declare players as AB values    
+let players = {
+  A: null,
+  B: null
+};
+    
 // Called when a game ends
 function endGame() {
   const homeName = document.getElementById('homeName').value || 'Player 1';
@@ -804,7 +810,13 @@ function endGame() {
   const homeScore = homeScoreValue;
   const awayScore = awayScoreValue;
 
-  // Snapshot layout before swap
+  // Initialize persistent player identities on first game only
+  if (!players.A || !players.B) {
+    players.A = { name: homeName, wins: 0 };
+    players.B = { name: awayName, wins: 0 };
+  }
+
+  // Determine layout
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
   const leftName = reversed ? awayName : homeName;
@@ -814,32 +826,39 @@ function endGame() {
   const leftInitial = leftName.charAt(0).toUpperCase();
   const rightInitial = rightName.charAt(0).toUpperCase();
 
-  let preWinnerSide, preLoserSide, winnerName, loserName;
-  let winnerScore, loserScore, winnerInitial, loserInitial;
+  let winnerName, loserName;
+  let winnerScore, loserScore;
+  let winnerInitial, loserInitial;
+  let preWinnerSide, preLoserSide;
 
   if (leftScore > rightScore) {
-    preWinnerSide = reversed ? 'away' : 'home';
-    preLoserSide  = reversed ? 'home' : 'away';
-    winnerName    = leftName;
-    loserName     = rightName;
-    winnerScore   = leftScore;
-    loserScore    = rightScore;
+    winnerName = leftName;
+    loserName = rightName;
+    winnerScore = leftScore;
+    loserScore = rightScore;
     winnerInitial = leftInitial;
-    loserInitial  = rightInitial;
+    loserInitial = rightInitial;
+    preWinnerSide = reversed ? 'away' : 'home';
+    preLoserSide = reversed ? 'home' : 'away';
   } else {
-    preWinnerSide = reversed ? 'home' : 'away';
-    preLoserSide  = reversed ? 'away' : 'home';
-    winnerName    = rightName;
-    loserName     = leftName;
-    winnerScore   = rightScore;
-    loserScore    = leftScore;
+    winnerName = rightName;
+    loserName = leftName;
+    winnerScore = rightScore;
+    loserScore = leftScore;
     winnerInitial = rightInitial;
-    loserInitial  = leftInitial;
+    loserInitial = leftInitial;
+    preWinnerSide = reversed ? 'home' : 'away';
+    preLoserSide = reversed ? 'away' : 'home';
   }
 
-  if (preWinnerSide === 'home') homeGamesWon++;
-  else awayGamesWon++;
+  // Attribute win to persistent player identity
+  if (winnerName === players.A.name) {
+    players.A.wins++;
+  } else if (winnerName === players.B.name) {
+    players.B.wins++;
+  }
 
+  matchesPlayed++;
   const suddenDeathWinner = lastGameWasSuddenDeath ? preWinnerSide : null;
 
   const gameData = {
@@ -867,7 +886,6 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  matchesPlayed++;
   updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
   swapSides();
   resetForNextGame(true);
@@ -1057,24 +1075,23 @@ function endGame() {
 }
   // Builds summary text for the match summary section
   function updateSummary() {
-  const homeName = document.getElementById('homeName').value || 'Player 1';
-  const awayName = document.getElementById('awayName').value || 'Player 2';
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
+  const container = document.getElementById('summaryText');
 
-  const leftName = reversed ? awayName : homeName;
-  const rightName = reversed ? homeName : awayName;
-  const leftWins = reversed ? awayGamesWon : homeGamesWon;
-  const rightWins = reversed ? homeGamesWon : awayGamesWon;
+  if (!players.A || !players.B) {
+    container.innerHTML = 'No match data available.';
+    return;
+  }
 
+  const A = players.A;
+  const B = players.B;
   let summary = '';
 
-  if (leftWins > rightWins) {
-    summary += `<span class='winner'>${leftName} (${leftWins} Wins)</span><br>${rightName} (${rightWins} Wins)<br>`;
-  } else if (rightWins > leftWins) {
-    summary += `${leftName} (${leftWins} Wins)<br><span class='winner'>${rightName} (${rightWins} Wins)</span><br>`;
+  if (A.wins > B.wins) {
+    summary += `<span class='winner'>${A.name} (${A.wins} Wins)</span><br>${B.name} (${B.wins} Wins)<br>`;
+  } else if (B.wins > A.wins) {
+    summary += `${A.name} (${A.wins} Wins)<br><span class='winner'>${B.name} (${B.wins} Wins)</span><br>`;
   } else {
-    summary += `${leftName} (${leftWins} Wins)<br>${rightName} (${rightWins} Wins)<br>`;
+    summary += `${A.name} (${A.wins} Wins)<br>${B.name} (${B.wins} Wins)<br>`;
   }
 
   summary += `Matches Played: ${matchesPlayed}<br><br>`;
@@ -1087,7 +1104,7 @@ function endGame() {
       ).join('<br>');
   }
 
-  document.getElementById('summaryText').innerHTML = summary;
+  container.innerHTML = summary;
   updateCompactSummary();
 }
     // Rebuilds the compact “G1…G3” line
