@@ -1022,41 +1022,39 @@ function updateCompactSummary() {
   const scoreboard = document.querySelector('.scoreboard');
   const wasReversed = scoreboard.classList.contains('reverse');
 
-  // 1️⃣ Capture the *current* game slot (the one we just filled in endGame)
-  //    It'll be game1 if that’s empty, else game2 if empty, else game3.
-  const currentGame = game1 && game2 ? game3
-                      : game1          ? game2
-                      :                  game1;
-
-  if (currentGame) {
-    // 2️⃣ Store the *pre‑swap* winner/loser & scores into that slot
-    //    We use the raw homeScoreValue/awayScoreValue, not flipped values.
-    const homeName = document.getElementById('homeName').value || 'Player 1';
-    const awayName = document.getElementById('awayName').value || 'Player 2';
-
-    // Determine who really won *this* game:
-    const homeWon = homeScoreValue > awayScoreValue;
-    currentGame.winnerInitial = (homeWon ? homeName : awayName).charAt(0).toUpperCase();
-    currentGame.loserInitial  = (!homeWon ? homeName : awayName).charAt(0).toUpperCase();
-    currentGame.winnerScore   = homeWon ? homeScoreValue : awayScoreValue;
-    currentGame.loserScore    = homeWon ? awayScoreValue : homeScoreValue;
-    // wasSuddenDeath etc. are already set in endGame
-  }
-
-  // 3️⃣ Now do the *visual* flip
-  scoreboard.classList.toggle('reverse');
-
-  // Swap the name inputs
+  // Capture current names and scores
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
+
+  // 💾 Swap input values (what the user sees and what endGame() reads)
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // Swap the *displayed* scores too
+  // 🔄 Swap the internal scores
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // 4️⃣ Finally update the UI
+  // 🔄 Flip A/B assignment if it matches the names visually
+  if (players.A && players.B) {
+    const nameA = players.A.name;
+    const nameB = players.B.name;
+
+    const newHome = homeInput.value;
+    const newAway = awayInput.value;
+
+    const currentLayoutMatchesAB = (newHome === nameA && newAway === nameB);
+    const currentLayoutMatchesBA = (newHome === nameB && newAway === nameA);
+
+    if (currentLayoutMatchesBA) {
+      [players.A, players.B] = [players.B, players.A]; // 👈 Fix identity mapping
+      console.log('🔁 Swapped persistent players.A and B to match visual sides');
+    }
+  }
+
+  // Toggle visual layout
+  scoreboard.classList.toggle('reverse');
+
+  // Update UI
   updateNameDisplays();
   updateSummary();
 }
