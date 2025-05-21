@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v1.9.9.6 (abandonhope)</div>
+  <div id="versionTag">v1.9.9.666 (👿)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -1130,8 +1130,11 @@ function updateCompactSummary() {
 
   const parts = games.map((g, i) => {
     const isSD = g.wasSuddenDeath ? '†' : '';
-    const winnerInitial = (g.winnerName === players.A.name) ? 'A' : 'B';
-    const loserInitial = (g.loserName === players.A.name) ? 'A' : 'B';
+    
+    // ✅ Use A/B identity based on original mapping
+    const winnerInitial = g.winnerName === players.A.name ? 'A' : 'B';
+    const loserInitial = g.loserName === players.A.name ? 'A' : 'B';
+
     const winnerScore = g.winnerScore;
     const loserScore = g.loserScore;
 
