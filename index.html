@@ -1087,33 +1087,33 @@ function endGame() {
   const reversed = scoreboard.classList.contains('reverse');
   const games = [game1, game2, game3].filter(Boolean);
 
-  const getGameResults = (isLeft) => {
-    return games.map((g) => {
-      const scoreA = reversed ? g.awayScore : g.homeScore;
-      const scoreB = reversed ? g.homeScore : g.awayScore;
-      const thisSideScore = isLeft ? scoreA : scoreB;
-      const otherSideScore = isLeft ? scoreB : scoreA;
-
-      return {
-        isLoss: thisSideScore < otherSideScore,
-        isSDWin: g.wasSuddenDeath && thisSideScore > otherSideScore
-      };
-    });
-  };
-
   const leftName = reversed ? players.B.name : players.A.name;
   const rightName = reversed ? players.A.name : players.B.name;
 
-  const leftGames = getGameResults(true);
-  const rightGames = getGameResults(false);
+  const leftGames = games.map(g => ({
+    visualWinnerName: g.visualWinnerName,
+    visualLoserName: g.visualLoserName,
+    leftName: reversed ? g.awayName : g.homeName,
+    rightName: reversed ? g.homeName : g.awayName,
+    wasSuddenDeath: g.wasSuddenDeath
+  }));
 
-  document.getElementById('homeDisplay').textContent = `${leftName} ${getPipsFromGames(leftGames)}`;
-  document.getElementById('awayDisplay').textContent = `${rightName} ${getPipsFromGames(rightGames)}`;
-}
-  // Builds summary text for the match summary section
-  function updateSummary() {
-  // Skip the big match summary, just rely on compact summary
-  updateCompactSummary();
+  const rightGames = games.map(g => ({
+    visualWinnerName: g.visualWinnerName,
+    visualLoserName: g.visualLoserName,
+    leftName: reversed ? g.awayName : g.homeName,
+    rightName: reversed ? g.homeName : g.awayName,
+    wasSuddenDeath: g.wasSuddenDeath
+  }));
+
+  const leftDisplay = document.getElementById('homeDisplay');
+  const rightDisplay = document.getElementById('awayDisplay');
+
+  const leftPips = getPipsFromGames(leftGames, 'left');
+  const rightPips = getPipsFromGames(rightGames, 'right');
+
+  leftDisplay.textContent = `${leftName} ${leftPips}`;
+  rightDisplay.textContent = `${rightName} ${rightPips}`;
 }
     // compact summary old location
 
