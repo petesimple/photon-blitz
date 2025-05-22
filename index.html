@@ -1111,41 +1111,8 @@ function endGame() {
 }
   // Builds summary text for the match summary section
   function updateSummary() {
-  const container = document.getElementById('summaryText');
-  const games = [game1, game2, game3].filter(Boolean);
-  if (games.length === 0) {
-    container.innerHTML = 'No match data available.';
-    return;
-  }
-
-  // Count wins based on visual winner names
-  const winCounts = {};
-  games.forEach(g => {
-    const winner = g.visualWinnerName || g.winnerName;
-    if (!winCounts[winner]) winCounts[winner] = 0;
-    winCounts[winner]++;
-  });
-
-  // Get the full list of unique players from visual data
-  const allPlayers = new Set(games.flatMap(g => [g.visualWinnerName, g.visualLoserName]));
-  let summary = '';
-
-  // Display each player's wins
-  allPlayers.forEach(name => {
-    const wins = winCounts[name] || 0;
-    const display = wins > 0
-      ? `<span class='winner'>${name} (${wins} Wins)</span>`
-      : `${name} (${wins} Wins)`;
-    summary += display + '<br>';
-  });
-
-  summary += `Matches Played: ${games.length}<br><br>`;
-  summary += `<strong>Game Scores:</strong><br>`;
-  summary += games.map((g, i) =>
-    `Game ${i + 1}: ${g.visualWinnerName} ${g.visualWinnerScore} – ${g.visualLoserScore} ${g.visualLoserName}${g.wasSuddenDeath ? ' †' : ''}`
-  ).join('<br>');
-
-  container.innerHTML = summary;
+  // Skip the big match summary, just rely on compact summary
+  updateCompactSummary();
 }
     // compact summary old location
 
