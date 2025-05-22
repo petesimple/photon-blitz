@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.5.3 (yethur)</div>
+  <div id="versionTag">v2.5.4 (3BF)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -886,6 +886,26 @@ function endGame() {
 
   finalGameSnapshot = []; // clear after recording
   console.log('🎯 [endGame()] COMPLETE');
+}
+
+    function updateCompactSummary() {
+  const compact = document.getElementById('compactSummary');
+  const games = [game1, game2, game3].filter(Boolean);
+  if (!games.length) {
+    compact.textContent = '';
+    return;
+  }
+
+  // Use initials and scores
+  const summaries = games.map((g, i) => {
+    const initialA = players.A.name.trim().charAt(0).toUpperCase() || 'A';
+    const initialB = players.B.name.trim().charAt(0).toUpperCase() || 'B';
+    const winnerInitial = g.winnerName === players.A.name ? initialA : initialB;
+    const loserInitial  = g.loserName  === players.A.name ? initialA : initialB;
+    return `G${i + 1} ${winnerInitial}${g.winnerScore}-${g.loserScore}${loserInitial}${g.wasSuddenDeath ? '†' : ''}`;
+  });
+
+  compact.textContent = summaries.join('  ');
 }
 
   // Resets scoreboard for the next game
