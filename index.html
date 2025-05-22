@@ -742,6 +742,15 @@ body.locked .timeout-button {
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
+  // 🧊 Snapshot scores before any layout mutation happens
+  window.finalGameSnapshot = {
+    homeName: document.getElementById('homeName').value || 'Player 1',
+    awayName: document.getElementById('awayName').value || 'Player 2',
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
+    reversed: document.querySelector('.scoreboard').classList.contains('reverse')
+  };
+
   if (suddenDeath) {
     endGame();
   } else {
