@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.5.1 (thur-real)</div>
+  <div id="versionTag">v2.5.2 (thur-fix)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -813,46 +813,51 @@ let players = {
 };
     
 function endGame() {
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
+  const snap = window.finalGameSnapshot || {
+    homeName: document.getElementById('homeName').value || 'Player 1',
+    awayName: document.getElementById('awayName').value || 'Player 2',
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue,
+    reversed: document.querySelector('.scoreboard').classList.contains('reverse')
+  };
 
-  // Lock in data BEFORE swap
-  const preHomeName = document.getElementById('homeName').value || 'Player 1';
-  const preAwayName = document.getElementById('awayName').value || 'Player 2';
-  const preHomeScore = homeScoreValue;
-  const preAwayScore = awayScoreValue;
-  const homeWon = preHomeScore > preAwayScore;
+  const homeWon = snap.homeScore > snap.awayScore;
+  const winnerName = homeWon ? snap.homeName : snap.awayName;
+  const loserName = homeWon ? snap.awayName : snap.homeName;
+  const winnerScore = homeWon ? snap.homeScore : snap.awayScore;
+  const loserScore = homeWon ? snap.awayScore : snap.homeScore;
 
   console.log('🎯 [endGame()] BEGIN');
-  console.log('Home:', preHomeName, preHomeScore);
-  console.log('Away:', preAwayName, preAwayScore);
-  console.log('Reversed layout:', reversed);
+  console.log('Home:', snap.homeName, snap.homeScore);
+  console.log('Away:', snap.awayName, snap.awayScore);
+  console.log('Reversed layout:', snap.reversed);
 
-  const winnerName = homeWon ? preHomeName : preAwayName;
-  const loserName = homeWon ? preAwayName : preHomeName;
-  const winnerScore = homeWon ? preHomeScore : preAwayScore;
-  const loserScore = homeWon ? preAwayScore : preHomeScore;
+  if (players.A && players.A.name === winnerName) players.A.wins++;
+  else if (players.B && players.B.name === winnerName) players.B.wins++;
 
-  // Sudden death tracking
+  if (homeWon) homeGamesWon++;
+  else awayGamesWon++;
+
+  matchesPlayed++;
+
   const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right'))
+    ? (homeWon ? (snap.reversed ? 'right' : 'left') : (snap.reversed ? 'left' : 'right'))
     : null;
 
   const suddenDeathLoser = lastGameWasSuddenDeath
-    ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
+    ? (homeWon ? (snap.reversed ? 'left' : 'right') : (snap.reversed ? 'right' : 'left'))
     : null;
 
   window.suddenDeathLoser = suddenDeathLoser;
 
-  const leftScore = reversed ? preAwayScore : preHomeScore;
-  const rightScore = reversed ? preHomeScore : preAwayScore;
+  const leftScore = snap.reversed ? snap.awayScore : snap.homeScore;
+  const rightScore = snap.reversed ? snap.homeScore : snap.awayScore;
 
-  // Save game record
   const gameData = {
-    homeName: preHomeName,
-    awayName: preAwayName,
-    homeScore: preHomeScore,
-    awayScore: preAwayScore,
+    homeName: snap.homeName,
+    awayName: snap.awayName,
+    homeScore: snap.homeScore,
+    awayScore: snap.awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner,
     winnerName,
@@ -867,21 +872,6 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  // Correctly increment A or B
-  if (players.A?.name === winnerName) {
-    players.A.wins++;
-  } else if (players.B?.name === winnerName) {
-    players.B.wins++;
-  }
-
-  if (homeWon) {
-    homeGamesWon++;
-  } else {
-    awayGamesWon++;
-  }
-
-  matchesPlayed++;
-
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
   swapSides();
@@ -891,9 +881,8 @@ function endGame() {
   updateSummary();
   updateCompactSummary();
 
-  const preWinnerSide = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
-  const preLoserSide = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
-
+  const preWinnerSide = homeWon ? (snap.reversed ? 'left' : 'right') : (snap.reversed ? 'right' : 'left');
+  const preLoserSide = homeWon ? (snap.reversed ? 'right' : 'left') : (snap.reversed ? 'left' : 'right');
   updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
 
   console.log('🎯 [endGame()] COMPLETE');
