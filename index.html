@@ -1336,6 +1336,12 @@ function adjustGamesVisual(visualSide, delta) {
     : (reversed ? 'home' : 'away');
   adjustGames(logicalSide, delta);
 }
+    function getVisualSides() {
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  return reversed
+    ? { left: 'away', right: 'home' }
+    : { left: 'home', right: 'away' };
+}
     
 </script>
 </body>
