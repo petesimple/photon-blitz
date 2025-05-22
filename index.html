@@ -60,16 +60,11 @@
 }
 
     .score-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;     /* ✅ added */
-  gap: 5px;
-  flex: 1;                     /* ✅ ensures it stretches evenly */
-  min-width: 40vw;             /* ✅ gives larger tap area */
-  height: 100%;                /* ✅ fills vertical space */
-  cursor: pointer;             /* ✅ shows it's interactive */
-}
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
 
     .score-center {
   position: relative;
@@ -501,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.4.1 (blitz)</div>
+  <div id="versionTag">v2.3.3 (ready)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -593,12 +588,11 @@ body.locked .timeout-button {
   </div>
 </div>
 
-    <!--
-<div class="match-summary" id="matchSummary">
-  <h3>Match Summary</h3>
-  <div id="summaryText"></div>
-</div>
--->
+    <!-- Dynamic summary of match results -->
+    <div class="match-summary" id="matchSummary">
+      <h3>Match Summary</h3>
+      <div id="summaryText"></div>
+    </div>
   </div>
 
   <!-- Set horn sound --> 
@@ -818,7 +812,7 @@ let players = {
   A: null,
   B: null
 };
-    
+
 function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
@@ -1092,27 +1086,73 @@ function endGame() {
   const reversed = scoreboard.classList.contains('reverse');
   const games = [game1, game2, game3].filter(Boolean);
 
+  const getGameResults = (isLeft) => {
+    return games.map((g) => {
+      const scoreA = reversed ? g.awayScore : g.homeScore;
+      const scoreB = reversed ? g.homeScore : g.awayScore;
+      const thisSideScore = isLeft ? scoreA : scoreB;
+      const otherSideScore = isLeft ? scoreB : scoreA;
+
+      return {
+        isLoss: thisSideScore < otherSideScore,
+        isSDWin: g.wasSuddenDeath && thisSideScore > otherSideScore
+      };
+    });
+  };
+
   const leftName = reversed ? players.B.name : players.A.name;
   const rightName = reversed ? players.A.name : players.B.name;
 
-  const leftGames = games.map(g => ({
-    visualWinnerName: g.visualWinnerName,
-    visualLoserName: g.visualLoserName,
-    leftName: reversed ? g.awayName : g.homeName,
-    rightName: reversed ? g.homeName : g.awayName,
-    wasSuddenDeath: g.wasSuddenDeath
-  }));
+  const leftGames = getGameResults(true);
+  const rightGames = getGameResults(false);
 
-  const rightGames = games.map(g => ({
-    visualWinnerName: g.visualWinnerName,
-    visualLoserName: g.visualLoserName,
-    leftName: reversed ? g.awayName : g.homeName,
-    rightName: reversed ? g.homeName : g.awayName,
-    wasSuddenDeath: g.wasSuddenDeath
-  }));
+  document.getElementById('homeDisplay').textContent = `${leftName} ${getPipsFromGames(leftGames)}`;
+  document.getElementById('awayDisplay').textContent = `${rightName} ${getPipsFromGames(rightGames)}`;
+}
+  // Builds summary text for the match summary section
+  function updateSummary() {
+  const container = document.getElementById('summaryText');
 
-  document.getElementById('homeDisplay').textContent = `${leftName} ${getPipsFromGames(leftGames, 'left')}`;
-  document.getElementById('awayDisplay').textContent = `${rightName} ${getPipsFromGames(rightGames, 'right')}`;
+  if (!players.A || !players.B) {
+    container.innerHTML = 'No match data available.';
+    return;
+  }
+
+  const games = [game1, game2, game3].filter(Boolean);
+  let leftWins = 0;
+  let rightWins = 0;
+
+  games.forEach(g => {
+    if (g.leftScore > g.rightScore) leftWins++;
+    else if (g.rightScore > g.leftScore) rightWins++;
+  });
+
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+  const leftPlayer = reversed ? players.B : players.A;
+  const rightPlayer = reversed ? players.A : players.B;
+
+  let summary = '';
+
+  if (leftWins > rightWins) {
+    summary += `<span class='winner'>${leftPlayer.name} (${leftWins} Wins)</span><br>${rightPlayer.name} (${rightWins} Wins)<br>`;
+  } else if (rightWins > leftWins) {
+    summary += `${leftPlayer.name} (${leftWins} Wins)<br><span class='winner'>${rightPlayer.name} (${rightWins} Wins)</span><br>`;
+  } else {
+    summary += `${leftPlayer.name} (${leftWins} Wins)<br>${rightPlayer.name} (${rightWins} Wins)<br>`;
+  }
+
+  summary += `Matches Played: ${games.length}<br><br>`;
+
+  if (games.length > 0) {
+    summary += `<strong>Game Scores:</strong><br>` +
+      games.map((g, i) =>
+        `Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
+      ).join('<br>');
+  }
+
+  container.innerHTML = summary;
+  updateCompactSummary(); // still keep compact summary in sync
 }
     // compact summary old location
 
@@ -1135,10 +1175,13 @@ function endGame() {
   loadNames();
   updateTimer();
 
-    document.getElementById('homeScoreDisplay').addEventListener('click', () => {
+    document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
+  e.stopPropagation();
   scoreVisual('left');
 });
-document.getElementById('awayScoreDisplay').addEventListener('click', () => {
+
+document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
+  e.stopPropagation();
   scoreVisual('right');
 });
 
@@ -1165,7 +1208,7 @@ document.getElementById('awayScoreDisplay').addEventListener('click', () => {
     scoreVisual('right');
   }
 });
-    
+
     document.getElementById('timer').addEventListener('click', (e) => {
   e.stopPropagation(); // prevent scoreboard click fallback
   toggleTimer();       // toggle the match timer
@@ -1278,32 +1321,23 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
   return pips;
 }
 
-    function getPipsFromGames(games, side = 'left') {
-  let wins = 0;
+    function getPipsFromGames(games) {
+  const wins = games.filter(g => !g.isLoss).length;
+  const loss = games.find(g => g.isLoss);
+  const lastIsSDWin = games.findLast(g => g.isSDWin);
+
   let pips = '';
-  let lossFound = false;
 
-  for (let g of games) {
-    const isWin = (side === 'left')
-      ? g.visualWinnerName === g.leftName
-      : g.visualWinnerName === g.rightName;
-
-    const isLoss = (side === 'left')
-      ? g.visualLoserName === g.leftName
-      : g.visualLoserName === g.rightName;
-
-    const isSD = g.wasSuddenDeath && isWin;
-
-    if (isWin) {
-      wins++;
-      pips += isSD ? '⭐' : '●';
-    } else if (isLoss && !lossFound) {
-      lossFound = true;
+  games.forEach((g, i) => {
+    if (g.isSDWin && i === games.length - 1) {
+      pips += '⭐';
+    } else if (!g.isLoss) {
+      pips += '●';
     }
-  }
+  });
 
   const empty = Math.max(0, 3 - pips.length);
-  if (lossFound && empty > 0) {
+  if (loss && empty > 0) {
     pips += '☠️' + '○'.repeat(empty - 1);
   } else {
     pips += '○'.repeat(empty);
@@ -1311,7 +1345,7 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
 
   return pips;
 }
-    
+
 function getLogicalSide(side) {
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
   if (reversed) {
@@ -1348,7 +1382,7 @@ function adjustGamesVisual(visualSide, delta) {
     ? { left: 'away', right: 'home' }
     : { left: 'home', right: 'away' };
 }
-    
+
 </script>
 </body>
 </html>
