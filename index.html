@@ -1131,12 +1131,12 @@ function endGame() {
   updateTimer();
 
     document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
-  //e.stopPropagation();
+  e.stopPropagation();
   scoreVisual('left');
 });
 
 document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
-  //e.stopPropagation();
+  e.stopPropagation();
   scoreVisual('right');
 });
 
@@ -1165,7 +1165,7 @@ document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
 });
     
     document.getElementById('timer').addEventListener('click', (e) => {
-  //e.stopPropagation(); // prevent scoreboard click fallback
+  e.stopPropagation(); // prevent scoreboard click fallback
   toggleTimer();       // toggle the match timer
 });
   // Toggles the "locked" class on body to fix scoreboard at top
