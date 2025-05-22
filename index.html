@@ -1282,26 +1282,38 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
   return pips;
 }
 
-    function getPipsFromGames(games) {
-  const wins = games.filter(g => !g.isLoss).length;
-  const loss = games.find(g => g.isLoss);
-  const lastIsSDWin = games.findLast(g => g.isSDWin);
-
+    function getPipsFromGames(gameHistory, side = 'left') {
+  let wins = 0;
   let pips = '';
+  let lossFound = false;
 
-  games.forEach((g, i) => {
-    if (g.isSDWin && i === games.length - 1) {
-      pips += '⭐';
-    } else if (!g.isLoss) {
-      pips += '●';
+  for (let i = 0; i < gameHistory.length; i++) {
+    const game = gameHistory[i];
+    const isWin = (side === 'left') 
+      ? game.visualWinnerName === game.leftName 
+      : game.visualWinnerName === game.rightName;
+    const isLoss = (side === 'left') 
+      ? game.visualLoserName === game.leftName 
+      : game.visualLoserName === game.rightName;
+    const isSD = game.wasSuddenDeath && isWin;
+
+    if (isWin) {
+      wins++;
+      if (isSD) {
+        pips += '⭐';
+      } else {
+        pips += '●';
+      }
+    } else if (isLoss && !lossFound) {
+      lossFound = true;
     }
-  });
+  }
 
-  const empty = Math.max(0, 3 - pips.length);
-  if (loss && empty > 0) {
-    pips += '☠️' + '○'.repeat(empty - 1);
+  const emptySlots = Math.max(0, 3 - pips.length);
+  if (lossFound && emptySlots > 0) {
+    pips += '☠️' + '○'.repeat(emptySlots - 1);
   } else {
-    pips += '○'.repeat(empty);
+    pips += '○'.repeat(emptySlots);
   }
 
   return pips;
