@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.5 (thur)</div>
+  <div id="versionTag">v2.5.1 (thur-real)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -807,75 +807,84 @@ function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  // 1. Read current names & scores
-  const homeName   = document.getElementById('homeName').value || 'Player 1';
-  const awayName   = document.getElementById('awayName').value || 'Player 2';
-  const homeScore  = homeScoreValue;
-  const awayScore  = awayScoreValue;
-  const homeWon    = homeScore > awayScore;
+  // Lock in data BEFORE swap
+  const preHomeName = document.getElementById('homeName').value || 'Player 1';
+  const preAwayName = document.getElementById('awayName').value || 'Player 2';
+  const preHomeScore = homeScoreValue;
+  const preAwayScore = awayScoreValue;
+  const homeWon = preHomeScore > preAwayScore;
 
   console.log('🎯 [endGame()] BEGIN');
-  console.log('Home:', homeName, homeScore);
-  console.log('Away:', awayName, awayScore);
+  console.log('Home:', preHomeName, preHomeScore);
+  console.log('Away:', preAwayName, preAwayScore);
   console.log('Reversed layout:', reversed);
 
-  // 2. Pre‑swap winner/loser by actual score
-  const winnerName = homeWon ? homeName : awayName;
-  const loserName  = homeWon ? awayName : homeName;
-  const winnerScore= homeWon ? homeScore : awayScore;
-  const loserScore = homeWon ? awayScore : homeScore;
+  const winnerName = homeWon ? preHomeName : preAwayName;
+  const loserName = homeWon ? preAwayName : preHomeName;
+  const winnerScore = homeWon ? preHomeScore : preAwayScore;
+  const loserScore = homeWon ? preAwayScore : preHomeScore;
 
-  // 3. Increment the correct player.A or player.B, by name
-  if (players.A && players.A.name === winnerName) {
-    players.A.wins++;
-  } else if (players.B && players.B.name === winnerName) {
-    players.B.wins++;
-  }
-
-  // 4. Also track total games for pips
-  if (homeWon)  homeGamesWon++;
-  else          awayGamesWon++;
-
-  matchesPlayed++;
-
-  // 5. Prepare sudden‑death flags & left/right scores
+  // Sudden death tracking
   const suddenDeathWinner = lastGameWasSuddenDeath
     ? (homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right'))
     : null;
+
   const suddenDeathLoser = lastGameWasSuddenDeath
     ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
     : null;
+
   window.suddenDeathLoser = suddenDeathLoser;
 
-  const leftScore  = reversed ? awayScore : homeScore;
-  const rightScore = reversed ? homeScore : awayScore;
+  const leftScore = reversed ? preAwayScore : preHomeScore;
+  const rightScore = reversed ? preHomeScore : preAwayScore;
 
-  // 6. Record this game in the next free slot
+  // Save game record
   const gameData = {
-    homeName, awayName, homeScore, awayScore,
+    homeName: preHomeName,
+    awayName: preAwayName,
+    homeScore: preHomeScore,
+    awayScore: preAwayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner, winnerName, winnerScore,
-    loserName, loserScore, leftScore, rightScore
+    suddenDeathWinner,
+    winnerName,
+    winnerScore,
+    loserName,
+    loserScore,
+    leftScore,
+    rightScore
   };
-  if (!game1)        game1 = gameData;
-  else if (!game2)   game2 = gameData;
-  else               game3 = gameData;
+
+  if (!game1) game1 = gameData;
+  else if (!game2) game2 = gameData;
+  else game3 = gameData;
+
+  // Correctly increment A or B
+  if (players.A?.name === winnerName) {
+    players.A.wins++;
+  } else if (players.B?.name === winnerName) {
+    players.B.wins++;
+  }
+
+  if (homeWon) {
+    homeGamesWon++;
+  } else {
+    awayGamesWon++;
+  }
+
+  matchesPlayed++;
 
   console.log('✅ Game recorded:', gameData);
-
-  // 7. Now perform the visual swap
-  console.log('🔁 Swapping sides…');
+  console.log('🔁 Swapping sides...');
   swapSides();
   console.log('🔄 Swap complete. reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
 
-  // 8. Reset & refresh UI
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
 
-  // 9. Pass correct pre‑swap loser/winner for pip rendering
   const preWinnerSide = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
-  const preLoserSide  = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
+  const preLoserSide = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
+
   updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
 
   console.log('🎯 [endGame()] COMPLETE');
