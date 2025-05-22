@@ -1106,14 +1106,8 @@ function endGame() {
     wasSuddenDeath: g.wasSuddenDeath
   }));
 
-  const leftDisplay = document.getElementById('homeDisplay');
-  const rightDisplay = document.getElementById('awayDisplay');
-
-  const leftPips = getPipsFromGames(leftGames, 'left');
-  const rightPips = getPipsFromGames(rightGames, 'right');
-
-  leftDisplay.textContent = `${leftName} ${leftPips}`;
-  rightDisplay.textContent = `${rightName} ${rightPips}`;
+  document.getElementById('homeDisplay').textContent = `${leftName} ${getPipsFromGames(leftGames, 'left')}`;
+  document.getElementById('awayDisplay').textContent = `${rightName} ${getPipsFromGames(rightGames, 'right')}`;
 }
     // compact summary old location
 
@@ -1282,38 +1276,35 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
   return pips;
 }
 
-    function getPipsFromGames(gameHistory, side = 'left') {
+    function getPipsFromGames(games, side = 'left') {
   let wins = 0;
   let pips = '';
   let lossFound = false;
 
-  for (let i = 0; i < gameHistory.length; i++) {
-    const game = gameHistory[i];
-    const isWin = (side === 'left') 
-      ? game.visualWinnerName === game.leftName 
-      : game.visualWinnerName === game.rightName;
-    const isLoss = (side === 'left') 
-      ? game.visualLoserName === game.leftName 
-      : game.visualLoserName === game.rightName;
-    const isSD = game.wasSuddenDeath && isWin;
+  for (let g of games) {
+    const isWin = (side === 'left')
+      ? g.visualWinnerName === g.leftName
+      : g.visualWinnerName === g.rightName;
+
+    const isLoss = (side === 'left')
+      ? g.visualLoserName === g.leftName
+      : g.visualLoserName === g.rightName;
+
+    const isSD = g.wasSuddenDeath && isWin;
 
     if (isWin) {
       wins++;
-      if (isSD) {
-        pips += '⭐';
-      } else {
-        pips += '●';
-      }
+      pips += isSD ? '⭐' : '●';
     } else if (isLoss && !lossFound) {
       lossFound = true;
     }
   }
 
-  const emptySlots = Math.max(0, 3 - pips.length);
-  if (lossFound && emptySlots > 0) {
-    pips += '☠️' + '○'.repeat(emptySlots - 1);
+  const empty = Math.max(0, 3 - pips.length);
+  if (lossFound && empty > 0) {
+    pips += '☠️' + '○'.repeat(empty - 1);
   } else {
-    pips += '○'.repeat(emptySlots);
+    pips += '○'.repeat(empty);
   }
 
   return pips;
