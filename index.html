@@ -1166,8 +1166,14 @@ document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
   }
 
   // All scoring is now handled by direct listeners on #homeScoreDisplay and #awayScoreDisplay
-  // No fallback scoring logic needed here
+  // Fallback scoring if a score-side section is tapped
+  if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[0]) {
+    scoreVisual('left');
+  } else if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[1]) {
+    scoreVisual('right');
+  }
 });
+    
     document.getElementById('timer').addEventListener('click', (e) => {
   e.stopPropagation(); // prevent scoreboard click fallback
   toggleTimer();       // toggle the match timer
