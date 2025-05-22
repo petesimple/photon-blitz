@@ -1081,30 +1081,35 @@ function endGame() {
   updateSummary();
 }
   // Updates name and score UI for each player
-  function updateNameDisplays() {
+  function updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner = null) {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  // Determine which player is on which side visually
-  const leftPlayer = reversed ? players.B : players.A;
-  const rightPlayer = reversed ? players.A : players.B;
+  const leftIsA = !reversed;
+  const rightIsA = reversed;
+
+  const leftPlayer = leftIsA ? players.A : players.B;
+  const rightPlayer = rightIsA ? players.A : players.B;
 
   const totalGames = players.A.wins + players.B.wins;
 
-  const leftLostSD = lastGameWasSuddenDeath && suddenDeathLoser === (reversed ? 'B' : 'A');
-  const rightLostSD = lastGameWasSuddenDeath && suddenDeathLoser === (reversed ? 'A' : 'B');
+  const leftWins = leftPlayer.wins;
+  const rightWins = rightPlayer.wins;
 
-  const leftSDWin = lastGameWasSuddenDeath && leftPlayer.wins > rightPlayer.wins;
-  const rightSDWin = lastGameWasSuddenDeath && rightPlayer.wins > leftPlayer.wins;
+  const leftLostSD = lastGameWasSuddenDeath && preLoserSide === 'left';
+  const rightLostSD = lastGameWasSuddenDeath && preLoserSide === 'right';
+
+  const leftSDWin = lastGameWasSuddenDeath && suddenDeathWinner === 'left';
+  const rightSDWin = lastGameWasSuddenDeath && suddenDeathWinner === 'right';
 
   const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
   if (totalGames > 0) {
     leftDisplay.textContent =
-      `${leftPlayer.name} ${getPips(leftPlayer.wins, leftLostSD, totalGames, leftSDWin)}`;
+      `${leftPlayer.name} ${getPips(leftWins, leftLostSD, totalGames, leftSDWin)}`;
     rightDisplay.textContent =
-      `${rightPlayer.name} ${getPips(rightPlayer.wins, rightLostSD, totalGames, rightSDWin)}`;
+      `${rightPlayer.name} ${getPips(rightWins, rightLostSD, totalGames, rightSDWin)}`;
   } else {
     leftDisplay.textContent = leftPlayer.name;
     rightDisplay.textContent = rightPlayer.name;
