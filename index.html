@@ -60,11 +60,16 @@
 }
 
     .score-side {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;     /* ✅ added */
+  gap: 5px;
+  flex: 1;                     /* ✅ ensures it stretches evenly */
+  min-width: 40vw;             /* ✅ gives larger tap area */
+  height: 100%;                /* ✅ fills vertical space */
+  cursor: pointer;             /* ✅ shows it's interactive */
+}
 
     .score-center {
   position: relative;
