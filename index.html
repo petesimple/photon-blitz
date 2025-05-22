@@ -1334,7 +1334,7 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
     }
   });
 
-  const empty = Math.max(0, 7 - pips.length);
+  const empty = Math.max(0, 3 - pips.length);
   if (loss && empty > 0) {
     pips += '☠️' + '○'.repeat(empty - 1);
   } else {
