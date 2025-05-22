@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.3.2 (morelogs)</div>
+  <div id="versionTag">v2.3.3 (morelies)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -834,7 +834,7 @@ function endGame() {
     ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
     : null;
 
-  window.suddenDeathLoser = suddenDeathLoser; // store globally so updateNameDisplays can use it
+  window.suddenDeathLoser = suddenDeathLoser; // used in updateNameDisplays()
 
   const leftScore = reversed ? awayScore : homeScore;
   const rightScore = reversed ? homeScore : awayScore;
@@ -859,14 +859,17 @@ function endGame() {
   else if (!game2) game2 = gameData;
   else game3 = gameData;
 
-  // 🧠 Correctly assign win to player A or B (based on name BEFORE swap)
-  if (players.A?.name === winnerName) {
+  // 🧠 Lock in winner attribution BEFORE swap
+  const playerAName = players.A?.name;
+  const playerBName = players.B?.name;
+
+  if (winnerName === playerAName) {
     players.A.wins++;
-  } else if (players.B?.name === winnerName) {
+  } else if (winnerName === playerBName) {
     players.B.wins++;
   }
 
-  // ✅ Still track visual win counters for layout
+  // ✅ Track visual layout game counters
   if (homeWon) {
     homeGamesWon++;
   } else {
