@@ -1114,8 +1114,8 @@ function endGame() {
   const leftGames = getGameResults(true);
   const rightGames = getGameResults(false);
 
-  document.getElementById('homeDisplay').textContent = `${leftName} ${getPipsFromGames(leftGames)}`;
-  document.getElementById('awayDisplay').textContent = `${rightName} ${getPipsFromGames(rightGames)}`;
+  document.getElementById('homeDisplay').textContent = `${leftName}`;
+  document.getElementById('awayDisplay').textContent = `${rightName}`;
 }
   // Builds summary text for the match summary section
   function updateSummary() {
