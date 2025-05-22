@@ -1134,43 +1134,41 @@ function endGame() {
     return;
   }
 
-  const A = players.A;
-  const B = players.B;
+  const games = [game1, game2, game3].filter(Boolean);
+  let leftWins = 0;
+  let rightWins = 0;
+
+  games.forEach(g => {
+    if (g.leftScore > g.rightScore) leftWins++;
+    else if (g.rightScore > g.leftScore) rightWins++;
+  });
+
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+  const leftPlayer = reversed ? players.B : players.A;
+  const rightPlayer = reversed ? players.A : players.B;
+
   let summary = '';
 
-  // Display winner based on visual wins
-  if (A.wins > B.wins) {
-    summary += `<span class='winner'>${A.name} (${A.wins} Wins)</span><br>${B.name} (${B.wins} Wins)<br>`;
-  } else if (B.wins > A.wins) {
-    summary += `${A.name} (${A.wins} Wins)<br><span class='winner'>${B.name} (${B.wins} Wins)</span><br>`;
+  if (leftWins > rightWins) {
+    summary += `<span class='winner'>${leftPlayer.name} (${leftWins} Wins)</span><br>${rightPlayer.name} (${rightWins} Wins)<br>`;
+  } else if (rightWins > leftWins) {
+    summary += `${leftPlayer.name} (${leftWins} Wins)<br><span class='winner'>${rightPlayer.name} (${rightWins} Wins)</span><br>`;
   } else {
-    summary += `${A.name} (${A.wins} Wins)<br>${B.name} (${B.wins} Wins)<br>`;
+    summary += `${leftPlayer.name} (${leftWins} Wins)<br>${rightPlayer.name} (${rightWins} Wins)<br>`;
   }
 
-  summary += `Matches Played: ${matchesPlayed}<br><br>`;
+  summary += `Matches Played: ${games.length}<br><br>`;
 
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-
-  const games = [game1, game2, game3].filter(Boolean);
   if (games.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
-      games.map((g, i) => {
-        const visualLeft = reversed ? g.awayName : g.homeName;
-        const visualRight = reversed ? g.homeName : g.awayName;
-        const leftScore = g.leftScore;
-        const rightScore = g.rightScore;
-
-        const visualWinner = leftScore > rightScore ? visualLeft : visualRight;
-        const visualLoser = leftScore > rightScore ? visualRight : visualLeft;
-        const visualWinnerScore = Math.max(leftScore, rightScore);
-        const visualLoserScore = Math.min(leftScore, rightScore);
-
-        return `Game ${i + 1}: ${visualWinner} ${visualWinnerScore} – ${visualLoserScore} ${visualLoser}${g.wasSuddenDeath ? ' †' : ''}`;
-      }).join('<br>');
+      games.map((g, i) =>
+        `Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
+      ).join('<br>');
   }
 
   container.innerHTML = summary;
-  updateCompactSummary();
+  updateCompactSummary(); // still keep compact summary in sync
 }
     // compact summary old location
 
