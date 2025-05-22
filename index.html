@@ -829,9 +829,18 @@ function endGame() {
 
   const homeWon = homeScore > awayScore;
   const winnerName = homeWon ? homeName : awayName;
-  const loserName  = homeWon ? awayName : homeName;
+  const loserName = homeWon ? awayName : homeName;
   const winnerScore = homeWon ? homeScore : awayScore;
-  const loserScore  = homeWon ? awayScore : homeScore;
+  const loserScore = homeWon ? awayScore : homeScore;
+
+  // Visual-side mapping (LEFT and RIGHT are pre-swap)
+  const visualLeftName = reversed ? awayName : homeName;
+  const visualRightName = reversed ? homeName : awayName;
+  const visualLeftScore = reversed ? awayScore : homeScore;
+  const visualRightScore = reversed ? homeScore : awayScore;
+
+  const visualWinnerSide = (winnerName === visualLeftName) ? 'left' : 'right';
+  const visualLoserSide = visualWinnerSide === 'left' ? 'right' : 'left';
 
   if (players.A?.name === winnerName) players.A.wins++;
   if (players.B?.name === winnerName) players.B.wins++;
@@ -841,31 +850,24 @@ function endGame() {
 
   matchesPlayed++;
 
-  const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right'))
-    : null;
-  const suddenDeathLoser = lastGameWasSuddenDeath
-    ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
-    : null;
-  window.suddenDeathLoser = suddenDeathLoser;
-
-  // ✅ Store visual layout scores BEFORE side swap
-  const leftScore = reversed ? awayScore : homeScore;
-  const rightScore = reversed ? homeScore : awayScore;
-
   const gameData = {
     homeName,
     awayName,
     homeScore,
     awayScore,
-    wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner,
     winnerName,
-    winnerScore,
     loserName,
+    winnerScore,
     loserScore,
-    leftScore,
-    rightScore
+    wasSuddenDeath: lastGameWasSuddenDeath,
+    suddenDeathWinner: lastGameWasSuddenDeath ? visualWinnerSide : null,
+    suddenDeathLoser: lastGameWasSuddenDeath ? visualLoserSide : null,
+    leftScore: visualLeftScore,
+    rightScore: visualRightScore,
+    visualWinnerName: visualWinnerSide === 'left' ? visualLeftName : visualRightName,
+    visualLoserName: visualLoserSide === 'left' ? visualLeftName : visualRightName,
+    visualWinnerScore: visualWinnerSide === 'left' ? visualLeftScore : visualRightScore,
+    visualLoserScore: visualLoserSide === 'left' ? visualLeftScore : visualRightScore
   };
 
   if (!game1) game1 = gameData;
@@ -874,20 +876,16 @@ function endGame() {
 
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
-
   swapSides();
-
   console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
 
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
 
-  const preWinnerSide = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
-  const preLoserSide = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
-  updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
+  updateNameDisplays(visualLoserSide, visualWinnerSide, gameData.suddenDeathWinner);
 
-  finalGameSnapshot = []; // clear after recording
+  finalGameSnapshot = [];
   console.log('🎯 [endGame()] COMPLETE');
 }
 
