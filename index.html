@@ -1130,7 +1130,7 @@ function endGame() {
   const B = players.B;
   let summary = '';
 
-  // Display winner based on actual A/B wins
+  // Display winner based on visual wins
   if (A.wins > B.wins) {
     summary += `<span class='winner'>${A.name} (${A.wins} Wins)</span><br>${B.name} (${B.wins} Wins)<br>`;
   } else if (B.wins > A.wins) {
@@ -1141,12 +1141,24 @@ function endGame() {
 
   summary += `Matches Played: ${matchesPlayed}<br><br>`;
 
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+
   const games = [game1, game2, game3].filter(Boolean);
   if (games.length > 0) {
     summary += `<strong>Game Scores:</strong><br>` +
-      games.map((g, i) =>
-        `Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
-      ).join('<br>');
+      games.map((g, i) => {
+        const visualLeft = reversed ? g.awayName : g.homeName;
+        const visualRight = reversed ? g.homeName : g.awayName;
+        const leftScore = g.leftScore;
+        const rightScore = g.rightScore;
+
+        const visualWinner = leftScore > rightScore ? visualLeft : visualRight;
+        const visualLoser = leftScore > rightScore ? visualRight : visualLeft;
+        const visualWinnerScore = Math.max(leftScore, rightScore);
+        const visualLoserScore = Math.min(leftScore, rightScore);
+
+        return `Game ${i + 1}: ${visualWinner} ${visualWinnerScore} – ${visualLoserScore} ${visualLoser}${g.wasSuddenDeath ? ' †' : ''}`;
+      }).join('<br>');
   }
 
   container.innerHTML = summary;
