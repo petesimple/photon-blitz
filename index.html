@@ -1189,6 +1189,15 @@ document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
     awayScoreValue = Math.max(0, awayScoreValue + delta);
     document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
   }
+
+  // 💾 Push updated score into snapshot
+  finalGameSnapshot.push({
+    time: Date.now(),
+    homeName: document.getElementById('homeName').value || 'Player 1',
+    awayName: document.getElementById('awayName').value || 'Player 2',
+    homeScore: homeScoreValue,
+    awayScore: awayScoreValue
+  });
 }
 
 function adjustGames(side, delta) {
