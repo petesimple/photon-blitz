@@ -1297,7 +1297,7 @@ function playHorn() {
   window.addEventListener("load", checkOrientation);
 
 function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = false) {
-  const pipCount = Math.min(Math.max(totalGames, wins), 7);
+  const pipCount = Math.min(Math.max(totalGames, wins), 3);
   let pips = '';
 
   for (let i = 0; i < wins; i++) {
