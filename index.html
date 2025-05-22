@@ -1085,37 +1085,45 @@ function endGame() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
 
-  const leftDisplay = document.getElementById('homeDisplay');
-  const rightDisplay = document.getElementById('awayDisplay');
-
-  const leftGames = [];
-  const rightGames = [];
-
   const games = [game1, game2, game3].filter(Boolean);
 
-  games.forEach((g) => {
-    const leftWon = reversed ? g.winnerName === g.awayName : g.winnerName === g.homeName;
-    const rightWon = reversed ? g.winnerName === g.homeName : g.winnerName === g.awayName;
-    const leftLostSD = g.wasSuddenDeath && (reversed ? g.loserName === g.awayName : g.loserName === g.homeName);
-    const rightLostSD = g.wasSuddenDeath && (reversed ? g.loserName === g.homeName : g.loserName === g.awayName);
-    const leftSDWin = g.wasSuddenDeath && leftWon;
-    const rightSDWin = g.wasSuddenDeath && rightWon;
-
-    if (leftWon) {
-      leftGames.push({ isSDWin: leftSDWin });
-    } else if (rightWon) {
-      rightGames.push({ isSDWin: rightSDWin });
-    }
-
-    if (leftLostSD) leftGames.push({ isLoss: true });
-    if (rightLostSD) rightGames.push({ isLoss: true });
-  });
-
+  // Visual sides: left is home if not reversed, away if reversed
   const leftName = reversed ? players.B.name : players.A.name;
   const rightName = reversed ? players.A.name : players.B.name;
 
-  leftDisplay.textContent = `${leftName} ${getPipsFromGames(leftGames)}`;
-  rightDisplay.textContent = `${rightName} ${getPipsFromGames(rightGames)}`;
+  // Get visual side game records
+  const leftGames = games.map((g, i) => {
+    const leftScore = reversed ? g.awayScore : g.homeScore;
+    const rightScore = reversed ? g.homeScore : g.awayScore;
+    const leftInitial = reversed ? g.awayName : g.homeName;
+    const rightInitial = reversed ? g.homeName : g.awayName;
+
+    return {
+      isLoss: leftScore < rightScore,
+      isSDWin: g.wasSuddenDeath && leftScore > rightScore
+    };
+  });
+
+  const rightGames = games.map((g, i) => {
+    const leftScore = reversed ? g.awayScore : g.homeScore;
+    const rightScore = reversed ? g.homeScore : g.awayScore;
+    const leftInitial = reversed ? g.awayName : g.homeName;
+    const rightInitial = reversed ? g.homeName : g.awayName;
+
+    return {
+      isLoss: rightScore < leftScore,
+      isSDWin: g.wasSuddenDeath && rightScore > leftScore
+    };
+  });
+
+  const leftDisplay = document.getElementById('homeDisplay');
+  const rightDisplay = document.getElementById('awayDisplay');
+
+  const leftPips = getPipsFromGames(leftGames);
+  const rightPips = getPipsFromGames(rightGames);
+
+  leftDisplay.textContent = `${leftName} ${leftPips}`;
+  rightDisplay.textContent = `${rightName} ${rightPips}`;
 }
   // Builds summary text for the match summary section
   function updateSummary() {
