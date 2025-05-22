@@ -1081,39 +1081,41 @@ function endGame() {
   updateSummary();
 }
   // Updates name and score UI for each player
-  function updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner = null) {
+  function updateNameDisplays() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
-
-  const leftIsA = !reversed;
-  const rightIsA = reversed;
-
-  const leftPlayer = leftIsA ? players.A : players.B;
-  const rightPlayer = rightIsA ? players.A : players.B;
-
-  const totalGames = players.A.wins + players.B.wins;
-
-  const leftWins = leftPlayer.wins;
-  const rightWins = rightPlayer.wins;
-
-  const leftLostSD = lastGameWasSuddenDeath && preLoserSide === 'left';
-  const rightLostSD = lastGameWasSuddenDeath && preLoserSide === 'right';
-
-  const leftSDWin = lastGameWasSuddenDeath && suddenDeathWinner === 'left';
-  const rightSDWin = lastGameWasSuddenDeath && suddenDeathWinner === 'right';
 
   const leftDisplay = document.getElementById('homeDisplay');
   const rightDisplay = document.getElementById('awayDisplay');
 
-  if (totalGames > 0) {
-    leftDisplay.textContent =
-      `${leftPlayer.name} ${getPips(leftWins, leftLostSD, totalGames, leftSDWin)}`;
-    rightDisplay.textContent =
-      `${rightPlayer.name} ${getPips(rightWins, rightLostSD, totalGames, rightSDWin)}`;
-  } else {
-    leftDisplay.textContent = leftPlayer.name;
-    rightDisplay.textContent = rightPlayer.name;
-  }
+  const leftGames = [];
+  const rightGames = [];
+
+  const games = [game1, game2, game3].filter(Boolean);
+
+  games.forEach((g) => {
+    const leftWon = reversed ? g.winnerName === g.awayName : g.winnerName === g.homeName;
+    const rightWon = reversed ? g.winnerName === g.homeName : g.winnerName === g.awayName;
+    const leftLostSD = g.wasSuddenDeath && (reversed ? g.loserName === g.awayName : g.loserName === g.homeName);
+    const rightLostSD = g.wasSuddenDeath && (reversed ? g.loserName === g.homeName : g.loserName === g.awayName);
+    const leftSDWin = g.wasSuddenDeath && leftWon;
+    const rightSDWin = g.wasSuddenDeath && rightWon;
+
+    if (leftWon) {
+      leftGames.push({ isSDWin: leftSDWin });
+    } else if (rightWon) {
+      rightGames.push({ isSDWin: rightSDWin });
+    }
+
+    if (leftLostSD) leftGames.push({ isLoss: true });
+    if (rightLostSD) rightGames.push({ isLoss: true });
+  });
+
+  const leftName = reversed ? players.B.name : players.A.name;
+  const rightName = reversed ? players.A.name : players.B.name;
+
+  leftDisplay.textContent = `${leftName} ${getPipsFromGames(leftGames)}`;
+  rightDisplay.textContent = `${rightName} ${getPipsFromGames(rightGames)}`;
 }
   // Builds summary text for the match summary section
   function updateSummary() {
