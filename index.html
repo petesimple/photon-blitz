@@ -1318,6 +1318,31 @@ function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = fa
 
   return pips;
 }
+
+    function getPipsFromGames(games) {
+  const wins = games.filter(g => !g.isLoss).length;
+  const loss = games.find(g => g.isLoss);
+  const lastIsSDWin = games.findLast(g => g.isSDWin);
+
+  let pips = '';
+
+  games.forEach((g, i) => {
+    if (g.isSDWin && i === games.length - 1) {
+      pips += '⭐';
+    } else if (!g.isLoss) {
+      pips += '●';
+    }
+  });
+
+  const empty = Math.max(0, 7 - pips.length);
+  if (loss && empty > 0) {
+    pips += '☠️' + '○'.repeat(empty - 1);
+  } else {
+    pips += '○'.repeat(empty);
+  }
+
+  return pips;
+}
     
 function getLogicalSide(side) {
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
