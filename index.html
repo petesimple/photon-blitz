@@ -890,23 +890,28 @@ function endGame() {
 }
 
     function updateCompactSummary() {
-  const compact = document.getElementById('compactSummary');
+  const summaryEl = document.getElementById('compactSummary');
   const games = [game1, game2, game3].filter(Boolean);
-  if (!games.length) {
-    compact.textContent = '';
+  if (games.length === 0) {
+    summaryEl.textContent = '';
     return;
   }
 
-  // Use initials and scores
-  const summaries = games.map((g, i) => {
-    const initialA = players.A.name.trim().charAt(0).toUpperCase() || 'A';
-    const initialB = players.B.name.trim().charAt(0).toUpperCase() || 'B';
-    const winnerInitial = g.winnerName === players.A.name ? initialA : initialB;
-    const loserInitial  = g.loserName  === players.A.name ? initialA : initialB;
-    return `G${i + 1} ${winnerInitial}${g.winnerScore}-${g.loserScore}${loserInitial}${g.wasSuddenDeath ? '†' : ''}`;
+  const leftInitial = (players.A && players.B)
+    ? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.B.name[0] : players.A.name[0])
+    : 'A';
+  const rightInitial = (players.A && players.B)
+    ? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.A.name[0] : players.B.name[0])
+    : 'B';
+
+  const compact = games.map((g, i) => {
+    const winnerInitial = g.visualWinnerName === g.homeName ? leftInitial : rightInitial;
+    const loserInitial = g.visualLoserName === g.homeName ? leftInitial : rightInitial;
+    const scoreString = `G${i + 1} ${winnerInitial}${g.visualWinnerScore}-${g.visualLoserScore}${loserInitial}`;
+    return g.wasSuddenDeath ? `${scoreString}†` : scoreString;
   });
 
-  compact.textContent = summaries.join('  ');
+  summaryEl.textContent = compact.join(' ');
 }
 
   // Resets scoreboard for the next game
