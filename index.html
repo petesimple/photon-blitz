@@ -849,8 +849,9 @@ function endGame() {
     : null;
   window.suddenDeathLoser = suddenDeathLoser;
 
-  const leftScore = reversed ? awayScore : homeScore;
-  const rightScore = reversed ? homeScore : awayScore;
+  const { left, right } = getVisualSides();
+const leftScore = left === 'home' ? homeScore : awayScore;
+const rightScore = right === 'home' ? homeScore : awayScore;
 
   const gameData = {
     homeName,
