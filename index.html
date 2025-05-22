@@ -535,7 +535,10 @@ body.locked .timeout-button {
       <input type="text" id="awayName" class="name-input" placeholder="Player 2" />
     </div>
 
-    <button class="menu-action" onclick="saveNames()">Update Names</button>
+    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+  <button class="menu-action" onclick="saveNames()">Update Names</button>
+  <button class="menu-action" onclick="clearNames()">Clear Names</button>
+</div>
 
 <!-- Score Correction -->
 <h3>Adjust Scores</h3>
@@ -1391,7 +1394,21 @@ function adjustGamesVisual(visualSide, delta) {
     ? { left: 'away', right: 'home' }
     : { left: 'home', right: 'away' };
 }
+function clearNames() {
+  if (confirm("You really wanna clear the names?")) {
+    document.getElementById('homeName').value = '';
+    document.getElementById('awayName').value = '';
+    localStorage.removeItem('homeName');
+    localStorage.removeItem('awayName');
 
+    // Reset players too
+    players.A = { name: 'Player 1', wins: 0 };
+    players.B = { name: 'Player 2', wins: 0 };
+
+    updateNameDisplays();
+    updateSummary();
+  }
+}
 </script>
 </body>
 </html>
