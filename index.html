@@ -814,27 +814,27 @@ let players = {
 };
     
 function endGame() {
-  const snap = window.finalGameSnapshot || {
-    homeName: document.getElementById('homeName').value || 'Player 1',
-    awayName: document.getElementById('awayName').value || 'Player 2',
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
-    reversed: document.querySelector('.scoreboard').classList.contains('reverse')
-  };
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
 
-  const homeWon = snap.homeScore > snap.awayScore;
-  const winnerName = homeWon ? snap.homeName : snap.awayName;
-  const loserName = homeWon ? snap.awayName : snap.homeName;
-  const winnerScore = homeWon ? snap.homeScore : snap.awayScore;
-  const loserScore = homeWon ? snap.awayScore : snap.homeScore;
+  const snapshot = finalGameSnapshot.at(-1); // last valid score state
+  if (!snapshot) return console.warn('❌ No score snapshot found.');
 
-  console.log('🎯 [endGame()] BEGIN');
-  console.log('Home:', snap.homeName, snap.homeScore);
-  console.log('Away:', snap.awayName, snap.awayScore);
-  console.log('Reversed layout:', snap.reversed);
+  const {
+    homeName,
+    awayName,
+    homeScore,
+    awayScore
+  } = snapshot;
 
-  if (players.A && players.A.name === winnerName) players.A.wins++;
-  else if (players.B && players.B.name === winnerName) players.B.wins++;
+  const homeWon = homeScore > awayScore;
+  const winnerName = homeWon ? homeName : awayName;
+  const loserName  = homeWon ? awayName : homeName;
+  const winnerScore = homeWon ? homeScore : awayScore;
+  const loserScore  = homeWon ? awayScore : homeScore;
+
+  if (players.A?.name === winnerName) players.A.wins++;
+  if (players.B?.name === winnerName) players.B.wins++;
 
   if (homeWon) homeGamesWon++;
   else awayGamesWon++;
@@ -842,23 +842,21 @@ function endGame() {
   matchesPlayed++;
 
   const suddenDeathWinner = lastGameWasSuddenDeath
-    ? (homeWon ? (snap.reversed ? 'right' : 'left') : (snap.reversed ? 'left' : 'right'))
+    ? (homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right'))
     : null;
-
   const suddenDeathLoser = lastGameWasSuddenDeath
-    ? (homeWon ? (snap.reversed ? 'left' : 'right') : (snap.reversed ? 'right' : 'left'))
+    ? (homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left'))
     : null;
-
   window.suddenDeathLoser = suddenDeathLoser;
 
-  const leftScore = snap.reversed ? snap.awayScore : snap.homeScore;
-  const rightScore = snap.reversed ? snap.homeScore : snap.awayScore;
+  const leftScore = reversed ? awayScore : homeScore;
+  const rightScore = reversed ? homeScore : awayScore;
 
   const gameData = {
-    homeName: snap.homeName,
-    awayName: snap.awayName,
-    homeScore: snap.homeScore,
-    awayScore: snap.awayScore,
+    homeName,
+    awayName,
+    homeScore,
+    awayScore,
     wasSuddenDeath: lastGameWasSuddenDeath,
     suddenDeathWinner,
     winnerName,
@@ -876,38 +874,18 @@ function endGame() {
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
   swapSides();
-  console.log('🔄 Swap complete. reversed =', document.querySelector('.scoreboard').classList.contains('reverse'));
+  console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
 
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
 
-  const preWinnerSide = homeWon ? (snap.reversed ? 'left' : 'right') : (snap.reversed ? 'right' : 'left');
-  const preLoserSide = homeWon ? (snap.reversed ? 'right' : 'left') : (snap.reversed ? 'left' : 'right');
+  const preWinnerSide = homeWon ? (reversed ? 'left' : 'right') : (reversed ? 'right' : 'left');
+  const preLoserSide = homeWon ? (reversed ? 'right' : 'left') : (reversed ? 'left' : 'right');
   updateNameDisplays(preLoserSide, preWinnerSide, suddenDeathWinner);
 
+  finalGameSnapshot = []; // clear after recording
   console.log('🎯 [endGame()] COMPLETE');
-}
-
-function updateCompactSummary() {
-  const container = document.getElementById('compactSummary');
-  if (!container) return;
-
-  const games = [game1, game2, game3].filter(Boolean);
-
-  if (games.length === 0) {
-    container.textContent = '';
-    return;
-  }
-
-  const parts = games.map((g, i) => {
-    const isSD = g.wasSuddenDeath ? '†' : '';
-    const leftScore = g.leftScore ?? g.homeScore;  // fallback if undefined
-    const rightScore = g.rightScore ?? g.awayScore;
-    return `G${i + 1} ${isSD}${leftScore}–${rightScore}`;
-  });
-
-  container.textContent = parts.join(', ');
 }
 
   // Resets scoreboard for the next game
