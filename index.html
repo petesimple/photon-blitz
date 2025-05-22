@@ -496,7 +496,7 @@ body.locked .timeout-button {
 
   <!-- Settings (gear) icon to open config panel -->
   <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.5.5 (reliabull)</div>
+  <div id="versionTag">v2.5.6 (reliabuller)</div>
 
   <!-- Settings panel that appears when gear icon is clicked -->
   <div id="menu">
@@ -849,9 +849,9 @@ function endGame() {
     : null;
   window.suddenDeathLoser = suddenDeathLoser;
 
-  const { left, right } = getVisualSides();
-const leftScore = left === 'home' ? homeScore : awayScore;
-const rightScore = right === 'home' ? homeScore : awayScore;
+  // ✅ Store visual layout scores BEFORE side swap
+  const leftScore = reversed ? awayScore : homeScore;
+  const rightScore = reversed ? homeScore : awayScore;
 
   const gameData = {
     homeName,
@@ -874,7 +874,9 @@ const rightScore = right === 'home' ? homeScore : awayScore;
 
   console.log('✅ Game recorded:', gameData);
   console.log('🔁 Swapping sides...');
+
   swapSides();
+
   console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
 
   resetForNextGame(true);
