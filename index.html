@@ -1023,42 +1023,23 @@ function updateCompactSummary() {
   const scoreboard = document.querySelector('.scoreboard');
   const wasReversed = scoreboard.classList.contains('reverse');
 
-  // 1️⃣ Capture the current game slot
-  const currentGame = game1 && game2 ? game3
-                        : game1        ? game2
-                        :                game1;
-
-  if (currentGame) {
-    const homeName = document.getElementById('homeName').value || 'Player 1';
-    const awayName = document.getElementById('awayName').value || 'Player 2';
-
-    const homeWon = homeScoreValue > awayScoreValue;
-    const winnerName = homeWon ? homeName : awayName;
-    const loserName  = homeWon ? awayName : homeName;
-
-    currentGame.winnerInitial = (winnerName === players.A.name) ? 'A' : 'B';
-    currentGame.loserInitial  = (loserName  === players.A.name) ? 'A' : 'B';
-    currentGame.winnerScore   = homeWon ? homeScoreValue : awayScoreValue;
-    currentGame.loserScore    = homeWon ? awayScoreValue : homeScoreValue;
-  }
-
-  // 2️⃣ Perform the visual flip
+  // 1️⃣ Perform the visual flip
   scoreboard.classList.toggle('reverse');
 
-  // 3️⃣ Swap name input values
+  // 2️⃣ Swap name input values
   const homeInput = document.getElementById('homeName');
   const awayInput = document.getElementById('awayName');
   [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-  // 4️⃣ Swap current score values
+  // 3️⃣ Swap current score values
   [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // 5️⃣ 🔄 Swap game win counters
+  // 4️⃣ 🔄 Swap game win counters
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // 6️⃣ Safely update player object values
+  // 5️⃣ Safely update player object values
   if (players.A) {
     players.A.name = homeInput.value || 'Player 1';
     players.A.wins = homeGamesWon;
@@ -1068,7 +1049,7 @@ function updateCompactSummary() {
     players.B.wins = awayGamesWon;
   }
 
-  // 7️⃣ Update UI
+  // 6️⃣ Update UI
   updateNameDisplays();
   updateSummary();
 }
