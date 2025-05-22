@@ -732,9 +732,11 @@ body.locked .timeout-button {
   }
 
   // Increments score for specified team (blitz gives double points)
-  function score(side) {
-  const timerEl = document.getElementById('timer');
-  const logicalSide = getLogicalSide(side); // account for visual reversal
+  let finalGameSnapshot = [];
+
+function score(side) {
+  const logicalSide = getLogicalSide(side);
+  const now = Date.now(); // optional timestamp
 
   if (logicalSide === 'home') homeScoreValue += blitz ? 2 : 1;
   if (logicalSide === 'away') awayScoreValue += blitz ? 2 : 1;
@@ -742,21 +744,20 @@ body.locked .timeout-button {
   document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
   document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  // 🧊 Snapshot scores before any layout mutation happens
-  window.finalGameSnapshot = {
+  finalGameSnapshot.push({
+    time: now,
     homeName: document.getElementById('homeName').value || 'Player 1',
     awayName: document.getElementById('awayName').value || 'Player 2',
     homeScore: homeScoreValue,
-    awayScore: awayScoreValue,
-    reversed: document.querySelector('.scoreboard').classList.contains('reverse')
-  };
+    awayScore: awayScoreValue
+  });
 
   if (suddenDeath) {
     endGame();
   } else {
     clearInterval(timerInterval);
     running = false;
-    timerEl.classList.remove('running');
+    document.getElementById('timer').classList.remove('running');
   }
 }
 
