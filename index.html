@@ -426,6 +426,14 @@ body.locked .timeout-button {
   font-size: 1.4em;
   text-shadow: 0 0 5px #0ff;
   letter-spacing: 0.25em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Optional: If pip logic still appends characters, force-hide them */
+.score-name::after {
+  content: "";
+  display: none;
 }
     .compact-summary {
   font-size: 1em;
