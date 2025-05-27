@@ -1134,22 +1134,24 @@ function endGame() {
   };
 
   const formatPips = (results) => {
-    let pips = '';
-    let wins = 0;
-    let lossAdded = false;
+  let pips = [];
+  let lossAdded = false;
 
-    results.forEach((r) => {
-      if (r.isSDWin) {
-        pips += '⭐';
-        wins++;
-      } else if (r.isWin) {
-        pips += '●';
-        wins++;
-      } else if (r.isLoss && !lossAdded) {
-        pips += '☠️';
-        lossAdded = true;
-      }
-    });
+  results.forEach((r) => {
+    if (r.isSDWin) pips.push('⭐');
+    else if (r.isWin) pips.push('●');
+    else if (r.isLoss && !lossAdded) {
+      pips.push('☠️');
+      lossAdded = true;
+    }
+  });
+
+  // Pad to 3 total
+  const total = pips.length;
+  if (total < 3) pips.push(...Array(3 - total).fill('○'));
+
+  return pips.join('');
+};
 
     const total = wins + (lossAdded ? 1 : 0);
     if (total < 3) pips += '○'.repeat(3 - total);
