@@ -867,6 +867,7 @@ function endGame() {
   const visualWinnerSide = (winnerName === visualLeftName) ? 'left' : 'right';
   const visualLoserSide = visualWinnerSide === 'left' ? 'right' : 'left';
 
+  // Track logical player A/B wins
   if (players.A?.name === winnerName) players.A.wins++;
   if (players.B?.name === winnerName) players.B.wins++;
 
@@ -892,9 +893,14 @@ function endGame() {
     visualWinnerName: visualWinnerSide === 'left' ? visualLeftName : visualRightName,
     visualLoserName: visualLoserSide === 'left' ? visualLeftName : visualRightName,
     visualWinnerScore: visualWinnerSide === 'left' ? visualLeftScore : visualRightScore,
-    visualLoserScore: visualLoserSide === 'left' ? visualLeftScore : visualRightScore
+    visualLoserScore: visualLoserSide === 'left' ? visualLeftScore : visualRightScore,
+
+    // ✅ New: logical identity for pip tracking
+    playerAName: players.A?.name,
+    playerBName: players.B?.name
   };
 
+  // Store the game in slot
   if (!game1) game1 = gameData;
   else if (!game2) game2 = gameData;
   else game3 = gameData;
@@ -907,7 +913,6 @@ function endGame() {
   resetForNextGame(true);
   updateSummary();
   updateCompactSummary();
-
   updateNameDisplays(visualLoserSide, visualWinnerSide, gameData.suddenDeathWinner);
 
   finalGameSnapshot = [];
