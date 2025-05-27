@@ -1092,15 +1092,20 @@ function endGame() {
 }
 
     function saveNames() {
-  const homeName = document.getElementById('homeName').value;
-  const awayName = document.getElementById('awayName').value;
+  const homeName = document.getElementById('homeName').value || 'Player 1';
+  const awayName = document.getElementById('awayName').value || 'Player 2';
 
   localStorage.setItem('homeName', homeName);
   localStorage.setItem('awayName', awayName);
 
-  // ✅ Initialize players A and B
-  players.A = { name: homeName, wins: homeGamesWon };
-  players.B = { name: awayName, wins: awayGamesWon };
+  // Assign IDs once only
+  players.A = players.A || { id: 'A' };
+  players.B = players.B || { id: 'B' };
+
+  players.A.name = homeName;
+  players.B.name = awayName;
+  players.A.wins = homeGamesWon;
+  players.B.wins = awayGamesWon;
 
   updateNameDisplays();
   updateSummary();
