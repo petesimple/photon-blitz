@@ -1124,8 +1124,15 @@ function endGame() {
   const leftGames = getGameResults(true);
   const rightGames = getGameResults(false);
 
+  // Update display names
   document.getElementById('homeDisplay').textContent = `${leftName}`;
   document.getElementById('awayDisplay').textContent = `${rightName}`;
+
+  // Update pip visuals
+  const homePips = document.getElementById('homePips');
+  const awayPips = document.getElementById('awayPips');
+  if (homePips) homePips.textContent = getPipsFromGames(leftGames);
+  if (awayPips) awayPips.textContent = getPipsFromGames(rightGames);
 }
   // Builds summary text for the match summary section
   function updateSummary() {
