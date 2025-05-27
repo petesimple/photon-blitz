@@ -458,22 +458,17 @@ body.locked .timeout-button {
     #matchSummary {
   display: none;  /* Hiding match summary */
 }
-    .pips-display {
-  font-size: 1.2em;
-  line-height: 1.4;
-  text-shadow: 0 0 4px #00eaff;
-}
   </style>
 </head>
 <body>
   <div id="scoreboardMask"></div>
   <!-- App logo: visible at top unless scoreboard is locked -->
 
-  <div class="score-side">
-  <div id="homeDisplay" class="score-name">Player 1</div>
-  <div id="homePips" class="pips-display">○○○</div>
-  <div id="homeScoreDisplay" class="score-number">0</div>
-</div>
+  <div class="scoreboard">
+    <div class="score-side">
+      <div id="homeDisplay" class="score-name">Player 1</div>
+      <div id="homeScoreDisplay" class="score-number">0</div>
+    </div>
 
     <div class="score-center">
       <div id="logoWrapper">
@@ -488,10 +483,9 @@ body.locked .timeout-button {
     </div>
 
     <div class="score-side">
-  <div id="awayDisplay" class="score-name">Player 2</div>
-  <div id="awayPips" class="pips-display">○○○</div>
-  <div id="awayScoreDisplay" class="score-number">0</div>
-</div>
+      <div id="awayDisplay" class="score-name">Player 2</div>
+      <div id="awayScoreDisplay" class="score-number">0</div>
+    </div>
   </div>
 
 <div id="scrollSpacer"></div>
@@ -1124,15 +1118,8 @@ function endGame() {
   const leftGames = getGameResults(true);
   const rightGames = getGameResults(false);
 
-  // Update display names
   document.getElementById('homeDisplay').textContent = `${leftName}`;
   document.getElementById('awayDisplay').textContent = `${rightName}`;
-
-  // Update pip visuals
-  const homePips = document.getElementById('homePips');
-  const awayPips = document.getElementById('awayPips');
-  if (homePips) homePips.textContent = getPipsFromGames(leftGames);
-  if (awayPips) awayPips.textContent = getPipsFromGames(rightGames);
 }
   // Builds summary text for the match summary section
   function updateSummary() {
