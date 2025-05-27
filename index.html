@@ -1126,14 +1126,16 @@ function endGame() {
   const playerA = players.A.name;
   const playerB = players.B.name;
 
-  const getPipsFromSummary = (initial) => {
-    const gamePattern = /G\d+ ([AB])(\d+)-(\d+)([AB])/g;
-    let match;
-    let wins = 0;
+  const getPipsFromSummary = (fullName) => {
+    const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/g) || [];
+    const initial = fullName[0].toUpperCase(); // "Sammy" → "S", "Ryan" → "R"
+    let pips = [];
     let lossAdded = false;
-    const pips = [];
 
-    while ((match = gamePattern.exec(summary)) !== null) {
+    for (let game of games) {
+      const match = game.match(/G\d+ ([A-Z])(\d+)-(\d+)([A-Z])/);
+      if (!match) continue;
+
       const winnerInitial = match[1];
       const winnerScore = parseInt(match[2]);
       const loserScore = parseInt(match[3]);
@@ -1151,21 +1153,17 @@ function endGame() {
     return pips.join('');
   };
 
-  // A = players.A, B = players.B
-  const pipsA = getPipsFromSummary('A');
-  const pipsB = getPipsFromSummary('B');
-
-  // Assign visual sides
+  // Assign layout based on visual orientation
   const leftName = reversed ? playerB : playerA;
   const rightName = reversed ? playerA : playerB;
-  const leftPips = reversed ? pipsB : pipsA;
-  const rightPips = reversed ? pipsA : pipsB;
 
-  // Update name display
+  const leftPips = getPipsFromSummary(leftName);
+  const rightPips = getPipsFromSummary(rightName);
+
+  // Update display
   document.getElementById('homeDisplay').textContent = leftName;
   document.getElementById('awayDisplay').textContent = rightName;
 
-  // Update pip display
   document.getElementById('homePips').textContent = leftPips;
   document.getElementById('awayPips').textContent = rightPips;
 }
