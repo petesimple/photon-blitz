@@ -478,28 +478,32 @@ body.locked .timeout-button {
   <!-- App logo: visible at top unless scoreboard is locked -->
 
   <div class="scoreboard">
-    <div class="score-side">
-      <div id="homeDisplay" class="score-name">Player 1</div>
-      <div id="homeScoreDisplay" class="score-number">0</div>
+  <div class="score-side">
+    <div id="homeDisplay" class="score-name">
+      Player 1 <span class="inline-pips"></span>
     </div>
-
-    <div class="score-center">
-      <div id="logoWrapper">
-        <img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
-      </div>
-      <div id="blitzWrapper">
-  <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
-  <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
-</div>
-            <div id="compactSummary" class="compact-summary"></div>
-            <div id="timer">3:00.0</div>
-    </div>
-
-    <div class="score-side">
-      <div id="awayDisplay" class="score-name">Player 2</div>
-      <div id="awayScoreDisplay" class="score-number">0</div>
-    </div>
+    <div id="homeScoreDisplay" class="score-number">0</div>
   </div>
+
+  <div class="score-center">
+    <div id="logoWrapper">
+      <img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
+    </div>
+    <div id="blitzWrapper">
+      <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
+      <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
+    </div>
+    <div id="compactSummary" class="compact-summary"></div>
+    <div id="timer">3:00.0</div>
+  </div>
+
+  <div class="score-side">
+    <div id="awayDisplay" class="score-name">
+      Player 2 <span class="inline-pips"></span>
+    </div>
+    <div id="awayScoreDisplay" class="score-number">0</div>
+  </div>
+</div>
 
 <div id="scrollSpacer"></div>
 
