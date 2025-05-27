@@ -439,7 +439,10 @@ body.locked .timeout-button {
   text-shadow: 0 0 4px #00eaff;
   padding: 0 10px;
   max-width: 100%;
-  word-break: break-word;
+  white-space: nowrap;         /* force one line */
+  overflow: hidden;            /* clip overflow */
+  text-overflow: ellipsis;     /* add "…" if too long */
+  text-align: center;
 }
     /* Ensure spacing below scoreboard when locked and in landscape */
 @media screen and (orientation: landscape) {
@@ -492,8 +495,8 @@ body.locked .timeout-button {
       <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
       <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
     </div>
-    <div id="compactSummary" class="compact-summary"></div>
     <div id="timer">3:00.0</div>
+    <div id="compactSummary" class="compact-summary"></div>    
   </div>
 
   <div class="score-side">
