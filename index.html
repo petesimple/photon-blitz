@@ -1111,32 +1111,48 @@ function endGame() {
   const reversed = scoreboard.classList.contains('reverse');
   const games = [game1, game2, game3].filter(Boolean);
 
-  const getGameResults = (isLeft) => {
-    return games.map((g) => {
-      const scoreA = reversed ? g.awayScore : g.homeScore;
-      const scoreB = reversed ? g.homeScore : g.awayScore;
-      const thisSideScore = isLeft ? scoreA : scoreB;
-      const otherSideScore = isLeft ? scoreB : scoreA;
+  const leftPlayer = reversed ? players.B : players.A;
+  const rightPlayer = reversed ? players.A : players.B;
 
-      return {
-        isLoss: thisSideScore < otherSideScore,
-        isSDWin: g.wasSuddenDeath && thisSideScore > otherSideScore
-      };
+  // Filter game results for each actual player name
+  const getPlayerResults = (playerName) => {
+    return games.map(g => {
+      const isLoss = g.loserName === playerName;
+      const isSDWin = g.wasSuddenDeath && g.winnerName === playerName;
+      const isWin = g.winnerName === playerName;
+      return { isLoss, isSDWin, isWin };
     });
   };
 
-  const leftName = reversed ? players.B.name : players.A.name;
-  const rightName = reversed ? players.A.name : players.B.name;
+  const leftGames = getPlayerResults(leftPlayer.name);
+  const rightGames = getPlayerResults(rightPlayer.name);
 
-  const leftGames = getGameResults(true);
-  const rightGames = getGameResults(false);
+  const getPipsFromResults = (results) => {
+    let pips = '';
+    results.forEach((r, i) => {
+      if (r.isSDWin) {
+        pips += '⭐';
+      } else if (r.isWin) {
+        pips += '●';
+      }
+    });
 
-  const leftPips = getPipsFromGames(leftGames);
-  const rightPips = getPipsFromGames(rightGames);
+    const empty = Math.max(0, 3 - pips.length);
+    if (results.some(r => r.isLoss) && empty > 0) {
+      pips += '☠️' + '○'.repeat(empty - 1);
+    } else {
+      pips += '○'.repeat(empty);
+    }
 
-  // Inject name and pips inside each display element
-  document.getElementById('homeDisplay').innerHTML = `${leftName} <span class="inline-pips">${leftPips}</span>`;
-  document.getElementById('awayDisplay').innerHTML = `${rightName} <span class="inline-pips">${rightPips}</span>`;
+    return pips;
+  };
+
+  const leftPips = getPipsFromResults(leftGames);
+  const rightPips = getPipsFromResults(rightGames);
+
+  // Inject into display
+  document.getElementById('homeDisplay').innerHTML = `${leftPlayer.name} <span class="inline-pips">${leftPips}</span>`;
+  document.getElementById('awayDisplay').innerHTML = `${rightPlayer.name} <span class="inline-pips">${rightPips}</span>`;
 }
   // Builds summary text for the match summary section
   function updateSummary() {
