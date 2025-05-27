@@ -945,7 +945,8 @@ function endGame() {
     const scoreString = `G${i + 1} ${winnerInitial}${g.visualWinnerScore}-${g.visualLoserScore}${loserInitial}`;
     return g.wasSuddenDeath ? `${scoreString}†` : scoreString;
   });
-
+      
+  console.log("📦 Writing compact summary:", compact.join(' '));
   summaryEl.textContent = compact.join(' ');
 }
 
