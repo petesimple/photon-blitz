@@ -1121,53 +1121,53 @@ function endGame() {
   function updateNameDisplays() {
   const scoreboard = document.querySelector('.scoreboard');
   const reversed = scoreboard.classList.contains('reverse');
-  const games = [game1, game2, game3].filter(Boolean);
+  const summary = document.getElementById('compactSummary')?.textContent || '';
 
-  const getResultsForName = (name) => {
-    return games.map((g) => {
-      const isWin = g.winnerName === name;
-      const isSDWin = g.wasSuddenDeath && isWin;
-      const isLoss = g.loserName === name;
-      return { isWin, isLoss, isSDWin };
-    });
-  };
+  const playerA = players.A.name;
+  const playerB = players.B.name;
 
-  const formatPips = (results) => {
-    let pips = [];
+  const getPipsFromSummary = (initial) => {
+    const gamePattern = /G\d+ ([AB])(\d+)-(\d+)([AB])/g;
+    let match;
+    let wins = 0;
     let lossAdded = false;
+    const pips = [];
 
-    results.forEach((r) => {
-      if (r.isSDWin) {
-        pips.push('⭐');
-      } else if (r.isWin) {
+    while ((match = gamePattern.exec(summary)) !== null) {
+      const winnerInitial = match[1];
+      const winnerScore = parseInt(match[2]);
+      const loserScore = parseInt(match[3]);
+      const loserInitial = match[4];
+
+      if (winnerInitial === initial) {
         pips.push('●');
-      } else if (r.isLoss && !lossAdded) {
+      } else if (!lossAdded && loserInitial === initial) {
         pips.push('☠️');
         lossAdded = true;
       }
-    });
+    }
 
     while (pips.length < 3) pips.push('○');
     return pips.join('');
   };
 
-  // Get actual players A and B by identity
-  const resultsA = getResultsForName(players.A.name);
-  const resultsB = getResultsForName(players.B.name);
+  // A = players.A, B = players.B
+  const pipsA = getPipsFromSummary('A');
+  const pipsB = getPipsFromSummary('B');
 
-  // Map players to visual sides
-  const leftName = reversed ? players.B.name : players.A.name;
-  const rightName = reversed ? players.A.name : players.B.name;
-  const leftResults = reversed ? resultsB : resultsA;
-  const rightResults = reversed ? resultsA : resultsB;
+  // Assign visual sides
+  const leftName = reversed ? playerB : playerA;
+  const rightName = reversed ? playerA : playerB;
+  const leftPips = reversed ? pipsB : pipsA;
+  const rightPips = reversed ? pipsA : pipsB;
 
   // Update name display
   document.getElementById('homeDisplay').textContent = leftName;
   document.getElementById('awayDisplay').textContent = rightName;
 
-  // Update pips (requires separate divs: #homePips and #awayPips)
-  document.getElementById('homePips').textContent = formatPips(leftResults);
-  document.getElementById('awayPips').textContent = formatPips(rightResults);
+  // Update pip display
+  document.getElementById('homePips').textContent = leftPips;
+  document.getElementById('awayPips').textContent = rightPips;
 }
   // Builds summary text for the match summary section
   function updateSummary() {
