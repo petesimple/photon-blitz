@@ -1127,7 +1127,7 @@ function endGame() {
   const playerB = players.B.name;
 
   const getPipsFromSummary = (fullName) => {
-    const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/g) || [];
+    const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/gi) || [];
     const initial = fullName[0].toUpperCase(); // "Sammy" → "S", "Ryan" → "R"
     let pips = [];
     let lossAdded = false;
