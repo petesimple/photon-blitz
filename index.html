@@ -1123,9 +1123,6 @@ function endGame() {
   const reversed = scoreboard.classList.contains('reverse');
   const games = [game1, game2, game3].filter(Boolean);
 
-  const leftName = reversed ? players.B.name : players.A.name;
-  const rightName = reversed ? players.A.name : players.B.name;
-
   const getResultsForName = (name) => {
     return games.map((g) => {
       const isWin = g.winnerName === name;
@@ -1140,28 +1137,37 @@ function endGame() {
     let lossAdded = false;
 
     results.forEach((r) => {
-      if (r.isSDWin) pips.push('⭐');
-      else if (r.isWin) pips.push('●');
-      else if (r.isLoss && !lossAdded) {
+      if (r.isSDWin) {
+        pips.push('⭐');
+      } else if (r.isWin) {
+        pips.push('●');
+      } else if (r.isLoss && !lossAdded) {
         pips.push('☠️');
         lossAdded = true;
       }
     });
 
-    while (pips.length < 3) {
-      pips.push('○');
-    }
-
+    while (pips.length < 3) pips.push('○');
     return pips.join('');
   };
 
-  // Update names (no DOM rewrite)
+  // Get actual players A and B by identity
+  const resultsA = getResultsForName(players.A.name);
+  const resultsB = getResultsForName(players.B.name);
+
+  // Map players to visual sides
+  const leftName = reversed ? players.B.name : players.A.name;
+  const rightName = reversed ? players.A.name : players.B.name;
+  const leftResults = reversed ? resultsB : resultsA;
+  const rightResults = reversed ? resultsA : resultsB;
+
+  // Update name display
   document.getElementById('homeDisplay').textContent = leftName;
   document.getElementById('awayDisplay').textContent = rightName;
 
-  // Inject pips into dedicated containers
-  document.getElementById('homePips').textContent = formatPips(getResultsForName(leftName));
-  document.getElementById('awayPips').textContent = formatPips(getResultsForName(rightName));
+  // Update pips (requires separate divs: #homePips and #awayPips)
+  document.getElementById('homePips').textContent = formatPips(leftResults);
+  document.getElementById('awayPips').textContent = formatPips(rightResults);
 }
   // Builds summary text for the match summary section
   function updateSummary() {
