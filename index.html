@@ -1140,11 +1140,9 @@ function endGame() {
     let lossAdded = false;
 
     results.forEach((r) => {
-      if (r.isSDWin) {
-        pips.push('⭐');
-      } else if (r.isWin) {
-        pips.push('●');
-      } else if (r.isLoss && !lossAdded) {
+      if (r.isSDWin) pips.push('⭐');
+      else if (r.isWin) pips.push('●');
+      else if (r.isLoss && !lossAdded) {
         pips.push('☠️');
         lossAdded = true;
       }
@@ -1157,19 +1155,13 @@ function endGame() {
     return pips.join('');
   };
 
-  const leftResults = getResultsForName(leftName);
-  const rightResults = getResultsForName(rightName);
+  // Update names (no DOM rewrite)
+  document.getElementById('homeDisplay').textContent = leftName;
+  document.getElementById('awayDisplay').textContent = rightName;
 
-  // Update name text (if needed)
-  document.getElementById('homeDisplay').childNodes[0].nodeValue = leftName + ' ';
-  document.getElementById('awayDisplay').childNodes[0].nodeValue = rightName + ' ';
-
-  // Update inline pips safely
-  const leftSpan = document.querySelector('#homeDisplay .inline-pips');
-  const rightSpan = document.querySelector('#awayDisplay .inline-pips');
-
-  if (leftSpan) leftSpan.textContent = formatPips(leftResults);
-  if (rightSpan) rightSpan.textContent = formatPips(rightResults);
+  // Inject pips into dedicated containers
+  document.getElementById('homePips').textContent = formatPips(getResultsForName(leftName));
+  document.getElementById('awayPips').textContent = formatPips(getResultsForName(rightName));
 }
   // Builds summary text for the match summary section
   function updateSummary() {
