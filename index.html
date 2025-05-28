@@ -1132,18 +1132,18 @@ function endGame() {
 
   const getPipsFromSummary = (fullName) => {
     const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/gi) || [];
-    const initial = fullName[0].toUpperCase(); // "Sammy" → "S", "Ryan" → "R"
+    const initial = fullName[0].toUpperCase(); // Normalize player initial to uppercase
     let pips = [];
     let lossAdded = false;
 
     for (let game of games) {
-      const match = game.match(/G\d+ ([A-Z])(\d+)-(\d+)([A-Z])/);
+      const match = game.match(/G\d+ ([A-Z])(\d+)-(\d+)([A-Z])/i);
       if (!match) continue;
 
-      const winnerInitial = match[1];
+      const winnerInitial = match[1].toUpperCase();
       const winnerScore = parseInt(match[2]);
       const loserScore = parseInt(match[3]);
-      const loserInitial = match[4];
+      const loserInitial = match[4].toUpperCase();
 
       if (winnerInitial === initial) {
         pips.push('●');
@@ -1157,14 +1157,14 @@ function endGame() {
     return pips.join('');
   };
 
-  // Assign layout based on visual orientation
+  // Determine layout order
   const leftName = reversed ? playerB : playerA;
   const rightName = reversed ? playerA : playerB;
 
   const leftPips = getPipsFromSummary(leftName);
   const rightPips = getPipsFromSummary(rightName);
 
-  // Update display
+  // Update UI
   document.getElementById('homeDisplay').textContent = leftName;
   document.getElementById('awayDisplay').textContent = rightName;
 
