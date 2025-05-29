@@ -486,6 +486,14 @@ body.locked .timeout-button {
   max-width: 500px;
   text-align: center;
 }
+    #rotatePrompt {
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
+#rotatePrompt.fade-out {
+  opacity: 0;
+}
   </style>
 </head>
 <body>
@@ -1362,13 +1370,25 @@ function playHorn() {
   }
 
   function checkOrientation() {
-    const prompt = document.getElementById('rotatePrompt');
-    if (isMobile() && window.innerHeight > window.innerWidth) {
-      prompt.style.display = 'flex';
-    } else {
+  const prompt = document.getElementById('rotatePrompt');
+
+  if (isMobile() && window.innerHeight > window.innerWidth) {
+    prompt.style.display = 'flex';
+    prompt.classList.remove('fade-out');
+
+    // Auto-fade and hide after 5 seconds
+    setTimeout(() => {
+      prompt.classList.add('fade-out');
+    }, 4000);
+
+    setTimeout(() => {
       prompt.style.display = 'none';
-    }
+    }, 5000);
+  } else {
+    prompt.style.display = 'none';
+    prompt.classList.remove('fade-out');
   }
+}
 
   window.addEventListener("orientationchange", checkOrientation);
   window.addEventListener("resize", checkOrientation);
