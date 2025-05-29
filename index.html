@@ -476,7 +476,16 @@ body.locked .timeout-button {
   opacity: 0.8;
   vertical-align: middle;
 }
-    
+    .adjust-scores-box {
+  margin: 20px auto;
+  padding: 15px;
+  border: 2px solid #00ffff;
+  border-radius: 10px;
+  background-color: rgba(1, 5, 24, 0.9);
+  box-shadow: 0 0 10px #00ffff40;
+  max-width: 500px;
+  text-align: center;
+}
   </style>
 </head>
 <body>
@@ -562,15 +571,17 @@ body.locked .timeout-button {
 </div>
 
 <!-- Score Correction -->
-<h3>Adjust Scores</h3>
-<div class="time-controls" style="justify-content: space-between;">
-  <div style="display: flex; gap: 10px;">
-    <button onclick="adjustScoreVisual('left', 1)">+1</button>
-    <button onclick="adjustScoreVisual('left', -1)">–1</button>
-  </div>
-  <div style="display: flex; gap: 10px;">
-    <button onclick="adjustScoreVisual('right', 1)">+1</button>
-    <button onclick="adjustScoreVisual('right', -1)">–1</button>
+<div class="adjust-scores-box">
+  <h3>Adjust Scores</h3>
+  <div class="time-controls" style="justify-content: space-between;">
+    <div style="display: flex; gap: 10px;">
+      <button onclick="adjustScoreVisual('left', 1)">+1</button>
+      <button onclick="adjustScoreVisual('left', -1)">–1</button>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button onclick="adjustScoreVisual('right', 1)">+1</button>
+      <button onclick="adjustScoreVisual('right', -1)">–1</button>
+    </div>
   </div>
 </div>
 
