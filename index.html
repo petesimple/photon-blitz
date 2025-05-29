@@ -1369,19 +1369,34 @@ function playHorn() {
     return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
-  function checkOrientation() {
+  let rotateTimeout1, rotateTimeout2;
+
+function checkOrientation() {
   const prompt = document.getElementById('rotatePrompt');
+
+  // If we've already shown the prompt once this session, skip it
+  if (sessionStorage.getItem('rotatePromptShown')) {
+    prompt.style.display = 'none';
+    return;
+  }
+
+  // Clear any existing timeouts
+  clearTimeout(rotateTimeout1);
+  clearTimeout(rotateTimeout2);
 
   if (isMobile() && window.innerHeight > window.innerWidth) {
     prompt.style.display = 'flex';
     prompt.classList.remove('fade-out');
 
-    // Auto-fade and hide after 5 seconds
-    setTimeout(() => {
+    // Set session flag to prevent repeat showing
+    sessionStorage.setItem('rotatePromptShown', 'true');
+
+    // Auto-fade and hide
+    rotateTimeout1 = setTimeout(() => {
       prompt.classList.add('fade-out');
     }, 4000);
 
-    setTimeout(() => {
+    rotateTimeout2 = setTimeout(() => {
       prompt.style.display = 'none';
     }, 5000);
   } else {
@@ -1390,9 +1405,9 @@ function playHorn() {
   }
 }
 
-  window.addEventListener("orientationchange", checkOrientation);
-  window.addEventListener("resize", checkOrientation);
-  window.addEventListener("load", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("load", checkOrientation);
 
 function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = false) {
   const pipCount = Math.min(Math.max(totalGames, wins), 3);
