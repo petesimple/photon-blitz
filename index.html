@@ -60,11 +60,14 @@
 }
 
     .score-side {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1 1 200px; /* Ensures equal width */
+  min-width: 160px; /* Optional: avoids excessive shrink */
+  text-align: center;
+}
 
     .score-center {
   position: relative;
