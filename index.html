@@ -1528,6 +1528,33 @@ function clearNames() {
       break;
   }
 });
+    let gamepadConnected = false;
+
+window.addEventListener("gamepadconnected", () => {
+  gamepadConnected = true;
+  console.log("🎮 Gamepad connected!");
+  pollGamepad();
+});
+
+function pollGamepad() {
+  const checkButtons = () => {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    if (!gamepads[0]) return;
+
+    const gp = gamepads[0];
+    const buttons = gp.buttons.map(b => b.pressed);
+
+    // D-Pad mappings (standard)
+    if (buttons[14]) scoreVisual('left');   // ← Left
+    if (buttons[15]) scoreVisual('right');  // → Right
+    if (buttons[13]) toggleTimer();         // ↓ Down
+    if (buttons[12]) startTimeout();        // ↑ Up
+
+    requestAnimationFrame(checkButtons);
+  };
+
+  requestAnimationFrame(checkButtons);
+}
 </script>
 </body>
 </html>
