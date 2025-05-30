@@ -1508,6 +1508,26 @@ function clearNames() {
     updateSummary();
   }
 }
+    document.addEventListener('keydown', (event) => {
+  const tag = event.target.tagName.toLowerCase();
+  // Ignore key presses when focused on an input field
+  if (tag === 'input' || tag === 'textarea') return;
+
+  switch (event.key) {
+    case 'ArrowLeft':
+      scoreVisual('left');
+      break;
+    case 'ArrowRight':
+      scoreVisual('right');
+      break;
+    case 'ArrowDown':
+      toggleTimer();
+      break;
+    case 'ArrowUp':
+      startTimeout();
+      break;
+  }
+});
 </script>
 </body>
 </html>
