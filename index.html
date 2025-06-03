@@ -1527,6 +1527,11 @@ function clearNames() {
     case 'ArrowUp':
       startTimeout();
       break;
+    case 'Escape':
+      if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
+        resetMatch();
+      }
+      break;
   }
 });
     let gamepadConnected = false;
