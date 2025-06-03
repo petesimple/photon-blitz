@@ -1534,21 +1534,18 @@ function clearNames() {
       break;
   }
 });
-    let gamepadConnected = false;
+    // 1️⃣ Gamepad connection flag
+let gamepadConnected = false;
 
-window.addEventListener("gamepadconnected", () => {
-  gamepadConnected = true;
-  console.log("🎮 Gamepad connected!");
-  pollGamepad();
-});
-
-    const gamepadButtonCooldown = {
+// 2️⃣ Cooldown state object for debouncing
+const gamepadButtonCooldown = {
   left: false,
   right: false,
   down: false,
   up: false
 };
 
+// 3️⃣ checkButtons() function — runs every frame
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
   const gp = gamepads[0];
@@ -1561,7 +1558,7 @@ function checkButtons() {
   const buttons = gp.buttons.map(b => b.pressed);
   const [hAxis = 0, vAxis = 0] = gp.axes;
 
-  // LEFT (Button 14 or Axis Left)
+  // LEFT (button 14 or axis left)
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
       scoreVisual('left');
@@ -1571,7 +1568,7 @@ function checkButtons() {
     gamepadButtonCooldown.left = false;
   }
 
-  // RIGHT (Button 15 or Axis Right)
+  // RIGHT (button 15 or axis right)
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
       scoreVisual('right');
@@ -1581,7 +1578,7 @@ function checkButtons() {
     gamepadButtonCooldown.right = false;
   }
 
-  // DOWN (Button 13 or Axis Down)
+  // DOWN (button 13 or axis down)
   if (buttons[13] || vAxis > 0.5) {
     if (!gamepadButtonCooldown.down) {
       toggleTimer();
@@ -1591,7 +1588,7 @@ function checkButtons() {
     gamepadButtonCooldown.down = false;
   }
 
-  // UP (Button 12 or Axis Up)
+  // UP (button 12 or axis up)
   if (buttons[12] || vAxis < -0.5) {
     if (!gamepadButtonCooldown.up) {
       startTimeout();
@@ -1603,6 +1600,20 @@ function checkButtons() {
 
   requestAnimationFrame(checkButtons);
 }
+
+// 4️⃣ Start polling loop
+function pollGamepad() {
+  requestAnimationFrame(checkButtons);
+}
+
+// 5️⃣ Gamepad connected event
+window.addEventListener("gamepadconnected", () => {
+  if (!gamepadConnected) {
+    gamepadConnected = true;
+    console.log("🎮 Gamepad connected!");
+    pollGamepad();
+  }
+});
 </script>
 </body>
 </html>
