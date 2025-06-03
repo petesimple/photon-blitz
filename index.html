@@ -1542,31 +1542,64 @@ window.addEventListener("gamepadconnected", () => {
   pollGamepad();
 });
 
-function pollGamepad() {
-  const checkButtons = () => {
-    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gp = gamepads[0];
+    const gamepadButtonCooldown = {
+  left: false,
+  right: false,
+  down: false,
+  up: false
+};
 
-    if (!gp) {
-      requestAnimationFrame(checkButtons);
-      return;
-    }
+function checkButtons() {
+  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gp = gamepads[0];
 
-    const buttons = gp.buttons.map((b, i) => {
-      if (b.pressed) console.log(`🎮 Button ${i} pressed`);
-      return b.pressed;
-    });
-
-    const [hAxis, vAxis] = gp.axes;
-
-    // D-pad via axes (with threshold)
-    if (hAxis < -0.5) scoreVisual('left');     // ←
-    if (hAxis > 0.5) scoreVisual('right');     // →
-    if (vAxis > 0.5) toggleTimer();            // ↓
-    if (vAxis < -0.5) startTimeout();          // ↑
-
+  if (!gp) {
     requestAnimationFrame(checkButtons);
-  };
+    return;
+  }
+
+  const buttons = gp.buttons.map(b => b.pressed);
+  const [hAxis = 0, vAxis = 0] = gp.axes;
+
+  // LEFT (Button 14 or Axis Left)
+  if (buttons[14] || hAxis < -0.5) {
+    if (!gamepadButtonCooldown.left) {
+      scoreVisual('left');
+      gamepadButtonCooldown.left = true;
+    }
+  } else {
+    gamepadButtonCooldown.left = false;
+  }
+
+  // RIGHT (Button 15 or Axis Right)
+  if (buttons[15] || hAxis > 0.5) {
+    if (!gamepadButtonCooldown.right) {
+      scoreVisual('right');
+      gamepadButtonCooldown.right = true;
+    }
+  } else {
+    gamepadButtonCooldown.right = false;
+  }
+
+  // DOWN (Button 13 or Axis Down)
+  if (buttons[13] || vAxis > 0.5) {
+    if (!gamepadButtonCooldown.down) {
+      toggleTimer();
+      gamepadButtonCooldown.down = true;
+    }
+  } else {
+    gamepadButtonCooldown.down = false;
+  }
+
+  // UP (Button 12 or Axis Up)
+  if (buttons[12] || vAxis < -0.5) {
+    if (!gamepadButtonCooldown.up) {
+      startTimeout();
+      gamepadButtonCooldown.up = true;
+    }
+  } else {
+    gamepadButtonCooldown.up = false;
+  }
 
   requestAnimationFrame(checkButtons);
 }
