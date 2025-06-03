@@ -1545,16 +1545,25 @@ window.addEventListener("gamepadconnected", () => {
 function pollGamepad() {
   const checkButtons = () => {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-    if (!gamepads[0]) return;
-
     const gp = gamepads[0];
-    const buttons = gp.buttons.map(b => b.pressed);
 
-    // D-Pad mappings (standard)
-    if (buttons[14]) scoreVisual('left');   // ← Left
-    if (buttons[15]) scoreVisual('right');  // → Right
-    if (buttons[13]) toggleTimer();         // ↓ Down
-    if (buttons[12]) startTimeout();        // ↑ Up
+    if (!gp) {
+      requestAnimationFrame(checkButtons);
+      return;
+    }
+
+    const buttons = gp.buttons.map((b, i) => {
+      if (b.pressed) console.log(`🎮 Button ${i} pressed`);
+      return b.pressed;
+    });
+
+    const [hAxis, vAxis] = gp.axes;
+
+    // D-pad via axes (with threshold)
+    if (hAxis < -0.5) scoreVisual('left');     // ←
+    if (hAxis > 0.5) scoreVisual('right');     // →
+    if (vAxis > 0.5) toggleTimer();            // ↓
+    if (vAxis < -0.5) startTimeout();          // ↑
 
     requestAnimationFrame(checkButtons);
   };
