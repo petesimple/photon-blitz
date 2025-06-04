@@ -1630,24 +1630,25 @@ function checkButtons() {
   const [hAxis = 0, vAxis = 0] = gp.axes;
 
   // LEFT input
-  if (buttons[14] || hAxis < -0.5) {
-    if (!gamepadButtonCooldown.left) {
-  scoreVisual(shouldFlipControls() ? 'right' : 'left');
-      gamepadButtonCooldown.left = true;
-    }
-  } else {
-    gamepadButtonCooldown.left = false;
-  }
+  const shouldFlipControls = getCurrentGameNumber() % 2 === 0;
 
-  // RIGHT input
-  if (buttons[15] || hAxis > 0.5) {
-    if (!gamepadButtonCooldown.right) {
-  scoreVisual(shouldFlipControls() ? 'left' : 'right');
-      gamepadButtonCooldown.right = true;
-    }
-  } else {
-    gamepadButtonCooldown.right = false;
+if (buttons[14] || hAxis < -0.5) {
+  if (!gamepadButtonCooldown.left) {
+    scoreVisual(shouldFlipControls ? 'right' : 'left');
+    gamepadButtonCooldown.left = true;
   }
+} else {
+  gamepadButtonCooldown.left = false;
+}
+
+if (buttons[15] || hAxis > 0.5) {
+  if (!gamepadButtonCooldown.right) {
+    scoreVisual(shouldFlipControls ? 'left' : 'right');
+    gamepadButtonCooldown.right = true;
+  }
+} else {
+  gamepadButtonCooldown.right = false;
+}
 
   // DOWN = Pause/Resume
   if (buttons[13] || vAxis > 0.5) {
@@ -1698,13 +1699,15 @@ document.addEventListener('keydown', (event) => {
   }
 
   // Arrow keys
-  switch (event.key) {
-    case 'ArrowLeft':
-  scoreVisual(shouldFlipControls() ? 'right' : 'left');
-  break;
-case 'ArrowRight':
-  scoreVisual(shouldFlipControls() ? 'left' : 'right');
-  break;
+  const shouldFlipControls = getCurrentGameNumber() % 2 === 0;
+
+switch (event.key) {
+  case 'ArrowLeft':
+    scoreVisual(shouldFlipControls ? 'right' : 'left');
+    break;
+  case 'ArrowRight':
+    scoreVisual(shouldFlipControls ? 'left' : 'right');
+    break;
     case 'ArrowDown':
       toggleTimer();
       break;
@@ -1736,9 +1739,12 @@ case 'f':
       break;
   }
 });
-  function shouldFlipControls() {
-  // Flip controls only on even-numbered games (2, 4, 6, ...)
-  return currentGameNumber % 2 === 0;
+  
+  function getCurrentGameNumber() {
+  if (game1 === null) return 1;
+  if (game2 === null) return 2;
+  if (game3 === null) return 3;
+  return 4; // or more if extended
 }
 </script>
 </body>
