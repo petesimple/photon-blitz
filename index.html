@@ -1510,30 +1510,33 @@ return side === 'home' ? 'away' : 'home';
 return side;
 }
 
-function scoreVisual(visualSide) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const side = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
+  function getSideFromVisual(visualSide) {
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
 
-  console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
+  // This assumes .score-side divs are in [left, center, right] order
+  // and you're not dynamically reordering DOM children (you're just using .reverse class)
+  if (visualSide === 'left') {
+    return reversed ? 'away' : 'home';
+  } else {
+    return reversed ? 'home' : 'away';
+  }
+}
+  
+function scoreVisual(visualSide) {
+  const side = getSideFromVisual(visualSide);
+  console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${document.querySelector('.scoreboard').classList.contains('reverse')}`);
   console.log(`👉 Actually scoring: ${side}`);
-  score(side); // score for visual position, not logical player
+  score(side);
 }
 function adjustScoreVisual(visualSide, delta) {
-const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-const logicalSide = (visualSide === 'left')
-? (reversed ? 'away' : 'home')
-: (reversed ? 'home' : 'away');
-adjustScore(logicalSide, delta);
+  const side = getSideFromVisual(visualSide);
+  adjustScore(side, delta);
 }
 
 function adjustGamesVisual(visualSide, delta) {
-const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-const logicalSide = (visualSide === 'left')
-? (reversed ? 'away' : 'home')
-: (reversed ? 'home' : 'away');
-adjustGames(logicalSide, delta);
+  const side = getSideFromVisual(visualSide);
+  adjustGames(side, delta);
 }
 function getVisualSides() {
 const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
