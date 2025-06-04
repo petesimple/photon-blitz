@@ -1528,6 +1528,17 @@ const keyboardButtonCooldown = {
   escape: false
 };
 
+// 🔁 Debounce helper for keyboard keys
+function triggerKeyOnce(key, actionFn) {
+  if (!keyboardButtonCooldown[key]) {
+    actionFn();
+    keyboardButtonCooldown[key] = true;
+    setTimeout(() => {
+      keyboardButtonCooldown[key] = false;
+    }, 300); // adjust as needed
+  }
+}
+
 // 3️⃣ Gamepad polling function
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
@@ -1611,7 +1622,7 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
   }
 
-  // Arrow key handling (no cooldown needed)
+  // Arrow key handling
   switch (event.key) {
     case 'ArrowLeft':
       scoreVisual('left');
@@ -1626,39 +1637,28 @@ document.addEventListener('keydown', (event) => {
       startTimeout();
       break;
     case 'Escape':
-      if (!keyboardButtonCooldown.escape) {
+      triggerKeyOnce('escape', () => {
         if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
           resetMatch();
         }
-        keyboardButtonCooldown.escape = true;
-      }
+      });
       break;
   }
 
-  // CDEF key handling with cooldown
-  if (!keyboardButtonCooldown[key]) {
-    switch (key) {
-      case 'e':
-        scoreVisual('left');
-        break;
-      case 'f':
-        scoreVisual('right');
-        break;
-      case 'd':
-        toggleTimer();
-        break;
-      case 'c':
-        startTimeout();
-        break;
-    }
-    keyboardButtonCooldown[key] = true;
-  }
-});
-
-document.addEventListener('keyup', (event) => {
-  const key = event.key.toLowerCase();
-  if (keyboardButtonCooldown[key]) {
-    keyboardButtonCooldown[key] = false;
+  // CDEF key handling with timed debounce
+  switch (key) {
+    case 'e':
+      triggerKeyOnce('e', () => scoreVisual('left'));
+      break;
+    case 'f':
+      triggerKeyOnce('f', () => scoreVisual('right'));
+      break;
+    case 'd':
+      triggerKeyOnce('d', () => toggleTimer());
+      break;
+    case 'c':
+      triggerKeyOnce('c', () => startTimeout());
+      break;
   }
 });
 </script>
