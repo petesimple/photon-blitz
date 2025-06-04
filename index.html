@@ -849,13 +849,26 @@ function startTimeout() {
 
   // ⏸ Pause the game if running
   if (running) {
-    toggleTimer();
+    toggleTimer(); // This stops the match timer
   }
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
+
+  // 🟡 Optional: tap the timer to cancel timeout early
+  timerEl.onclick = cancelTimeoutAndResume;
+
+  timeoutInterval = setInterval(() => {
+    timeoutCounter--;
+    if (timeoutCounter <= 0) {
+      cancelTimeoutAndResume();
+    } else {
+      timerEl.textContent = `Timeout: ${timeoutCounter}`;
+    }
+  }, 1000);
+}
 
   // Cleanup handler for cancel or completion
   function clearTimeoutState() {
