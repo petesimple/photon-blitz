@@ -1509,36 +1509,10 @@ function clearNames() {
     updateSummary();
   }
 }
-    document.addEventListener('keydown', (event) => {
-  const tag = event.target.tagName.toLowerCase();
-  // Ignore key presses when focused on an input field
-  if (tag === 'input' || tag === 'textarea') return;
-
-  switch (event.key) {
-    case 'ArrowLeft':
-      scoreVisual('left');
-      break;
-    case 'ArrowRight':
-      scoreVisual('right');
-      break;
-    case 'ArrowDown':
-      toggleTimer();
-      break;
-    case 'ArrowUp':
-      startTimeout();
-      break;
-    case 'Escape':
-      if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
-        resetMatch();
-      }
-      break;
-  }
-});
     // 1️⃣ Gamepad connection flag
-// Gamepad connection state
 let gamepadConnected = false;
 
-// Cooldown state objects
+// 2️⃣ Cooldown state objects
 const gamepadButtonCooldown = {
   left: false,
   right: false,
@@ -1554,7 +1528,7 @@ const keyboardButtonCooldown = {
   escape: false
 };
 
-// Gamepad polling function
+// 3️⃣ Gamepad polling function
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
   const gp = gamepads[0];
@@ -1610,12 +1584,12 @@ function checkButtons() {
   requestAnimationFrame(checkButtons);
 }
 
-// Start gamepad polling loop
+// 4️⃣ Start gamepad polling loop
 function pollGamepad() {
   requestAnimationFrame(checkButtons);
 }
 
-// Gamepad connected listener
+// 5️⃣ Gamepad connected listener
 window.addEventListener("gamepadconnected", () => {
   if (!gamepadConnected) {
     gamepadConnected = true;
@@ -1624,14 +1598,44 @@ window.addEventListener("gamepadconnected", () => {
   }
 });
 
-// Keyboard input support for controller in keyboard mode (CDEF + Escape)
+// 6️⃣ Unified keyboard support (Arrow keys + CDEF + Escape)
 document.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
   const tag = event.target.tagName.toLowerCase();
 
-  // Ignore input fields
+  // Ignore if typing
   if (tag === 'input' || tag === 'textarea') return;
 
+  // Prevent browser scroll or nudge
+  if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
+    event.preventDefault();
+  }
+
+  // Arrow key handling (no cooldown needed)
+  switch (event.key) {
+    case 'ArrowLeft':
+      scoreVisual('left');
+      break;
+    case 'ArrowRight':
+      scoreVisual('right');
+      break;
+    case 'ArrowDown':
+      toggleTimer();
+      break;
+    case 'ArrowUp':
+      startTimeout();
+      break;
+    case 'Escape':
+      if (!keyboardButtonCooldown.escape) {
+        if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
+          resetMatch();
+        }
+        keyboardButtonCooldown.escape = true;
+      }
+      break;
+  }
+
+  // CDEF key handling with cooldown
   if (!keyboardButtonCooldown[key]) {
     switch (key) {
       case 'c':
@@ -1646,14 +1650,8 @@ document.addEventListener('keydown', (event) => {
       case 'e':
         startTimeout();
         break;
-      case 'escape':
-        if (confirm("Are you sure you want to reset the match?")) {
-          resetMatch();
-        }
-        break;
     }
     keyboardButtonCooldown[key] = true;
-    event.preventDefault();
   }
 });
 
