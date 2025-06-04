@@ -1724,21 +1724,20 @@ switch (event.key) {
   }
 
   // CDEF keys
-  switch (key) {
-    case 'e':
-  triggerKeyOnce('e', () => scoreVisual(shouldFlipControls() ? 'right' : 'left'));
-  break;
-case 'f':
-  triggerKeyOnce('f', () => scoreVisual(shouldFlipControls() ? 'left' : 'right'));
-  break;
-    case 'd':
-      triggerKeyOnce('d', () => toggleTimer());
-      break;
-    case 'c':
-      triggerKeyOnce('c', () => startTimeout());
-      break;
-  }
-});
+switch (key) {
+  case 'e':
+    triggerKeyOnce('e', () => scoreVisual(shouldFlipControls ? 'right' : 'left'));
+    break;
+  case 'f':
+    triggerKeyOnce('f', () => scoreVisual(shouldFlipControls ? 'left' : 'right'));
+    break;
+  case 'd':
+    triggerKeyOnce('d', () => toggleTimer());
+    break;
+  case 'c':
+    triggerKeyOnce('c', () => startTimeout());
+    break;
+}
   
   function getCurrentGameNumber() {
   if (game1 === null) return 1;
