@@ -1611,7 +1611,7 @@ function checkButtons() {
   // LEFT input (D-pad left or analog stick left)
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
-      document.getElementById('leftScoreTouchArea')?.click();
+      document.getElementById('homeScoreDisplay')?.click();
       gamepadButtonCooldown.left = true;
     }
   } else {
@@ -1621,7 +1621,7 @@ function checkButtons() {
   // RIGHT input (D-pad right or analog stick right)
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
-      document.getElementById('rightScoreTouchArea')?.click();
+      document.getElementById('awayScoreDisplay')?.click();
       gamepadButtonCooldown.right = true;
     }
   } else {
@@ -1681,10 +1681,10 @@ document.addEventListener('keydown', (event) => {
   // Arrow keys (no debounce)
   switch (event.key) {
     case 'ArrowLeft':
-      document.getElementById('leftScoreTouchArea')?.click();
+       document.getElementById('homeScoreDisplay')?.click();
       break;
     case 'ArrowRight':
-     document.getElementById('rightScoreTouchArea')?.click();
+     document.getElementById('awayScoreDisplay')?.click();
       break;
     case 'ArrowDown':
       toggleTimer();
