@@ -1525,14 +1525,17 @@ return side;
   
 function scoreVisual(visualSide) {
   const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const actualSide = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
-
   console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
-  console.log(`👉 Actually scoring: ${actualSide}`);
 
-  score(actualSide);
+  const displayId = (visualSide === 'left') ? 'leftScoreDisplay' : 'rightScoreDisplay';
+  const el = document.getElementById(displayId);
+
+  if (el) {
+    console.log(`👉 Clicking DOM element: #${displayId}`);
+    el.click();
+  } else {
+    console.warn(`⚠️ Element #${displayId} not found`);
+  }
 }
   
 function adjustScoreVisual(visualSide, delta) {
@@ -1595,7 +1598,7 @@ function triggerKeyOnce(key, actionFn) {
   }
 }
 
-// 3️⃣ Gamepad polling function (uses scoreVisual so it's layout-aware)
+// 3️⃣ Gamepad polling function
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
   const gp = gamepads[0];
@@ -1608,27 +1611,27 @@ function checkButtons() {
   const buttons = gp.buttons.map(b => b.pressed);
   const [hAxis = 0, vAxis = 0] = gp.axes;
 
-  // LEFT input (D-pad left or analog stick left)
+  // LEFT input
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
-      document.getElementById('homeScoreDisplay')?.click();
+      scoreVisual('left'); // ✅ use visual side
       gamepadButtonCooldown.left = true;
     }
   } else {
     gamepadButtonCooldown.left = false;
   }
 
-  // RIGHT input (D-pad right or analog stick right)
+  // RIGHT input
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
-      document.getElementById('awayScoreDisplay')?.click();
+      scoreVisual('right'); // ✅ use visual side
       gamepadButtonCooldown.right = true;
     }
   } else {
     gamepadButtonCooldown.right = false;
   }
 
-  // DOWN input (pause/resume)
+  // DOWN = Pause/Resume
   if (buttons[13] || vAxis > 0.5) {
     if (!gamepadButtonCooldown.down) {
       toggleTimer();
@@ -1638,7 +1641,7 @@ function checkButtons() {
     gamepadButtonCooldown.down = false;
   }
 
-  // UP input (timeout)
+  // UP = Timeout
   if (buttons[12] || vAxis < -0.5) {
     if (!gamepadButtonCooldown.up) {
       startTimeout();
@@ -1651,12 +1654,12 @@ function checkButtons() {
   requestAnimationFrame(checkButtons);
 }
 
-// 4️⃣ Start polling on gamepad connection
+// 4️⃣ Start polling
 function pollGamepad() {
   requestAnimationFrame(checkButtons);
 }
 
-// 5️⃣ Gamepad listener
+// 5️⃣ Gamepad connected
 window.addEventListener("gamepadconnected", () => {
   if (!gamepadConnected) {
     gamepadConnected = true;
@@ -1665,26 +1668,24 @@ window.addEventListener("gamepadconnected", () => {
   }
 });
 
-// 6️⃣ Keyboard support (Arrow keys and CDEF keys)
+// 6️⃣ Keyboard support (Arrow keys and CDEF)
 document.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
   const tag = event.target.tagName.toLowerCase();
 
-  // Ignore if typing in input/textarea
   if (tag === 'input' || tag === 'textarea') return;
 
-  // Prevent default scrolling
   if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
     event.preventDefault();
   }
 
-  // Arrow keys (no debounce)
+  // Arrow keys
   switch (event.key) {
     case 'ArrowLeft':
-       document.getElementById('homeScoreDisplay')?.click();
+      scoreVisual('left'); // ✅
       break;
     case 'ArrowRight':
-     document.getElementById('awayScoreDisplay')?.click();
+      scoreVisual('right'); // ✅
       break;
     case 'ArrowDown':
       toggleTimer();
@@ -1694,14 +1695,14 @@ document.addEventListener('keydown', (event) => {
       break;
     case 'Escape':
       triggerKeyOnce('escape', () => {
-        if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
+        if (confirm("Are you sure you want to reset the match?")) {
           resetMatch();
         }
       });
       break;
   }
 
-  // CDEF keys (with debounce)
+  // CDEF keys
   switch (key) {
     case 'e':
       triggerKeyOnce('e', () => scoreVisual('left'));
