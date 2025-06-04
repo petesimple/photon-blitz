@@ -569,8 +569,28 @@ Enable Sounds
 
 <!-- Input fields for updating team/player names -->
 <div class="name-container">
-<input type="text" id="homeName" class="name-input" placeholder="Player 1" />
-<input type="text" id="awayName" class="name-input" placeholder="Player 2" />
+  <input
+    id="homeName"
+    class="name-input"
+    type="text"
+    placeholder="Player 1"
+    inputmode="text"
+    readonly
+    autocomplete="off"
+    autocorrect="off"
+    onfocus="this.removeAttribute('readonly');"
+  />
+  <input
+    id="awayName"
+    class="name-input"
+    type="text"
+    placeholder="Player 2"
+    inputmode="text"
+    readonly
+    autocomplete="off"
+    autocorrect="off"
+    onfocus="this.removeAttribute('readonly');"
+  />
 </div>
 
 <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
