@@ -747,62 +747,62 @@ announcedTimes.add(sec);
 
 // Starts or pauses the timer
 function toggleTimer() {
-const timerEl = document.getElementById('timer');
+  const timerEl = document.getElementById('timer');
 
-if (timeoutActive) {
-cancelTimeoutAndResume(); // ⛔ Cancel timeout before resuming
-return;
-}
+  if (timeoutActive) {
+    cancelTimeoutAndResume(); // ⛔ Cancel timeout before resuming
+    return;
+  }
 
-if (running) {
-clearInterval(timerInterval);
-timerInterval = null;
-running = false;
-timerEl.classList.remove('running');
-} else {
-timerInterval = setInterval(() => {
-if (time > 0) {
-time--;
-updateTimer();
-}
-}, 100);
-running = true;
-timerEl.classList.add('running');
+  if (running) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    running = false;
+    timerEl.classList.remove('running');
+  } else {
+    timerInterval = setInterval(() => {
+      if (time > 0) {
+        time--;
+        updateTimer();
+      }
+    }, 100);
+    running = true;
+    timerEl.classList.add('running');
 
-if (!playPuckAnnounced) {
-speak("Play Puck");
-playPuckAnnounced = true;
-}
-}
+    if (!playPuckAnnounced) {
+      speak("Play Puck");
+      playPuckAnnounced = true;
+    }
+  }
 }
 
 function cancelTimeoutAndResume() {
-if (!timeoutActive) return;
+  if (!timeoutActive) return;
 
-clearInterval(timeoutInterval);
-timeoutInterval = null;
-timeoutActive = false;
+  clearInterval(timeoutInterval);
+  timeoutInterval = null;
+  timeoutActive = false;
 
-const timerEl = document.getElementById('timer');
-timerEl.classList.remove('timer-small');
-timerEl.onclick = null;
-updateTimer();
+  const timerEl = document.getElementById('timer');
+  timerEl.classList.remove('timer-small');
+  timerEl.onclick = null;
+  updateTimer();
 
-if (!running) {
-timerInterval = setInterval(() => {
-if (time > 0) {
-time--;
-updateTimer();
-}
-}, 100);
-running = true;
-timerEl.classList.add('running');
+  if (!running) {
+    timerInterval = setInterval(() => {
+      if (time > 0) {
+        time--;
+        updateTimer();
+      }
+    }, 100);
+    running = true;
+    timerEl.classList.add('running');
 
-if (!playPuckAnnounced) {
-speak("Play Puck");
-playPuckAnnounced = true;
-}
-}
+    if (!playPuckAnnounced) {
+      speak("Play Puck");
+      playPuckAnnounced = true;
+    }
+  }
 }
 
 // Adjusts the timer by a number of seconds (+/-)
