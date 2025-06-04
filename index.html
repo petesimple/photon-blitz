@@ -750,13 +750,14 @@ body.locked .timeout-button {
   const timerEl = document.getElementById('timer');
 
   if (timeoutActive) {
-    cancelTimeoutAndResume(); // 👈 Handle cancel AND resume from timer press
+    cancelTimeoutAndResume(); // ⛔ Cancel timeout before resuming
     return;
   }
 
   if (running) {
     clearInterval(timerInterval);
     timerInterval = null;
+    running = false;
     timerEl.classList.remove('running');
   } else {
     timerInterval = setInterval(() => {
@@ -765,6 +766,7 @@ body.locked .timeout-button {
         updateTimer();
       }
     }, 100);
+    running = true;
     timerEl.classList.add('running');
 
     if (!playPuckAnnounced) {
@@ -772,23 +774,20 @@ body.locked .timeout-button {
       playPuckAnnounced = true;
     }
   }
-
-  running = !running;
 }
 
     function cancelTimeoutAndResume() {
-  const timerEl = document.getElementById('timer');
+  if (!timeoutActive) return;
 
-  // ✅ Cancel timeout countdown
   clearInterval(timeoutInterval);
   timeoutInterval = null;
   timeoutActive = false;
 
-  // ✅ Reset timer appearance
+  const timerEl = document.getElementById('timer');
   timerEl.classList.remove('timer-small');
+  timerEl.onclick = null;
   updateTimer();
 
-  // ✅ Resume match timer immediately
   if (!running) {
     timerInterval = setInterval(() => {
       if (time > 0) {
@@ -799,7 +798,6 @@ body.locked .timeout-button {
     running = true;
     timerEl.classList.add('running');
 
-    // ✅ Optional: Play "Play Puck" voice if not spoken yet
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
@@ -843,14 +841,16 @@ function score(side) {
   }
 }
 
-
 function startTimeout() {
-  if (timeoutActive) return; // 🚫 Prevent reentry
-  timeoutActive = true;
+  if (timeoutActive) {
+    console.warn("⛔ Timeout already running. Ignored.");
+    return;
+  }
 
-  // ⏸ Pause the game if running
+  timeoutActive = true; // 🟢 Immediately block reentry
+
   if (running) {
-    toggleTimer(); // This stops the match timer
+    toggleTimer(); // ⏸️ Pause game timer
   }
 
   timeoutCounter = 10;
@@ -858,7 +858,7 @@ function startTimeout() {
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
 
-  // 🟡 Add one-tap cancel
+  // Tap-to-cancel behavior
   timerEl.onclick = cancelTimeoutAndResume;
 
   timeoutInterval = setInterval(() => {
@@ -866,7 +866,7 @@ function startTimeout() {
     if (timeoutCounter > 0) {
       timerEl.textContent = `Timeout: ${timeoutCounter}`;
     } else {
-      cancelTimeoutAndResume(); // Handles everything
+      cancelTimeoutAndResume(); // ⏹️ Auto-end timeout
     }
   }, 1000);
 }
