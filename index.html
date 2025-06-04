@@ -1621,7 +1621,7 @@ function checkButtons() {
   // RIGHT input (D-pad right or analog stick right)
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
-      scoreVisual('right');
+      document.getElementById('rightScoreTouchArea')?.click();
       gamepadButtonCooldown.right = true;
     }
   } else {
@@ -1681,10 +1681,10 @@ document.addEventListener('keydown', (event) => {
   // Arrow keys (no debounce)
   switch (event.key) {
     case 'ArrowLeft':
-      scoreVisual('left');
+      document.getElementById('leftScoreTouchArea')?.click();
       break;
     case 'ArrowRight':
-      scoreVisual('right');
+     document.getElementById('rightScoreTouchArea')?.click();
       break;
     case 'ArrowDown':
       toggleTimer();
