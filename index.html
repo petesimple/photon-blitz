@@ -778,31 +778,31 @@ body.locked .timeout-button {
     function cancelTimeoutAndResume() {
   const timerEl = document.getElementById('timer');
 
-  // Cancel timeout UI
+  // ✅ Cancel timeout countdown
   clearInterval(timeoutInterval);
   timeoutInterval = null;
   timeoutActive = false;
 
+  // ✅ Reset timer appearance
   timerEl.classList.remove('timer-small');
-  timerEl.removeEventListener('click', cancelTimeout);
-
   updateTimer();
 
-  // ✅ Immediately resume the match timer without calling toggleTimer()
-  timerInterval = setInterval(() => {
-    if (time > 0) {
-      time--;
-      updateTimer();
+  // ✅ Resume match timer immediately
+  if (!running) {
+    timerInterval = setInterval(() => {
+      if (time > 0) {
+        time--;
+        updateTimer();
+      }
+    }, 100);
+    running = true;
+    timerEl.classList.add('running');
+
+    // ✅ Optional: Play "Play Puck" voice if not spoken yet
+    if (!playPuckAnnounced) {
+      speak("Play Puck");
+      playPuckAnnounced = true;
     }
-  }, 100);
-
-  running = true;
-  timerEl.classList.add('running');
-
-  // Optional: Re-speak the play cue if desired
-  if (!playPuckAnnounced) {
-    speak("Play Puck");
-    playPuckAnnounced = true;
   }
 }
     
