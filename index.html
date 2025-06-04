@@ -1,897 +1,888 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Photon Blitz Score System</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Photon Blitz Score System</title>
 
-  <!-- PWA metadata -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#00eaff" />
-  <link rel="apple-touch-icon" href="photonblitzlogo.png" />
+<!-- PWA metadata -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#00eaff" />
+<link rel="apple-touch-icon" href="photonblitzlogo.png" />
 
-  <!-- Register service worker for offline support -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker Registered'));
-    }
-  </script>
+<!-- Register service worker for offline support -->
+<script>
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('service-worker.js')
+.then(() => console.log('Service Worker Registered'));
+}
+</script>
 
-  <!-- Styling -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+<!-- Styling -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-    /* General reset and theme */
-    * { box-sizing: border-box; }
+/* General reset and theme */
+* { box-sizing: border-box; }
 
-    body {
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(to bottom right, #010518, #012B58);
-      color: #00eaff;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .logo {
-      max-width: 300px;
-      margin: 0 auto 20px;
-      display: block;
-    }
-
-    /* Main scoreboard container */
-    .scoreboard {
-  width: calc(100% - 20px); /* shrink width to allow for side padding */
-  padding: 20px 10px; /* top/bottom 20px, left/right 10px */
-  margin: 0 auto 20px auto;
-  border: 3px solid #00ffff;
-  border-radius: 15px;
-  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  position: relative;
-  height: 280px;
+body {
+font-family: 'Orbitron', sans-serif;
+background: linear-gradient(to bottom right, #010518, #012B58);
+color: #00eaff;
+margin: 0;
+padding: 20px;
+text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
 
-    .score-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  flex: 1 1 200px; /* Ensures equal width */
-  min-width: 160px; /* Optional: avoids excessive shrink */
-  text-align: center;
+.logo {
+max-width: 300px;
+margin: 0 auto 20px;
+display: block;
 }
 
-    .score-center {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  width: 220px;
-  padding: 10px 0;
-  gap: 5px;
-  box-sizing: border-box;
+/* Main scoreboard container */
+.scoreboard {
+width: calc(100% - 20px); /* shrink width to allow for side padding */
+padding: 20px 10px; /* top/bottom 20px, left/right 10px */
+margin: 0 auto 20px auto;
+border: 3px solid #00ffff;
+border-radius: 15px;
+box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff inset;
+display: flex;
+flex-direction: row;
+justify-content: space-around;
+align-items: center;
+position: relative;
+height: 280px;
 }
 
-    .score-name {
-      font-size: 1.4em;
-      text-shadow: 0 0 5px #0ff;
-    }
+.score-side {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 5px;
+flex: 1 1 200px; /* Ensures equal width */
+min-width: 160px; /* Optional: avoids excessive shrink */
+text-align: center;
+}
 
-    .score-number {
-      font-size: 5em;
-      font-weight: bold;
-      text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
-    }
+.score-center {
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: space-between;
+height: 100%;
+width: 220px;
+padding: 10px 0;
+gap: 5px;
+box-sizing: border-box;
+}
 
-    #logoWrapper {
-  position: absolute;
-  top: -20px; /* 👈 push it near the top of .score-center */
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  animation: flash 1s infinite;
+.score-name {
+font-size: 1.4em;
+text-shadow: 0 0 5px #0ff;
+}
+
+.score-number {
+font-size: 5em;
+font-weight: bold;
+text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
+}
+
+#logoWrapper {
+position: absolute;
+top: -20px; /* 👈 push it near the top of .score-center */
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+justify-content: center;
+align-items: center;
+visibility: visible;
+opacity: 1;
+transition: opacity 0.3s ease, visibility 0.3s ease;
+animation: flash 1s infinite;
 }
 
 #logoWrapper.hidden {
-  visibility: hidden;
-  opacity: 0;
+visibility: hidden;
+opacity: 0;
 }
 
-    #mainLogo {
-      height: 60px;
-      filter: drop-shadow(0 0 6px #00eaff);
-    }
+#mainLogo {
+height: 60px;
+filter: drop-shadow(0 0 6px #00eaff);
+}
 
-    #blitzWrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  animation: flash 1s infinite;
+#blitzWrapper {
+display: flex;
+align-items: center;
+gap: 10px;
+visibility: hidden;
+opacity: 0;
+transition: opacity 0.3s ease, visibility 0.3s ease;
+animation: flash 1s infinite;
 }
 
 #blitzWrapper.active {
-  visibility: visible;
-  opacity: 1;
+visibility: visible;
+opacity: 1;
 }
 
-    #blitzLogo {
-      height: 40px;
-      filter: drop-shadow(0 0 6px #ffcc00);
-    }
-
-    #blitzBanner {
-      font-size: 1.8em;
-      font-weight: bold;
-      color: #ffcc00;
-      text-shadow: 0 0 4px #ffcc00;
-    }
-
-    @keyframes flash {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Timer display */
-    #timer {
-  font-size: clamp(4.5em, 6vw, 5.5em);
-  margin-bottom: 10px;
-  color: #ff4444;
-  text-shadow: 0 0 10px #f00, 0 0 20px #f00;
-  max-width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  height: 1.2em; /* 👈 locks height to prevent shifting */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#blitzLogo {
+height: 40px;
+filter: drop-shadow(0 0 6px #ffcc00);
 }
 
-    .names {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      font-size: 1.5em;
-      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
-    }
-
-    .scores {
-      margin-top: 10px;
-      font-size: 5em;
-      font-weight: bold;
-      text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
-    }
-
-    .timeout-button button {
-  font-size: 1.8em;
-  padding: 14px 30px;
-  background: #00eaff;
-  color: #012B58;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 12px #00eaff80;
-  cursor: pointer;
-  margin-bottom: 20px;
+#blitzBanner {
+font-size: 1.8em;
+font-weight: bold;
+color: #ffcc00;
+text-shadow: 0 0 4px #ffcc00;
 }
 
-    /* Button layout */
-    .buttons {
-      display: flex;
-      justify-content: center;
-      flex-wrap: nowrap;
-      gap: 20px;
-      overflow-x: auto;
-      padding: 10px;
-      scroll-behavior: smooth;
-    }
-
-    /* Button styling */
-    .buttons button,
-    .time-controls button {
-      flex: 0 0 auto;
-      font-size: 1.2em;
-      padding: 10px 18px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      background: #00eaff;
-      color: #012B58;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 10px #00eaff80;
-      white-space: nowrap;
-    }
-
-    #gear {
-      display: block;
-      margin: 30px auto 10px auto;
-      font-size: 2.5em;
-      cursor: pointer;
-    }
-
-    /* Settings menu */
-    #menu {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      pointer-events: none;
-      margin-top: 30px;
-      width: 100%;
-      max-width: 500px;
-      padding: 20px;
-      background: rgba(1, 5, 24, 0.9);
-      border: 2px solid #00ffff;
-      border-radius: 10px;
-      box-sizing: border-box;
-    }
-
-    #menu.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .name-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .name-input {
-  font-size: 1.4em;
-  padding: 10px;
-  border: 2px solid #ccc;  /* add border to look like input */
-  border-radius: 5px;
-  font-family: 'Orbitron', sans-serif;
-  text-align: center;
-  min-width: 150px;
-  flex: 1 1 40%;
-  background-color: black;
-  color: white;
-  outline: none;
+@keyframes flash {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.3; }
 }
 
-/* Show placeholder text when empty */
-.name-input:empty:before {
-  content: attr(data-placeholder);
-  color: #666;
-  pointer-events: none;
+/* Timer display */
+#timer {
+font-size: clamp(4.5em, 6vw, 5.5em);
+margin-bottom: 10px;
+color: #ff4444;
+text-shadow: 0 0 10px #f00, 0 0 20px #f00;
+max-width: 100%;
+word-wrap: break-word;
+overflow-wrap: break-word;
+white-space: normal;
+height: 1.2em; /* 👈 locks height to prevent shifting */
+display: flex;
+align-items: center;
+justify-content: center;
 }
 
-    .match-summary {
-      margin-top: 20px;
-      font-size: 1.2em;
-      text-shadow: 0 0 5px #0ff;
-    }
+.names {
+display: flex;
+justify-content: center;
+gap: 30px;
+font-size: 1.5em;
+text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+}
 
-    .winner {
-      color: #00ff00;
-      font-weight: bold;
-    }
+.scores {
+margin-top: 10px;
+font-size: 5em;
+font-weight: bold;
+text-shadow: 0 0 3px #0ff, 0 0 5px #0ff;
+}
 
-    .time-controls {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 20px auto;
-      gap: 10px;
-    }
+.timeout-button button {
+font-size: 1.8em;
+padding: 14px 30px;
+background: #00eaff;
+color: #012B58;
+font-weight: bold;
+border: none;
+border-radius: 10px;
+box-shadow: 0 0 12px #00eaff80;
+cursor: pointer;
+margin-bottom: 20px;
+}
 
-    /* Locked mode tweaks (when scoreboard is fixed to top) */
-    body.locked .logo {
-      display: none;
-    }
+/* Button layout */
+.buttons {
+display: flex;
+justify-content: center;
+flex-wrap: nowrap;
+gap: 20px;
+overflow-x: auto;
+padding: 10px;
+scroll-behavior: smooth;
+}
 
-    body.locked {
-  padding-top: 360px;
-  overflow-x: hidden;
-  scroll-padding-top: 360px; /* ensures in-page links don’t go behind the scoreboard */
+/* Button styling */
+.buttons button,
+.time-controls button {
+flex: 0 0 auto;
+font-size: 1.2em;
+padding: 10px 18px;
+margin: 5px;
+border: none;
+border-radius: 8px;
+background: #00eaff;
+color: #012B58;
+font-weight: bold;
+cursor: pointer;
+box-shadow: 0 0 10px #00eaff80;
+white-space: nowrap;
+}
+
+#gear {
+display: block;
+margin: 30px auto 10px auto;
+font-size: 2.5em;
+cursor: pointer;
+}
+
+/* Settings menu */
+#menu {
+opacity: 0;
+transition: opacity 0.5s ease;
+pointer-events: none;
+margin-top: 30px;
+width: 100%;
+max-width: 500px;
+padding: 20px;
+background: rgba(1, 5, 24, 0.9);
+border: 2px solid #00ffff;
+border-radius: 10px;
+box-sizing: border-box;
+}
+
+#menu.active {
+opacity: 1;
+pointer-events: all;
+}
+
+.name-container {
+display: flex;
+justify-content: center;
+gap: 20px;
+flex-wrap: wrap;
+margin-top: 10px;
+}
+
+.name-input {
+font-size: 1.4em;
+padding: 10px;
+border: none;
+border-radius: 5px;
+font-family: 'Orbitron', sans-serif;
+text-align: center;
+min-width: 150px;
+flex: 1 1 40%;
+}
+
+.match-summary {
+margin-top: 20px;
+font-size: 1.2em;
+text-shadow: 0 0 5px #0ff;
+}
+
+.winner {
+color: #00ff00;
+font-weight: bold;
+}
+
+.time-controls {
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+margin: 20px auto;
+gap: 10px;
+}
+
+/* Locked mode tweaks (when scoreboard is fixed to top) */
+body.locked .logo {
+display: none;
+}
+
+body.locked {
+padding-top: 360px;
+overflow-x: hidden;
+scroll-padding-top: 360px; /* ensures in-page links don’t go behind the scoreboard */
 }
 
 body.locked #scrollSpacer {
-  height: 360px; /* same as padding-top so nothing scrolls under the scoreboard */
+height: 360px; /* same as padding-top so nothing scrolls under the scoreboard */
 }
 
-    body.locked .scoreboard {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 999;
-    }
+body.locked .scoreboard {
+position: fixed;
+top: 10px;
+left: 50%;
+transform: translateX(-50%);
+z-index: 999;
+}
 
-    body.locked #menu {
-      margin-top: 220px;
-    }
+body.locked #menu {
+margin-top: 220px;
+}
 
-    #menu {
-      max-height: 70vh;
-      overflow-y: auto;
-    }
+#menu {
+max-height: 70vh;
+overflow-y: auto;
+}
 
-    @media (max-width: 500px) {
-      #timer { font-size: 4em; }
-      .names { font-size: 1.2em; gap: 15px; }
-      .scores { font-size: 3.5em; }
-      .buttons { gap: 10px; padding: 5px; }
-      .buttons button { font-size: 0.9em; padding: 6px 10px; max-width: 100px; }
-      .time-controls button { font-size: 0.9em; padding: 6px 10px; }
-      .name-container { flex-direction: column; align-items: center; gap: 10px; }
-      .name-input { width: 90%; max-width: 300px; }
-    }
+@media (max-width: 500px) {
+#timer { font-size: 4em; }
+.names { font-size: 1.2em; gap: 15px; }
+.scores { font-size: 3.5em; }
+.buttons { gap: 10px; padding: 5px; }
+.buttons button { font-size: 0.9em; padding: 6px 10px; max-width: 100px; }
+.time-controls button { font-size: 0.9em; padding: 6px 10px; }
+.name-container { flex-direction: column; align-items: center; gap: 10px; }
+.name-input { width: 90%; max-width: 300px; }
+}
 
-    @media (max-width: 360px) {
-      #timer {
-    font-size: 3.2em;
-    max-width: 100%;
-    white-space: normal;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-      .buttons { justify-content: flex-start; }
-    }
-    #scoreboardMask {
-    display: none;
-  }
+@media (max-width: 360px) {
+#timer {
+font-size: 3.2em;
+max-width: 100%;
+white-space: normal;
+word-wrap: break-word;
+overflow-wrap: break-word;
+}
+.buttons { justify-content: flex-start; }
+}
+#scoreboardMask {
+display: none;
+}
 
 body.locked #scoreboardMask {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 310px; /* Match or slightly exceed .scoreboard height + spacing */
-  background: linear-gradient(to bottom right, #010518, #012B58);
-  z-index: 998;
-  pointer-events: none;
+display: block;
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 310px; /* Match or slightly exceed .scoreboard height + spacing */
+background: linear-gradient(to bottom right, #010518, #012B58);
+z-index: 998;
+pointer-events: none;
 }
-    body.locked #scoreboardMask::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(to bottom, rgba(1,5,24,1), rgba(1,5,24,0));
+body.locked #scoreboardMask::after {
+content: "";
+position: absolute;
+bottom: 0;
+left: 0;
+height: 3px;
+width: 100%;
+background: linear-gradient(to bottom, rgba(1,5,24,1), rgba(1,5,24,0));
 }
-    #gearBack {
-  display: none;
+#gearBack {
+display: none;
 }
 
 #menu.active #gearBack {
-  display: block;
+display: block;
 }
-    .timer-small {
-  font-size: 3em !important;
-  text-shadow: 0 0 6px #f00;
+.timer-small {
+font-size: 3em !important;
+text-shadow: 0 0 6px #f00;
 }
-    .menu-action {
-  font-size: 1.2em;
-  padding: 10px 18px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  background: #00eaff;
-  color: #012B58;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 10px #00eaff80;
-  white-space: nowrap;
+.menu-action {
+font-size: 1.2em;
+padding: 10px 18px;
+margin: 5px;
+border: none;
+border-radius: 8px;
+background: #00eaff;
+color: #012B58;
+font-weight: bold;
+cursor: pointer;
+box-shadow: 0 0 10px #00eaff80;
+white-space: nowrap;
 }
-    #timer.running {
-  color: #00ff00;
-  text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+#timer.running {
+color: #00ff00;
+text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
 }
-   #rotatePrompt {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: #000000f0;
-    color: white;
-    font-size: 1.8em;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-    z-index: 9999;
-  }
-    /* Ensure controls are always below the scoreboard */
+#rotatePrompt {
+display: none;
+position: fixed;
+top: 0; left: 0;
+width: 100vw; height: 100vh;
+background: #000000f0;
+color: white;
+font-size: 1.8em;
+justify-content: center;
+align-items: center;
+text-align: center;
+padding: 20px;
+z-index: 9999;
+}
+/* Ensure controls are always below the scoreboard */
 #buttonsWrapper,
 .timeout-button {
-  margin-top: 20px; /* Adjust if needed, scoreboard height is 180px */
+margin-top: 20px; /* Adjust if needed, scoreboard height is 180px */
 }
 
 body.locked #buttonsWrapper,
 body.locked .timeout-button {
-  margin-top: 20px; /* Matches body's padding-top when locked */
+margin-top: 20px; /* Matches body's padding-top when locked */
 }
-    #versionTag {
-  margin-top: -10px;
-  margin-bottom: 10px;
-  font-size: 0.9em;
-  color: #00eaffa0;
-  text-shadow: 0 0 5px #00eaff40;
+#versionTag {
+margin-top: -10px;
+margin-bottom: 10px;
+font-size: 0.9em;
+color: #00eaffa0;
+text-shadow: 0 0 5px #00eaff40;
 }
-    button, input[type="button"], input[type="submit"] {
-  touch-action: manipulation;
+button, input[type="button"], input[type="submit"] {
+touch-action: manipulation;
 }
-    .score-name {
-  font-size: 1.4em;
-  text-shadow: 0 0 5px #0ff;
-  letter-spacing: 0.25em;
+.score-name {
+font-size: 1.4em;
+text-shadow: 0 0 5px #0ff;
+letter-spacing: 0.25em;
 }
 
 /* Optional: If pip logic still appends characters, force-hide them */
 .score-name::after {
-  content: "";
-  display: none;
+content: "";
+display: none;
 }
-    .compact-summary {
-  font-size: 1em;
-  color: #00eaffcc;
-  text-shadow: 0 0 4px #00eaff;
-  padding: 0 10px;
-  margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
+.compact-summary {
+font-size: 1em;
+color: #00eaffcc;
+text-shadow: 0 0 4px #00eaff;
+padding: 0 10px;
+margin-top: 4px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+text-align: center;
 }
-    /* Ensure spacing below scoreboard when locked and in landscape */
+/* Ensure spacing below scoreboard when locked and in landscape */
 @media screen and (orientation: landscape) {
-  body.locked .scoreboard {
-    margin-bottom: 220px; /* Enough space for controls to render cleanly */
-  }
+body.locked .scoreboard {
+margin-bottom: 220px; /* Enough space for controls to render cleanly */
+}
 
-  #buttonsWrapper,
-  .timeout-button {
-    margin-top: 40px; /* Additional spacing in landscape */
-  }
+#buttonsWrapper,
+.timeout-button {
+margin-top: 40px; /* Additional spacing in landscape */
 }
-    .scoreboard.reverse {
-  flex-direction: row-reverse;
 }
-    #matchSummary {
-  display: none;  /* Hiding match summary */
+.scoreboard.reverse {
+flex-direction: row-reverse;
+}
+#matchSummary {
+display: none;  /* Hiding match summary */
 }
 .pips-display {
-  font-size: 1.2em;
-  line-height: 1.4;
-  text-shadow: 0 0 4px #00eaff;
+font-size: 1.2em;
+line-height: 1.4;
+text-shadow: 0 0 4px #00eaff;
 }
-    .inline-pips {
-  font-size: 0.7em;
-  margin-left: 6px;
-  letter-spacing: 0.15em;
-  opacity: 0.8;
-  vertical-align: middle;
+.inline-pips {
+font-size: 0.7em;
+margin-left: 6px;
+letter-spacing: 0.15em;
+opacity: 0.8;
+vertical-align: middle;
 }
-    .adjust-scores-box {
-  margin: 20px auto;
-  padding: 15px;
-  border: 2px solid #00ffff;
-  border-radius: 10px;
-  background-color: rgba(1, 5, 24, 0.9);
-  box-shadow: 0 0 10px #00ffff40;
-  max-width: 500px;
-  text-align: center;
+.adjust-scores-box {
+margin: 20px auto;
+padding: 15px;
+border: 2px solid #00ffff;
+border-radius: 10px;
+background-color: rgba(1, 5, 24, 0.9);
+box-shadow: 0 0 10px #00ffff40;
+max-width: 500px;
+text-align: center;
 }
-    #rotatePrompt {
-  transition: opacity 0.5s ease;
-  opacity: 1;
+#rotatePrompt {
+transition: opacity 0.5s ease;
+opacity: 1;
 }
 
 #rotatePrompt.fade-out {
-  opacity: 0;
+opacity: 0;
 }
-  </style>
+</style>
 </head>
 <body>
-  <div id="scoreboardMask"></div>
-  <!-- App logo: visible at top unless scoreboard is locked -->
+<div id="scoreboardMask"></div>
+<!-- App logo: visible at top unless scoreboard is locked -->
 
-  <div class="scoreboard">
-  <div class="score-side">
-    <div id="homeDisplay" class="score-name">Player 1</div>
-    <div id="homePips" class="pips-row"></div>
-    <div id="homeScoreDisplay" class="score-number">0</div>
-  </div>
+<div class="scoreboard">
+<div class="score-side">
+<div id="homeDisplay" class="score-name">Player 1</div>
+<div id="homePips" class="pips-row"></div>
+<div id="homeScoreDisplay" class="score-number">0</div>
+</div>
 
-  <div class="score-center">
-    <div id="logoWrapper">
-      <img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
-    </div>
-    <div id="blitzWrapper">
-      <img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
-      <div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
-    </div>
-    <div id="timer">3:00.0</div>
-    <div id="compactSummary" class="compact-summary">G1 R1-0S G2 S1-0R G3 R1-0S</div>    
-  </div>
+<div class="score-center">
+<div id="logoWrapper">
+<img src="photonblitzlogo.png" id="mainLogo" alt="Photon Logo" />
+</div>
+<div id="blitzWrapper">
+<img src="photonblitzlogo.png" id="blitzLogo" alt="Photon Logo" onclick="startTimeout()" />
+<div id="blitzBanner" onclick="startTimeout()">BLITZ ⚡</div>
+</div>
+<div id="timer">3:00.0</div>
+<div id="compactSummary" class="compact-summary">G1 R1-0S G2 S1-0R G3 R1-0S</div>    
+</div>
 
-  <div class="score-side">
-    <div id="awayDisplay" class="score-name">Player 2</div>
-    <div id="awayPips" class="pips-row"></div>
-    <div id="awayScoreDisplay" class="score-number">0</div>
-  </div>
+<div class="score-side">
+<div id="awayDisplay" class="score-name">Player 2</div>
+<div id="awayPips" class="pips-row"></div>
+<div id="awayScoreDisplay" class="score-number">0</div>
+</div>
 </div>
 
 <div id="scrollSpacer"></div>
 
-  <div id="rotatePrompt">Please rotate your device to landscape mode.</div>
-  <!-- Timeout control button: pauses for 10 seconds -->
-  <div class="timeout-button">
-    <button onclick="startTimeout()">Timeout 10s</button>
-  </div>
+<div id="rotatePrompt">Please rotate your device to landscape mode.</div>
+<!-- Timeout control button: pauses for 10 seconds -->
+<div class="timeout-button">
+<button onclick="startTimeout()">Timeout 10s</button>
+</div>
 
-  <!-- Core control buttons for scoring and timer -->
-  <div id="buttonsWrapper" class="buttons" style="display: flex;">
-        <button onclick="scoreVisual('left')">Player 1</button>
-        <button onclick="toggleTimer()">⏯</button>
-        <button onclick="scoreVisual('right')">Player 2</button>
-  </div>
+<!-- Core control buttons for scoring and timer -->
+<div id="buttonsWrapper" class="buttons" style="display: flex;">
+<button onclick="scoreVisual('left')">Player 1</button>
+<button onclick="toggleTimer()">⏯</button>
+<button onclick="scoreVisual('right')">Player 2</button>
+</div>
 
-  <!-- Settings (gear) icon to open config panel -->
-  <div id="gear" onclick="toggleMenu()">⚙️</div>
-  <div id="versionTag">v2.4.3 (FlipFix)</div>
+<!-- Settings (gear) icon to open config panel -->
+<div id="gear" onclick="toggleMenu()">⚙️</div>
+  <div id="versionTag">v2.4.1 (FatBoy)</div>
+  <div id="versionTag">v2.4.2 (FatBoy)</div>
 
-  <!-- Settings panel that appears when gear icon is clicked -->
-  <div id="menu">
+<!-- Settings panel that appears when gear icon is clicked -->
+<div id="menu">
 
-    <!-- Checkbox to lock scoreboard to top of screen -->
-    <label style="display: block; margin: 15px 0;">
-      <input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
-      Lock scoreboard to top
-    </label>
-
-    <label style="display: block; margin-top: 15px;">
-  <input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
-  Enable Sounds
+<!-- Checkbox to lock scoreboard to top of screen -->
+<label style="display: block; margin: 15px 0;">
+<input type="checkbox" id="lockToggle" onchange="toggleLock(this)" />
+Lock scoreboard to top
 </label>
 
-    <!-- Layout toggle button -->
-<!--<button onclick="switchToPortrait()">Switch to Portrait Mode</button>-->
-  <!-- REMOVED PORTRAIT MODE BUTTON FOR LATER RELEASES--> 
+<label style="display: block; margin-top: 15px;">
+<input type="checkbox" id="soundToggle" checked onchange="toggleSound()" />
+Enable Sounds
+</label>
 
-    <!-- Back gear in menu -->
+<!-- Layout toggle button -->
+<!--<button onclick="switchToPortrait()">Switch to Portrait Mode</button>-->
+<!-- REMOVED PORTRAIT MODE BUTTON FOR LATER RELEASES--> 
+
+<!-- Back gear in menu -->
 <div id="gearBack" onclick="toggleMenu()" style="font-size: 2.5em; cursor: pointer; margin-bottom: 10px;">⚙️</div>
 
 
-    <!-- Input fields for updating team/player names -->
-    <div class="name-container">
-  <div id="homeNameDisplay" class="name-input" contenteditable="true" spellcheck="false" data-placeholder="Player 1"></div>
-  <div id="awayNameDisplay" class="name-input" contenteditable="true" spellcheck="false" data-placeholder="Player 2"></div>
+<!-- Input fields for updating team/player names -->
+<div class="name-container">
+<input type="text" id="homeName" class="name-input" placeholder="Player 1" />
+<input type="text" id="awayName" class="name-input" placeholder="Player 2" />
 </div>
 
-    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-  <button class="menu-action" onclick="saveNames()">Update Names</button>
-  <button class="menu-action" onclick="clearNames()">Clear Names</button>
+<div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+<button class="menu-action" onclick="saveNames()">Update Names</button>
+<button class="menu-action" onclick="clearNames()">Clear Names</button>
 </div>
 
 <!-- Score Correction -->
 <div class="adjust-scores-box">
-  <h3>Adjust Scores</h3>
-  <div class="time-controls" style="justify-content: space-between;">
-    <div style="display: flex; gap: 10px;">
-      <button onclick="adjustScoreVisual('left', 1)">+1</button>
-      <button onclick="adjustScoreVisual('left', -1)">–1</button>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button onclick="adjustScoreVisual('right', 1)">+1</button>
-      <button onclick="adjustScoreVisual('right', -1)">–1</button>
-    </div>
-  </div>
+<h3>Adjust Scores</h3>
+<div class="time-controls" style="justify-content: space-between;">
+<div style="display: flex; gap: 10px;">
+<button onclick="adjustScoreVisual('left', 1)">+1</button>
+<button onclick="adjustScoreVisual('left', -1)">–1</button>
+</div>
+<div style="display: flex; gap: 10px;">
+<button onclick="adjustScoreVisual('right', 1)">+1</button>
+<button onclick="adjustScoreVisual('right', -1)">–1</button>
+</div>
+</div>
 </div>
 
 <!-- Game Count Correction -->
 <!--<h3>Adjust Game Wins</h3>
 <div class="time-controls" style="justify-content: space-between;">
-  <div style="display: flex; gap: 10px;">
-    <button onclick="adjustGamesVisual('left', 1)">+1</button>
-    <button onclick="adjustGamesVisual('left', -1)">–1</button>
-  </div>
-  <div style="display: flex; gap: 10px;">
-    <button onclick="adjustGamesVisual('right', 1)">+1</button>
-    <button onclick="adjustGamesVisual('right', -1)">–1</button>
-  </div>
+ <div style="display: flex; gap: 10px;">
+   <button onclick="adjustGamesVisual('left', 1)">+1</button>
+   <button onclick="adjustGamesVisual('left', -1)">–1</button>
+ </div>
+ <div style="display: flex; gap: 10px;">
+   <button onclick="adjustGamesVisual('right', 1)">+1</button>
+   <button onclick="adjustGamesVisual('right', -1)">–1</button>
+ </div>
 </div> -->
 
-    <!-- Action buttons for match control -->
+<!-- Action buttons for match control -->
 
 <button class="menu-action" onclick="restartGame()">Restart Game</button>
 <button class="menu-action" onclick="startSuddenDeath()">Force Sudden Death</button>
 <button class="menu-action" onclick="swapSides()">Swap Sides</button>
 <button class="menu-action" onclick="resetMatch()">Reset Match</button>
 
-    <!-- Elegant Time Adjustment Controls -->
+<!-- Elegant Time Adjustment Controls -->
 <div style="margin-top: 30px; padding: 15px; border: 2px solid #00ffff50; border-radius: 12px; background: rgba(0,255,255,0.05);">
-  <h3 style="margin-bottom: 10px; color: #00ffff;">Adjust Match Timer</h3>
+<h3 style="margin-bottom: 10px; color: #00ffff;">Adjust Match Timer</h3>
 
-  <div class="time-controls">
-    <strong>Add Time</strong>
-  </div>
-  <div class="time-controls">
-    <button onclick="adjustTime(0.5)">+0.5s</button>
-    <button onclick="adjustTime(1)">+1s</button>
-    <button onclick="adjustTime(10)">+10s</button>
-    <button onclick="adjustTime(30)">+30s</button>
-    <button onclick="adjustTime(60)">+1min</button>
-  </div>
-
-  <div class="time-controls">
-    <strong>Remove Time</strong>
-  </div>
-  <div class="time-controls">
-    <button onclick="adjustTime(-0.5)">-0.5s</button>
-    <button onclick="adjustTime(-1)">-1s</button>
-    <button onclick="adjustTime(-10)">-10s</button>
-    <button onclick="adjustTime(-30)">-30s</button>
-    <button onclick="adjustTime(-60)">-1min</button>
-  </div>
+<div class="time-controls">
+<strong>Add Time</strong>
+</div>
+<div class="time-controls">
+<button onclick="adjustTime(0.5)">+0.5s</button>
+<button onclick="adjustTime(1)">+1s</button>
+<button onclick="adjustTime(10)">+10s</button>
+<button onclick="adjustTime(30)">+30s</button>
+<button onclick="adjustTime(60)">+1min</button>
 </div>
 
-    <!-- Dynamic summary of match results -->
-    <div class="match-summary" id="matchSummary">
-      <h3>Match Summary</h3>
-      <div id="summaryText"></div>
-    </div>
-  </div>
+<div class="time-controls">
+<strong>Remove Time</strong>
+</div>
+<div class="time-controls">
+<button onclick="adjustTime(-0.5)">-0.5s</button>
+<button onclick="adjustTime(-1)">-1s</button>
+<button onclick="adjustTime(-10)">-10s</button>
+<button onclick="adjustTime(-30)">-30s</button>
+<button onclick="adjustTime(-60)">-1min</button>
+</div>
+</div>
 
-  <!-- Set horn sound --> 
-    <audio id="hornSound" src="horn.mp3" preload="auto"></audio>
+<!-- Dynamic summary of match results -->
+<div class="match-summary" id="matchSummary">
+<h3>Match Summary</h3>
+<div id="summaryText"></div>
+</div>
+</div>
 
-  <script>
+<!-- Set horn sound --> 
+<audio id="hornSound" src="horn.mp3" preload="auto"></audio>
 
-  // Set the initial time to 3 minutes (in tenths of seconds)
-  let time = 1800;
+<script>
 
-  // Declare timers and game state variables
-  let timerInterval;
-  let running = false;
-  let homeScoreValue = 0;
-  let awayScoreValue = 0;
-  let blitz = false; // Blitz mode triggers at 1:00
-  let suddenDeath = false;
-  let homeGamesWon = 0;
-  let awayGamesWon = 0;
-  let matchesPlayed = 0;
-  let timeoutCounter = 10;
-  let timeoutInterval = null;
-  let playPuckAnnounced = false;
-  let timeoutActive = false;
-  let lastGameWasSuddenDeath = false;
-  let suddenDeathLoser = null;  
+// Set the initial time to 3 minutes (in tenths of seconds)
+let time = 1800;
 
-  // Predefined times in seconds to call out remaining time
-  const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
-  let announcedTimes = new Set(); // Keeps track of times already announced
-  let gameScores = []; // Stores completed game results
+// Declare timers and game state variables
+let timerInterval;
+let running = false;
+let homeScoreValue = 0;
+let awayScoreValue = 0;
+let blitz = false; // Blitz mode triggers at 1:00
+let suddenDeath = false;
+let homeGamesWon = 0;
+let awayGamesWon = 0;
+let matchesPlayed = 0;
+let timeoutCounter = 10;
+let timeoutInterval = null;
+let playPuckAnnounced = false;
+let timeoutActive = false;
+let lastGameWasSuddenDeath = false;
+let suddenDeathLoser = null;  
 
-  // Speaks the given text aloud using browser's speech synthesis
-  function speak(text) {
-    if ('speechSynthesis' in window) {
-      const msg = new SpeechSynthesisUtterance(text);
-      msg.pitch = 1.2;
-      msg.rate = 1.1;
-      msg.volume = 1;
-      speechSynthesis.speak(msg);
-    }
-  }
+// Predefined times in seconds to call out remaining time
+const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
+let announcedTimes = new Set(); // Keeps track of times already announced
+let gameScores = []; // Stores completed game results
 
-
-  // Updates the visible timer and manages game flow at key time events
-  function updateTimer() {
-  const timerEl = document.getElementById('timer');
-  timerEl.classList.remove('timer-small');
-  const minutes = String(Math.floor(time / 600));
-  const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
-  const tenths = String(time % 10);
-  timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
-
-  // Trigger Blitz mode at exactly 1:00 remaining
-  const blitzWrapper = document.getElementById('blitzWrapper');
-  const logoWrapper = document.getElementById('logoWrapper');
-  const blitzBanner = document.getElementById('blitzBanner');
-
-  if (time <= 600 && !blitz) {
-    blitz = true;
-    blitzWrapper.classList.add('active');
-    logoWrapper.classList.add('hidden');
-    blitzBanner.style.display = 'block';
-    speak("Blitz Blitz Blitz! Double Points!");
-  } else if (time > 600 && !running && !blitz) {
-    // Reset visuals if not in blitz and timer is above 1:00
-    blitzWrapper.classList.remove('active');
-    logoWrapper.classList.remove('hidden');
-  }
-
-  // Handle end-of-match logic
-  if (time === 0) {
-    clearInterval(timerInterval);
-    running = false;
-    if (homeScoreValue === awayScoreValue) {
-      startSuddenDeath();
-    } else {
-      endGame();
-    }
-  }
-
-  // Announce specific countdown moments
-  const sec = Math.floor(time / 10);
-  if (!announcedTimes.has(sec)) {
-    if (sec === 70) speak("Ten seconds til Blitz!");
-  else if (sec === 60) speak("One minute remaining");
-  else if (sec === 45) speak("Forty-five seconds");
-  else if (sec === 30) speak("Thirty seconds");
-  else if (sec === 15) speak("Fifteen seconds");
-  else if (sec === 10) speak("Ten seconds");
-  else if (sec === 5) speak("Five");
-  else if (sec === 4) speak("Four");
-  else if (sec === 3) speak("Three");
-  else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
-  else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
-
-  announcedTimes.add(sec);
+// Speaks the given text aloud using browser's speech synthesis
+function speak(text) {
+if ('speechSynthesis' in window) {
+const msg = new SpeechSynthesisUtterance(text);
+msg.pitch = 1.2;
+msg.rate = 1.1;
+msg.volume = 1;
+speechSynthesis.speak(msg);
 }
 }
 
-  // Starts or pauses the timer
-  function toggleTimer() {
-  const timerEl = document.getElementById('timer');
 
-  if (timeoutActive) {
-    cancelTimeoutAndResume(); // ⛔ Cancel timeout before resuming
-    return;
-  }
+// Updates the visible timer and manages game flow at key time events
+function updateTimer() {
+const timerEl = document.getElementById('timer');
+timerEl.classList.remove('timer-small');
+const minutes = String(Math.floor(time / 600));
+const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
+const tenths = String(time % 10);
+timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
 
-  if (running) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-    running = false;
-    timerEl.classList.remove('running');
-  } else {
-    timerInterval = setInterval(() => {
-      if (time > 0) {
-        time--;
-        updateTimer();
-      }
-    }, 100);
-    running = true;
-    timerEl.classList.add('running');
+// Trigger Blitz mode at exactly 1:00 remaining
+const blitzWrapper = document.getElementById('blitzWrapper');
+const logoWrapper = document.getElementById('logoWrapper');
+const blitzBanner = document.getElementById('blitzBanner');
 
-    if (!playPuckAnnounced) {
-      speak("Play Puck");
-      playPuckAnnounced = true;
-    }
-  }
+if (time <= 600 && !blitz) {
+blitz = true;
+blitzWrapper.classList.add('active');
+logoWrapper.classList.add('hidden');
+blitzBanner.style.display = 'block';
+speak("Blitz Blitz Blitz! Double Points!");
+} else if (time > 600 && !running && !blitz) {
+// Reset visuals if not in blitz and timer is above 1:00
+blitzWrapper.classList.remove('active');
+logoWrapper.classList.remove('hidden');
 }
 
-    function cancelTimeoutAndResume() {
-  if (!timeoutActive) return;
-
-  clearInterval(timeoutInterval);
-  timeoutInterval = null;
-  timeoutActive = false;
-
-  const timerEl = document.getElementById('timer');
-  timerEl.classList.remove('timer-small');
-  timerEl.onclick = null;
-  updateTimer();
-
-  if (!running) {
-    timerInterval = setInterval(() => {
-      if (time > 0) {
-        time--;
-        updateTimer();
-      }
-    }, 100);
-    running = true;
-    timerEl.classList.add('running');
-
-    if (!playPuckAnnounced) {
-      speak("Play Puck");
-      playPuckAnnounced = true;
-    }
-  }
+// Handle end-of-match logic
+if (time === 0) {
+clearInterval(timerInterval);
+running = false;
+if (homeScoreValue === awayScoreValue) {
+startSuddenDeath();
+} else {
+endGame();
 }
-    
-  // Adjusts the timer by a number of seconds (+/-)
-  function adjustTime(seconds) {
-    time = Math.max(0, Math.min(5999, time + seconds * 10));
-    updateTimer();
-  }
+}
 
-  // Increments score for specified team (blitz gives double points)
-  let finalGameSnapshot = [];
+// Announce specific countdown moments
+const sec = Math.floor(time / 10);
+if (!announcedTimes.has(sec)) {
+if (sec === 70) speak("Ten seconds til Blitz!");
+else if (sec === 60) speak("One minute remaining");
+else if (sec === 45) speak("Forty-five seconds");
+else if (sec === 30) speak("Thirty seconds");
+else if (sec === 15) speak("Fifteen seconds");
+else if (sec === 10) speak("Ten seconds");
+else if (sec === 5) speak("Five");
+else if (sec === 4) speak("Four");
+else if (sec === 3) speak("Three");
+else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
+else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
+
+announcedTimes.add(sec);
+}
+}
+
+// Starts or pauses the timer
+function toggleTimer() {
+const timerEl = document.getElementById('timer');
+
+if (timeoutActive) {
+cancelTimeoutAndResume(); // ⛔ Cancel timeout before resuming
+return;
+}
+
+if (running) {
+clearInterval(timerInterval);
+timerInterval = null;
+running = false;
+timerEl.classList.remove('running');
+} else {
+timerInterval = setInterval(() => {
+if (time > 0) {
+time--;
+updateTimer();
+}
+}, 100);
+running = true;
+timerEl.classList.add('running');
+
+if (!playPuckAnnounced) {
+speak("Play Puck");
+playPuckAnnounced = true;
+}
+}
+}
+
+function cancelTimeoutAndResume() {
+if (!timeoutActive) return;
+
+clearInterval(timeoutInterval);
+timeoutInterval = null;
+timeoutActive = false;
+
+const timerEl = document.getElementById('timer');
+timerEl.classList.remove('timer-small');
+timerEl.onclick = null;
+updateTimer();
+
+if (!running) {
+timerInterval = setInterval(() => {
+if (time > 0) {
+time--;
+updateTimer();
+}
+}, 100);
+running = true;
+timerEl.classList.add('running');
+
+if (!playPuckAnnounced) {
+speak("Play Puck");
+playPuckAnnounced = true;
+}
+}
+}
+
+// Adjusts the timer by a number of seconds (+/-)
+function adjustTime(seconds) {
+time = Math.max(0, Math.min(5999, time + seconds * 10));
+updateTimer();
+}
+
+// Increments score for specified team (blitz gives double points)
+let finalGameSnapshot = [];
 
 function score(side) {
-  const logicalSide = getLogicalSide(side);
-  const now = Date.now(); // optional timestamp
+const logicalSide = getLogicalSide(side);
+const now = Date.now(); // optional timestamp
 
-  if (logicalSide === 'home') homeScoreValue += blitz ? 2 : 1;
-  if (logicalSide === 'away') awayScoreValue += blitz ? 2 : 1;
+if (logicalSide === 'home') homeScoreValue += blitz ? 2 : 1;
+if (logicalSide === 'away') awayScoreValue += blitz ? 2 : 1;
 
-  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-  finalGameSnapshot.push({
-    time: now,
-    homeName: document.getElementById('homeName').value || 'Player 1',
-    awayName: document.getElementById('awayName').value || 'Player 2',
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue
-  });
+finalGameSnapshot.push({
+time: now,
+homeName: document.getElementById('homeName').value || 'Player 1',
+awayName: document.getElementById('awayName').value || 'Player 2',
+homeScore: homeScoreValue,
+awayScore: awayScoreValue
+});
 
-  if (suddenDeath) {
-    endGame();
-  } else {
-    clearInterval(timerInterval);
-    running = false;
-    document.getElementById('timer').classList.remove('running');
-  }
+if (suddenDeath) {
+endGame();
+} else {
+clearInterval(timerInterval);
+running = false;
+document.getElementById('timer').classList.remove('running');
+}
 }
 
 function startTimeout() {
-  if (timeoutActive) {
-    console.warn("⛔ Timeout already running. Ignored.");
-    return;
-  }
-
-  timeoutActive = true; // 🟢 Immediately block reentry
-
-  if (running) {
-    toggleTimer(); // ⏸️ Pause game timer
-  }
-
-  timeoutCounter = 10;
-  const timerEl = document.getElementById('timer');
-  timerEl.textContent = `Timeout: ${timeoutCounter}`;
-  timerEl.classList.add('timer-small');
-
-  // Tap-to-cancel behavior
-  timerEl.onclick = cancelTimeoutAndResume;
-
-  timeoutInterval = setInterval(() => {
-    timeoutCounter--;
-    if (timeoutCounter > 0) {
-      timerEl.textContent = `Timeout: ${timeoutCounter}`;
-    } else {
-      cancelTimeoutAndResume(); // ⏹️ Auto-end timeout
-    }
-  }, 1000);
+if (timeoutActive) {
+console.warn("⛔ Timeout already running. Ignored.");
+return;
 }
-    
+
+timeoutActive = true; // 🟢 Immediately block reentry
+
+if (running) {
+toggleTimer(); // ⏸️ Pause game timer
+}
+
+timeoutCounter = 10;
+const timerEl = document.getElementById('timer');
+timerEl.textContent = `Timeout: ${timeoutCounter}`;
+timerEl.classList.add('timer-small');
+
+// Tap-to-cancel behavior
+timerEl.onclick = cancelTimeoutAndResume;
+
+timeoutInterval = setInterval(() => {
+timeoutCounter--;
+if (timeoutCounter > 0) {
+timerEl.textContent = `Timeout: ${timeoutCounter}`;
+} else {
+cancelTimeoutAndResume(); // ⏹️ Auto-end timeout
+}
+}, 1000);
+}
+
 // Optional helper: if game is resumed manually, ensure timeout is canceled
 function forceResumePlay() {
-  if (timeoutActive) {
-    clearInterval(timeoutInterval);
-    timeoutInterval = null;
-    timeoutActive = false;
-    const timerEl = document.getElementById('timer');
-    timerEl.classList.remove('timer-small');
-    timerEl.onclick = null;
-  }
-  toggleTimer(); // resume game
+if (timeoutActive) {
+clearInterval(timeoutInterval);
+timeoutInterval = null;
+timeoutActive = false;
+const timerEl = document.getElementById('timer');
+timerEl.classList.remove('timer-small');
+timerEl.onclick = null;
+}
+toggleTimer(); // resume game
 }
 
 // Game data slots
@@ -901,549 +892,549 @@ let game3 = null;
 
 //declare players as AB values    
 let players = {
-  A: null,
-  B: null
+A: null,
+B: null
 };
 
 function endGame() {
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
+const scoreboard = document.querySelector('.scoreboard');
+const reversed = scoreboard.classList.contains('reverse');
 
-  const snapshot = finalGameSnapshot.at(-1); // last valid score state
-  if (!snapshot) return console.warn('❌ No score snapshot found.');
+const snapshot = finalGameSnapshot.at(-1); // last valid score state
+if (!snapshot) return console.warn('❌ No score snapshot found.');
 
-  const {
-    homeName,
-    awayName,
-    homeScore,
-    awayScore
-  } = snapshot;
+const {
+homeName,
+awayName,
+homeScore,
+awayScore
+} = snapshot;
 
-  const homeWon = homeScore > awayScore;
-  const winnerName = homeWon ? homeName : awayName;
-  const loserName = homeWon ? awayName : homeName;
-  const winnerScore = homeWon ? homeScore : awayScore;
-  const loserScore = homeWon ? awayScore : homeScore;
+const homeWon = homeScore > awayScore;
+const winnerName = homeWon ? homeName : awayName;
+const loserName = homeWon ? awayName : homeName;
+const winnerScore = homeWon ? homeScore : awayScore;
+const loserScore = homeWon ? awayScore : homeScore;
 
-  // Visual-side mapping (LEFT and RIGHT are pre-swap)
-  const visualLeftName = reversed ? awayName : homeName;
-  const visualRightName = reversed ? homeName : awayName;
-  const visualLeftScore = reversed ? awayScore : homeScore;
-  const visualRightScore = reversed ? homeScore : awayScore;
+// Visual-side mapping (LEFT and RIGHT are pre-swap)
+const visualLeftName = reversed ? awayName : homeName;
+const visualRightName = reversed ? homeName : awayName;
+const visualLeftScore = reversed ? awayScore : homeScore;
+const visualRightScore = reversed ? homeScore : awayScore;
 
-  const visualWinnerSide = (winnerName === visualLeftName) ? 'left' : 'right';
-  const visualLoserSide = visualWinnerSide === 'left' ? 'right' : 'left';
+const visualWinnerSide = (winnerName === visualLeftName) ? 'left' : 'right';
+const visualLoserSide = visualWinnerSide === 'left' ? 'right' : 'left';
 
-  // Track logical player A/B wins
-  if (players.A?.name === winnerName) players.A.wins++;
-  if (players.B?.name === winnerName) players.B.wins++;
+// Track logical player A/B wins
+if (players.A?.name === winnerName) players.A.wins++;
+if (players.B?.name === winnerName) players.B.wins++;
 
-  if (homeWon) homeGamesWon++;
-  else awayGamesWon++;
+if (homeWon) homeGamesWon++;
+else awayGamesWon++;
 
-  matchesPlayed++;
+matchesPlayed++;
 
-  const gameData = {
-    homeName,
-    awayName,
-    homeScore,
-    awayScore,
-    winnerName,
-    loserName,
-    winnerScore,
-    loserScore,
-    wasSuddenDeath: lastGameWasSuddenDeath,
-    suddenDeathWinner: lastGameWasSuddenDeath ? visualWinnerSide : null,
-    suddenDeathLoser: lastGameWasSuddenDeath ? visualLoserSide : null,
-    leftScore: visualLeftScore,
-    rightScore: visualRightScore,
-    visualWinnerName: visualWinnerSide === 'left' ? visualLeftName : visualRightName,
-    visualLoserName: visualLoserSide === 'left' ? visualLeftName : visualRightName,
-    visualWinnerScore: visualWinnerSide === 'left' ? visualLeftScore : visualRightScore,
-    visualLoserScore: visualLoserSide === 'left' ? visualLeftScore : visualRightScore,
+const gameData = {
+homeName,
+awayName,
+homeScore,
+awayScore,
+winnerName,
+loserName,
+winnerScore,
+loserScore,
+wasSuddenDeath: lastGameWasSuddenDeath,
+suddenDeathWinner: lastGameWasSuddenDeath ? visualWinnerSide : null,
+suddenDeathLoser: lastGameWasSuddenDeath ? visualLoserSide : null,
+leftScore: visualLeftScore,
+rightScore: visualRightScore,
+visualWinnerName: visualWinnerSide === 'left' ? visualLeftName : visualRightName,
+visualLoserName: visualLoserSide === 'left' ? visualLeftName : visualRightName,
+visualWinnerScore: visualWinnerSide === 'left' ? visualLeftScore : visualRightScore,
+visualLoserScore: visualLoserSide === 'left' ? visualLeftScore : visualRightScore,
 
-    // ✅ New: logical identity for pip tracking
-    playerAName: players.A?.name,
-    playerBName: players.B?.name
-  };
+// ✅ New: logical identity for pip tracking
+playerAName: players.A?.name,
+playerBName: players.B?.name
+};
 
-  // Store the game in slot
-  if (!game1) game1 = gameData;
-  else if (!game2) game2 = gameData;
-  else game3 = gameData;
+// Store the game in slot
+if (!game1) game1 = gameData;
+else if (!game2) game2 = gameData;
+else game3 = gameData;
 
-  console.log('✅ Game recorded:', gameData);
-  console.log('🔁 Swapping sides...');
-  swapSides();
-  console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
+console.log('✅ Game recorded:', gameData);
+console.log('🔁 Swapping sides...');
+swapSides();
+console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
 
-  resetForNextGame(true);
-  updateSummary();
-  updateCompactSummary();
-  updateNameDisplays(visualLoserSide, visualWinnerSide, gameData.suddenDeathWinner);
+resetForNextGame(true);
+updateSummary();
+updateCompactSummary();
+updateNameDisplays(visualLoserSide, visualWinnerSide, gameData.suddenDeathWinner);
 
-  finalGameSnapshot = [];
-  console.log('🎯 [endGame()] COMPLETE');
+finalGameSnapshot = [];
+console.log('🎯 [endGame()] COMPLETE');
 }
 
-    function updateCompactSummary() {
-  const summaryEl = document.getElementById('compactSummary');
-  const games = [game1, game2, game3].filter(Boolean);
-  if (games.length === 0) {
-    summaryEl.textContent = '';
-    return;
-  }
-
-  const leftInitial = (players.A && players.B)
-    ? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.B.name[0] : players.A.name[0])
-    : 'A';
-  const rightInitial = (players.A && players.B)
-    ? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.A.name[0] : players.B.name[0])
-    : 'B';
-
-  const compact = games.map((g, i) => {
-    const winnerInitial = g.visualWinnerName === g.homeName ? leftInitial : rightInitial;
-    const loserInitial = g.visualLoserName === g.homeName ? leftInitial : rightInitial;
-    const scoreString = `G${i + 1} ${winnerInitial}${g.visualWinnerScore}-${g.visualLoserScore}${loserInitial}`;
-    return g.wasSuddenDeath ? `${scoreString}†` : scoreString;
-  });
-      
-  console.log("📦 Writing compact summary:", compact.join(' '));
-  summaryEl.textContent = compact.join(' ');
+function updateCompactSummary() {
+const summaryEl = document.getElementById('compactSummary');
+const games = [game1, game2, game3].filter(Boolean);
+if (games.length === 0) {
+summaryEl.textContent = '';
+return;
 }
 
-  // Resets scoreboard for the next game
-  function resetForNextGame(preserveSuddenDeath = false) {
-  homeScoreValue = 0;
-  awayScoreValue = 0;
-  time = 1800;
-  blitz = false;
-  suddenDeath = false;
-  announcedTimes.clear();
-  timeoutActive = false;
-  document.getElementById('blitzBanner').style.display = 'none';
-  updateTimer();
-  document.getElementById('homeScoreDisplay').textContent = 0;
-  document.getElementById('awayScoreDisplay').textContent = 0;
+const leftInitial = (players.A && players.B)
+? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.B.name[0] : players.A.name[0])
+: 'A';
+const rightInitial = (players.A && players.B)
+? (document.querySelector('.scoreboard').classList.contains('reverse') ? players.A.name[0] : players.B.name[0])
+: 'B';
 
-  // Only reset these after the pip logic runs
-  if (!preserveSuddenDeath) {
-    lastGameWasSuddenDeath = false;
-    suddenDeathLoser = null;
-  }
+const compact = games.map((g, i) => {
+const winnerInitial = g.visualWinnerName === g.homeName ? leftInitial : rightInitial;
+const loserInitial = g.visualLoserName === g.homeName ? leftInitial : rightInitial;
+const scoreString = `G${i + 1} ${winnerInitial}${g.visualWinnerScore}-${g.visualLoserScore}${loserInitial}`;
+return g.wasSuddenDeath ? `${scoreString}†` : scoreString;
+});
+
+console.log("📦 Writing compact summary:", compact.join(' '));
+summaryEl.textContent = compact.join(' ');
 }
 
-  // Fully resets match data and stats
-  function resetMatch() {
-  homeGamesWon = 0;
-  awayGamesWon = 0;
-  matchesPlayed = 0;
-  gameScores = [];
-  game1 = null;
-  game2 = null;
-  game3 = null;
-  announcedTimes.clear();
-  playPuckAnnounced = false;
+// Resets scoreboard for the next game
+function resetForNextGame(preserveSuddenDeath = false) {
+homeScoreValue = 0;
+awayScoreValue = 0;
+time = 1800;
+blitz = false;
+suddenDeath = false;
+announcedTimes.clear();
+timeoutActive = false;
+document.getElementById('blitzBanner').style.display = 'none';
+updateTimer();
+document.getElementById('homeScoreDisplay').textContent = 0;
+document.getElementById('awayScoreDisplay').textContent = 0;
 
-  restartGame(true);
-
-  // ✅ Ensure only the correct gear is shown
-  document.getElementById('gear').style.display = 'none';
-  document.getElementById('gearBack').style.display = 'block';
-
-  // 🧹 Clear summaries and pips
-  document.getElementById('compactSummary').textContent = '';
-  document.getElementById('summaryText').textContent = '';
-  updateNameDisplays();
+// Only reset these after the pip logic runs
+if (!preserveSuddenDeath) {
+lastGameWasSuddenDeath = false;
+suddenDeathLoser = null;
+}
 }
 
-  // Fully resets game and scoreboard UI state
-  function restartGame(keepMenuOpen = false) {
-  const timerEl = document.getElementById('timer');
-  timerEl.classList.remove('timer-small');
+// Fully resets match data and stats
+function resetMatch() {
+homeGamesWon = 0;
+awayGamesWon = 0;
+matchesPlayed = 0;
+gameScores = [];
+game1 = null;
+game2 = null;
+game3 = null;
+announcedTimes.clear();
+playPuckAnnounced = false;
 
-  homeScoreValue = 0;
-  awayScoreValue = 0;
-  time = 1800;
-  blitz = false;
-  suddenDeath = false;
-  announcedTimes.clear();
-  timeoutActive = false;
-  playPuckAnnounced = false;
-  document.getElementById('blitzBanner').style.display = 'none';
-  updateTimer();
-  document.getElementById('homeScoreDisplay').textContent = 0;
-  document.getElementById('awayScoreDisplay').textContent = 0;
-  clearInterval(timerInterval);
+restartGame(true);
 
-  if (!keepMenuOpen) {
-    document.getElementById('menu').classList.remove('active');
-    document.getElementById('buttonsWrapper').style.display = 'flex';
-    document.getElementById('gear').style.display = 'block';
-    document.querySelector('.timeout-button').style.display = 'block';
-    document.getElementById('gearBack').style.display = 'none';
-  }
+// ✅ Ensure only the correct gear is shown
+document.getElementById('gear').style.display = 'none';
+document.getElementById('gearBack').style.display = 'block';
 
-  running = false;
-  updateSummary();
+// 🧹 Clear summaries and pips
+document.getElementById('compactSummary').textContent = '';
+document.getElementById('summaryText').textContent = '';
+updateNameDisplays();
 }
 
-  // Opens and closes gear menu
-  function toggleMenu() {
-  const menu = document.getElementById('menu');
-  const buttonsWrapper = document.getElementById('buttonsWrapper');
-  const gear = document.getElementById('gear');
-  const timeoutBtn = document.querySelector('.timeout-button');
-  const gearBack = document.getElementById('gearBack');
-  const versionTag = document.getElementById('versionTag'); // 👈 add this line
+// Fully resets game and scoreboard UI state
+function restartGame(keepMenuOpen = false) {
+const timerEl = document.getElementById('timer');
+timerEl.classList.remove('timer-small');
 
-  const isActive = menu.classList.contains('active');
-  menu.classList.toggle('active');
-  buttonsWrapper.style.display = isActive ? 'flex' : 'none';
-  gear.style.display = isActive ? 'block' : 'none';
-  timeoutBtn.style.display = isActive ? 'block' : 'none';
-  gearBack.style.display = isActive ? 'none' : 'block';
-  versionTag.style.display = isActive ? 'block' : 'none'; // 👈 this hides version when menu is open
+homeScoreValue = 0;
+awayScoreValue = 0;
+time = 1800;
+blitz = false;
+suddenDeath = false;
+announcedTimes.clear();
+timeoutActive = false;
+playPuckAnnounced = false;
+document.getElementById('blitzBanner').style.display = 'none';
+updateTimer();
+document.getElementById('homeScoreDisplay').textContent = 0;
+document.getElementById('awayScoreDisplay').textContent = 0;
+clearInterval(timerInterval);
 
-  if (!isActive) {
-    setTimeout(() => {
-      document.getElementById('homeName').focus();
-    }, 300);
-  }
+if (!keepMenuOpen) {
+document.getElementById('menu').classList.remove('active');
+document.getElementById('buttonsWrapper').style.display = 'flex';
+document.getElementById('gear').style.display = 'block';
+document.querySelector('.timeout-button').style.display = 'block';
+document.getElementById('gearBack').style.display = 'none';
 }
 
-  // Puts game into sudden death mode (no timer, first score wins)
-  function startSuddenDeath() {
-  clearInterval(timerInterval);
-  suddenDeath = true;
-  lastGameWasSuddenDeath = true;
-  running = false;
-  time = 0;
-
-  // 🔁 Auto-clear Blitz Mode
-  blitz = false;
-  document.getElementById('blitzBanner').style.display = 'none';
-
-  const timerEl = document.getElementById('timer');
-  timerEl.textContent = 'Sudden Death';
-  timerEl.classList.add('timer-small'); // 👈 Add this line
+running = false;
+updateSummary();
 }
 
-  function swapSides() {
-  const scoreboard = document.querySelector('.scoreboard');
-  const wasReversed = scoreboard.classList.contains('reverse');
+// Opens and closes gear menu
+function toggleMenu() {
+const menu = document.getElementById('menu');
+const buttonsWrapper = document.getElementById('buttonsWrapper');
+const gear = document.getElementById('gear');
+const timeoutBtn = document.querySelector('.timeout-button');
+const gearBack = document.getElementById('gearBack');
+const versionTag = document.getElementById('versionTag'); // 👈 add this line
 
-  // 1️⃣ Perform the visual flip
-  scoreboard.classList.toggle('reverse');
+const isActive = menu.classList.contains('active');
+menu.classList.toggle('active');
+buttonsWrapper.style.display = isActive ? 'flex' : 'none';
+gear.style.display = isActive ? 'block' : 'none';
+timeoutBtn.style.display = isActive ? 'block' : 'none';
+gearBack.style.display = isActive ? 'none' : 'block';
+versionTag.style.display = isActive ? 'block' : 'none'; // 👈 this hides version when menu is open
 
-  // 2️⃣ Swap name input values
-  const homeInput = document.getElementById('homeName');
-  const awayInput = document.getElementById('awayName');
-  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
-
-  // 3️⃣ Swap current score values
-  [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
-  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-
-  // 4️⃣ 🔄 Swap game win counters
-  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
-
-  // 5️⃣ Safely update player object values
-  if (players.A) {
-    players.A.name = homeInput.value || 'Player 1';
-    players.A.wins = homeGamesWon;
-  }
-  if (players.B) {
-    players.B.name = awayInput.value || 'Player 2';
-    players.B.wins = awayGamesWon;
-  }
-
-  // 6️⃣ Update UI
-  updateNameDisplays();
-  updateSummary();
+if (!isActive) {
+setTimeout(() => {
+document.getElementById('homeName').focus();
+}, 300);
+}
 }
 
-    function saveNames() {
-  const homeName = document.getElementById('homeName').value || 'Player 1';
-  const awayName = document.getElementById('awayName').value || 'Player 2';
+// Puts game into sudden death mode (no timer, first score wins)
+function startSuddenDeath() {
+clearInterval(timerInterval);
+suddenDeath = true;
+lastGameWasSuddenDeath = true;
+running = false;
+time = 0;
 
-  localStorage.setItem('homeName', homeName);
-  localStorage.setItem('awayName', awayName);
+// 🔁 Auto-clear Blitz Mode
+blitz = false;
+document.getElementById('blitzBanner').style.display = 'none';
 
-  // Assign IDs once only
-  players.A = players.A || { id: 'A' };
-  players.B = players.B || { id: 'B' };
-
-  players.A.name = homeName;
-  players.B.name = awayName;
-  players.A.wins = homeGamesWon;
-  players.B.wins = awayGamesWon;
-
-  updateNameDisplays();
-  updateSummary();
-}
-  // Updates name and score UI for each player
-  function updateNameDisplays() {
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
-  const summary = document.getElementById('compactSummary')?.textContent || '';
-
-  const playerA = players.A.name;
-  const playerB = players.B.name;
-
-  const getPipsFromSummary = (fullName) => {
-    const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/gi) || [];
-    const initial = fullName[0].toUpperCase(); // Normalize player initial to uppercase
-    let pips = [];
-    let lossAdded = false;
-
-    for (let game of games) {
-      const match = game.match(/G\d+ ([A-Z])(\d+)-(\d+)([A-Z])/i);
-      if (!match) continue;
-
-      const winnerInitial = match[1].toUpperCase();
-      const winnerScore = parseInt(match[2]);
-      const loserScore = parseInt(match[3]);
-      const loserInitial = match[4].toUpperCase();
-
-      if (winnerInitial === initial) {
-        pips.push('●');
-      } else if (!lossAdded && loserInitial === initial) {
-        pips.push('☠️');
-        lossAdded = true;
-      }
-    }
-
-    while (pips.length < 3) pips.push('○');
-    return pips.join('');
-  };
-
-  // Determine layout order
-  const leftName = reversed ? playerB : playerA;
-  const rightName = reversed ? playerA : playerB;
-
-  const leftPips = getPipsFromSummary(leftName);
-  const rightPips = getPipsFromSummary(rightName);
-
-  // Update UI
-  document.getElementById('homeDisplay').textContent = leftName;
-  document.getElementById('awayDisplay').textContent = rightName;
-
-  document.getElementById('homePips').textContent = leftPips;
-  document.getElementById('awayPips').textContent = rightPips;
-}
-  // Builds summary text for the match summary section
-  function updateSummary() {
-  const container = document.getElementById('summaryText');
-
-  if (!players.A || !players.B) {
-    container.innerHTML = 'No match data available.';
-    return;
-  }
-
-  const games = [game1, game2, game3].filter(Boolean);
-  let leftWins = 0;
-  let rightWins = 0;
-
-  games.forEach(g => {
-    if (g.leftScore > g.rightScore) leftWins++;
-    else if (g.rightScore > g.leftScore) rightWins++;
-  });
-
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
-  const leftPlayer = reversed ? players.B : players.A;
-  const rightPlayer = reversed ? players.A : players.B;
-
-  let summary = '';
-
-  if (leftWins > rightWins) {
-    summary += `<span class='winner'>${leftPlayer.name} (${leftWins} Wins)</span><br>${rightPlayer.name} (${rightWins} Wins)<br>`;
-  } else if (rightWins > leftWins) {
-    summary += `${leftPlayer.name} (${leftWins} Wins)<br><span class='winner'>${rightPlayer.name} (${rightWins} Wins)</span><br>`;
-  } else {
-    summary += `${leftPlayer.name} (${leftWins} Wins)<br>${rightPlayer.name} (${rightWins} Wins)<br>`;
-  }
-
-  summary += `Matches Played: ${games.length}<br><br>`;
-
-  if (games.length > 0) {
-    summary += `<strong>Game Scores:</strong><br>` +
-      games.map((g, i) =>
-        `Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
-      ).join('<br>');
-  }
-
-  container.innerHTML = summary;
-  updateCompactSummary(); // still keep compact summary in sync
-}
-    // compact summary old location
-
-  // Loads saved player names from localStorage on page load
-  function loadNames() {
-  const savedHome = localStorage.getItem('homeName');
-  const savedAway = localStorage.getItem('awayName');
-  if (savedHome) document.getElementById('homeName').value = savedHome;
-  if (savedAway) document.getElementById('awayName').value = savedAway;
-
-  // ✅ Initialize players from saved names
-  players.A = { name: savedHome || 'Player 1', wins: homeGamesWon };
-  players.B = { name: savedAway || 'Player 2', wins: awayGamesWon };
-
-  updateNameDisplays();
-  updateSummary();
-    document.getElementById('homeName').focus();
+const timerEl = document.getElementById('timer');
+timerEl.textContent = 'Sudden Death';
+timerEl.classList.add('timer-small'); // 👈 Add this line
 }
 
-  // Run initial load
-  loadNames();
-  updateTimer();
+function swapSides() {
+const scoreboard = document.querySelector('.scoreboard');
+const wasReversed = scoreboard.classList.contains('reverse');
 
-    document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
-  e.stopPropagation();
-  scoreVisual('left');
+// 1️⃣ Perform the visual flip
+scoreboard.classList.toggle('reverse');
+
+// 2️⃣ Swap name input values
+const homeInput = document.getElementById('homeName');
+const awayInput = document.getElementById('awayName');
+[homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+
+// 3️⃣ Swap current score values
+[homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
+document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+
+// 4️⃣ 🔄 Swap game win counters
+[homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
+
+// 5️⃣ Safely update player object values
+if (players.A) {
+players.A.name = homeInput.value || 'Player 1';
+players.A.wins = homeGamesWon;
+}
+if (players.B) {
+players.B.name = awayInput.value || 'Player 2';
+players.B.wins = awayGamesWon;
+}
+
+// 6️⃣ Update UI
+updateNameDisplays();
+updateSummary();
+}
+
+function saveNames() {
+const homeName = document.getElementById('homeName').value || 'Player 1';
+const awayName = document.getElementById('awayName').value || 'Player 2';
+
+localStorage.setItem('homeName', homeName);
+localStorage.setItem('awayName', awayName);
+
+// Assign IDs once only
+players.A = players.A || { id: 'A' };
+players.B = players.B || { id: 'B' };
+
+players.A.name = homeName;
+players.B.name = awayName;
+players.A.wins = homeGamesWon;
+players.B.wins = awayGamesWon;
+
+updateNameDisplays();
+updateSummary();
+}
+// Updates name and score UI for each player
+function updateNameDisplays() {
+const scoreboard = document.querySelector('.scoreboard');
+const reversed = scoreboard.classList.contains('reverse');
+const summary = document.getElementById('compactSummary')?.textContent || '';
+
+const playerA = players.A.name;
+const playerB = players.B.name;
+
+const getPipsFromSummary = (fullName) => {
+const games = summary.match(/G\d+ [A-Z]\d+-\d+[A-Z]/gi) || [];
+const initial = fullName[0].toUpperCase(); // Normalize player initial to uppercase
+let pips = [];
+let lossAdded = false;
+
+for (let game of games) {
+const match = game.match(/G\d+ ([A-Z])(\d+)-(\d+)([A-Z])/i);
+if (!match) continue;
+
+const winnerInitial = match[1].toUpperCase();
+const winnerScore = parseInt(match[2]);
+const loserScore = parseInt(match[3]);
+const loserInitial = match[4].toUpperCase();
+
+if (winnerInitial === initial) {
+pips.push('●');
+} else if (!lossAdded && loserInitial === initial) {
+pips.push('☠️');
+lossAdded = true;
+}
+}
+
+while (pips.length < 3) pips.push('○');
+return pips.join('');
+};
+
+// Determine layout order
+const leftName = reversed ? playerB : playerA;
+const rightName = reversed ? playerA : playerB;
+
+const leftPips = getPipsFromSummary(leftName);
+const rightPips = getPipsFromSummary(rightName);
+
+// Update UI
+document.getElementById('homeDisplay').textContent = leftName;
+document.getElementById('awayDisplay').textContent = rightName;
+
+document.getElementById('homePips').textContent = leftPips;
+document.getElementById('awayPips').textContent = rightPips;
+}
+// Builds summary text for the match summary section
+function updateSummary() {
+const container = document.getElementById('summaryText');
+
+if (!players.A || !players.B) {
+container.innerHTML = 'No match data available.';
+return;
+}
+
+const games = [game1, game2, game3].filter(Boolean);
+let leftWins = 0;
+let rightWins = 0;
+
+games.forEach(g => {
+if (g.leftScore > g.rightScore) leftWins++;
+else if (g.rightScore > g.leftScore) rightWins++;
+});
+
+const scoreboard = document.querySelector('.scoreboard');
+const reversed = scoreboard.classList.contains('reverse');
+const leftPlayer = reversed ? players.B : players.A;
+const rightPlayer = reversed ? players.A : players.B;
+
+let summary = '';
+
+if (leftWins > rightWins) {
+summary += `<span class='winner'>${leftPlayer.name} (${leftWins} Wins)</span><br>${rightPlayer.name} (${rightWins} Wins)<br>`;
+} else if (rightWins > leftWins) {
+summary += `${leftPlayer.name} (${leftWins} Wins)<br><span class='winner'>${rightPlayer.name} (${rightWins} Wins)</span><br>`;
+} else {
+summary += `${leftPlayer.name} (${leftWins} Wins)<br>${rightPlayer.name} (${rightWins} Wins)<br>`;
+}
+
+summary += `Matches Played: ${games.length}<br><br>`;
+
+if (games.length > 0) {
+summary += `<strong>Game Scores:</strong><br>` +
+games.map((g, i) =>
+`Game ${i + 1}: ${g.winnerName} ${g.winnerScore} – ${g.loserScore} ${g.loserName}${g.wasSuddenDeath ? ' †' : ''}`
+).join('<br>');
+}
+
+container.innerHTML = summary;
+updateCompactSummary(); // still keep compact summary in sync
+}
+// compact summary old location
+
+// Loads saved player names from localStorage on page load
+function loadNames() {
+const savedHome = localStorage.getItem('homeName');
+const savedAway = localStorage.getItem('awayName');
+if (savedHome) document.getElementById('homeName').value = savedHome;
+if (savedAway) document.getElementById('awayName').value = savedAway;
+
+// ✅ Initialize players from saved names
+players.A = { name: savedHome || 'Player 1', wins: homeGamesWon };
+players.B = { name: savedAway || 'Player 2', wins: awayGamesWon };
+
+updateNameDisplays();
+updateSummary();
+document.getElementById('homeName').focus();
+}
+
+// Run initial load
+loadNames();
+updateTimer();
+
+document.getElementById('homeScoreDisplay').addEventListener('click', (e) => {
+e.stopPropagation();
+scoreVisual('left');
 });
 
 document.getElementById('awayScoreDisplay').addEventListener('click', (e) => {
-  e.stopPropagation();
-  scoreVisual('right');
+e.stopPropagation();
+scoreVisual('right');
 });
 
-    document.querySelector('.scoreboard').addEventListener('click', (e) => {
-  const logo = document.getElementById('mainLogo');
+document.querySelector('.scoreboard').addEventListener('click', (e) => {
+const logo = document.getElementById('mainLogo');
 
-  // If the logo was clicked, trigger timeout
-  if (logo && logo.contains(e.target)) {
-    startTimeout();
-    return;
-  }
+// If the logo was clicked, trigger timeout
+if (logo && logo.contains(e.target)) {
+startTimeout();
+return;
+}
 
-  // If timer was clicked, toggle it
-  if (e.target.id === 'timer') {
-    toggleTimer();
-    return;
-  }
+// If timer was clicked, toggle it
+if (e.target.id === 'timer') {
+toggleTimer();
+return;
+}
 
-  // All scoring is now handled by direct listeners on #homeScoreDisplay and #awayScoreDisplay
-  // Fallback scoring if a score-side section is tapped
-  if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[0]) {
-    scoreVisual('left');
-  } else if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[1]) {
-    scoreVisual('right');
-  }
+// All scoring is now handled by direct listeners on #homeScoreDisplay and #awayScoreDisplay
+// Fallback scoring if a score-side section is tapped
+if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[0]) {
+scoreVisual('left');
+} else if (e.target.closest('.score-side') === document.querySelectorAll('.score-side')[1]) {
+scoreVisual('right');
+}
 });
 
-    document.getElementById('timer').addEventListener('click', (e) => {
-  e.stopPropagation(); // prevent scoreboard click fallback
-  toggleTimer();       // toggle the match timer
+document.getElementById('timer').addEventListener('click', (e) => {
+e.stopPropagation(); // prevent scoreboard click fallback
+toggleTimer();       // toggle the match timer
 });
-  // Toggles the "locked" class on body to fix scoreboard at top
-  function toggleLock(checkbox) {
-    const scoreboard = document.querySelector('.scoreboard');
-    if (checkbox.checked) {
-      document.body.classList.add('locked');
-    } else {
-      document.body.classList.remove('locked');
-    }
-  }
-    function adjustScore(side, delta) {
-  if (side === 'home') {
-    homeScoreValue = Math.max(0, homeScoreValue + delta);
-    document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-  } else {
-    awayScoreValue = Math.max(0, awayScoreValue + delta);
-    document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
-  }
+// Toggles the "locked" class on body to fix scoreboard at top
+function toggleLock(checkbox) {
+const scoreboard = document.querySelector('.scoreboard');
+if (checkbox.checked) {
+document.body.classList.add('locked');
+} else {
+document.body.classList.remove('locked');
+}
+}
+function adjustScore(side, delta) {
+if (side === 'home') {
+homeScoreValue = Math.max(0, homeScoreValue + delta);
+document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+} else {
+awayScoreValue = Math.max(0, awayScoreValue + delta);
+document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+}
 
-  // 💾 Push updated score into snapshot
-  finalGameSnapshot.push({
-    time: Date.now(),
-    homeName: document.getElementById('homeName').value || 'Player 1',
-    awayName: document.getElementById('awayName').value || 'Player 2',
-    homeScore: homeScoreValue,
-    awayScore: awayScoreValue
-  });
+// 💾 Push updated score into snapshot
+finalGameSnapshot.push({
+time: Date.now(),
+homeName: document.getElementById('homeName').value || 'Player 1',
+awayName: document.getElementById('awayName').value || 'Player 2',
+homeScore: homeScoreValue,
+awayScore: awayScoreValue
+});
 }
 
 function adjustGames(side, delta) {
-  if (side === 'home') {
-    homeGamesWon = Math.max(0, homeGamesWon + delta);
-    if (players.A?.name === document.getElementById('homeName').value) {
-      players.A.wins = homeGamesWon;
-    }
-  } else {
-    awayGamesWon = Math.max(0, awayGamesWon + delta);
-    if (players.B?.name === document.getElementById('awayName').value) {
-      players.B.wins = awayGamesWon;
-    }
-  }
-
-  updateNameDisplays();
-  updateSummary();
+if (side === 'home') {
+homeGamesWon = Math.max(0, homeGamesWon + delta);
+if (players.A?.name === document.getElementById('homeName').value) {
+players.A.wins = homeGamesWon;
 }
-    // play horn sound at the end of the match
-    let soundEnabled = true;
+} else {
+awayGamesWon = Math.max(0, awayGamesWon + delta);
+if (players.B?.name === document.getElementById('awayName').value) {
+players.B.wins = awayGamesWon;
+}
+}
+
+updateNameDisplays();
+updateSummary();
+}
+// play horn sound at the end of the match
+let soundEnabled = true;
 
 function playHorn() {
-  if (soundEnabled) {
-    const horn = document.getElementById('hornSound');
-    horn.currentTime = 0;
-    setTimeout(() => {
-      horn.play().catch((e) => {
-        console.warn("Horn playback failed:", e);
-      });
-    }, 0);
-  }
+if (soundEnabled) {
+const horn = document.getElementById('hornSound');
+horn.currentTime = 0;
+setTimeout(() => {
+horn.play().catch((e) => {
+console.warn("Horn playback failed:", e);
+});
+}, 0);
 }
-    // Toggles sound on/off 
-    function toggleSound() {
-  soundEnabled = document.getElementById('soundToggle').checked;
 }
-    function switchToPortrait() {
-  // Optional: confirm switch
-  if (confirm("Switch to Portrait (One-Hand) Mode? Switching layout will reset all game data. Continue?")) {
-    window.location.href = "PMindex.html";
-  }
+// Toggles sound on/off 
+function toggleSound() {
+soundEnabled = document.getElementById('soundToggle').checked;
 }
-    function isMobile() {
-    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  }
+function switchToPortrait() {
+// Optional: confirm switch
+if (confirm("Switch to Portrait (One-Hand) Mode? Switching layout will reset all game data. Continue?")) {
+window.location.href = "PMindex.html";
+}
+}
+function isMobile() {
+return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
-  let rotateTimeout1, rotateTimeout2;
+let rotateTimeout1, rotateTimeout2;
 
 function checkOrientation() {
-  const prompt = document.getElementById('rotatePrompt');
+const prompt = document.getElementById('rotatePrompt');
 
-  // If we've already shown the prompt once this session, skip it
-  if (sessionStorage.getItem('rotatePromptShown')) {
-    prompt.style.display = 'none';
-    return;
-  }
+// If we've already shown the prompt once this session, skip it
+if (sessionStorage.getItem('rotatePromptShown')) {
+prompt.style.display = 'none';
+return;
+}
 
-  // Clear any existing timeouts
-  clearTimeout(rotateTimeout1);
-  clearTimeout(rotateTimeout2);
+// Clear any existing timeouts
+clearTimeout(rotateTimeout1);
+clearTimeout(rotateTimeout2);
 
-  if (isMobile() && window.innerHeight > window.innerWidth) {
-    prompt.style.display = 'flex';
-    prompt.classList.remove('fade-out');
+if (isMobile() && window.innerHeight > window.innerWidth) {
+prompt.style.display = 'flex';
+prompt.classList.remove('fade-out');
 
-    // Set session flag to prevent repeat showing
-    sessionStorage.setItem('rotatePromptShown', 'true');
+// Set session flag to prevent repeat showing
+sessionStorage.setItem('rotatePromptShown', 'true');
 
-    // Auto-fade and hide
-    rotateTimeout1 = setTimeout(() => {
-      prompt.classList.add('fade-out');
-    }, 4000);
+// Auto-fade and hide
+rotateTimeout1 = setTimeout(() => {
+prompt.classList.add('fade-out');
+}, 4000);
 
-    rotateTimeout2 = setTimeout(() => {
-      prompt.style.display = 'none';
-    }, 5000);
-  } else {
-    prompt.style.display = 'none';
-    prompt.classList.remove('fade-out');
-  }
+rotateTimeout2 = setTimeout(() => {
+prompt.style.display = 'none';
+}, 5000);
+} else {
+prompt.style.display = 'none';
+prompt.classList.remove('fade-out');
+}
 }
 
 window.addEventListener("orientationchange", checkOrientation);
@@ -1451,268 +1442,256 @@ window.addEventListener("resize", checkOrientation);
 window.addEventListener("load", checkOrientation);
 
 function getPips(wins, isLoser = false, totalGames = 0, isSuddenDeathWinner = false) {
-  const pipCount = Math.min(Math.max(totalGames, wins), 3);
-  let pips = '';
+const pipCount = Math.min(Math.max(totalGames, wins), 3);
+let pips = '';
 
-  for (let i = 0; i < wins; i++) {
-    if (isSuddenDeathWinner && i === wins - 1) {
-      pips += '⭐'; // Gold star pip for sudden death win
-    } else {
-      pips += '●';
-    }
-  }
-
-  const emptySlots = pipCount - wins;
-
-  if (isLoser && emptySlots > 0) {
-    pips += '☠️' + '○'.repeat(emptySlots - 1);
-  } else {
-    pips += '○'.repeat(emptySlots);
-  }
-
-  return pips;
+for (let i = 0; i < wins; i++) {
+if (isSuddenDeathWinner && i === wins - 1) {
+pips += '⭐'; // Gold star pip for sudden death win
+} else {
+pips += '●';
+}
 }
 
-    function getPipsFromGames(games) {
-  const wins = games.filter(g => !g.isLoss).length;
-  const loss = games.find(g => g.isLoss);
-  const lastIsSDWin = games.findLast(g => g.isSDWin);
+const emptySlots = pipCount - wins;
 
-  let pips = '';
+if (isLoser && emptySlots > 0) {
+pips += '☠️' + '○'.repeat(emptySlots - 1);
+} else {
+pips += '○'.repeat(emptySlots);
+}
 
-  games.forEach((g, i) => {
-    if (g.isSDWin && i === games.length - 1) {
-      pips += '⭐';
-    } else if (!g.isLoss) {
-      pips += '●';
-    }
-  });
+return pips;
+}
 
-  const empty = Math.max(0, 3 - pips.length);
-  if (loss && empty > 0) {
-    pips += '☠️' + '○'.repeat(empty - 1);
-  } else {
-    pips += '○'.repeat(empty);
-  }
+function getPipsFromGames(games) {
+const wins = games.filter(g => !g.isLoss).length;
+const loss = games.find(g => g.isLoss);
+const lastIsSDWin = games.findLast(g => g.isSDWin);
 
-  return pips;
+let pips = '';
+
+games.forEach((g, i) => {
+if (g.isSDWin && i === games.length - 1) {
+pips += '⭐';
+} else if (!g.isLoss) {
+pips += '●';
+}
+});
+
+const empty = Math.max(0, 3 - pips.length);
+if (loss && empty > 0) {
+pips += '☠️' + '○'.repeat(empty - 1);
+} else {
+pips += '○'.repeat(empty);
+}
+
+return pips;
 }
 
 function getLogicalSide(side) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  if (reversed) {
-    return side === 'home' ? 'away' : 'home';
-  }
-  return side;
+const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+if (reversed) {
+return side === 'home' ? 'away' : 'home';
+}
+return side;
 }
 
-    function scoreVisual(visualSide) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const actualSide = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
-  score(actualSide);
+function scoreVisual(visualSide) {
+const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+const actualSide = (visualSide === 'left')
+? (reversed ? 'away' : 'home')
+: (reversed ? 'home' : 'away');
+score(actualSide);
 }
-    function adjustScoreVisual(visualSide, delta) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const logicalSide = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
-  adjustScore(logicalSide, delta);
+function adjustScoreVisual(visualSide, delta) {
+const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+const logicalSide = (visualSide === 'left')
+? (reversed ? 'away' : 'home')
+: (reversed ? 'home' : 'away');
+adjustScore(logicalSide, delta);
 }
 
 function adjustGamesVisual(visualSide, delta) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  const logicalSide = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
-  adjustGames(logicalSide, delta);
+const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+const logicalSide = (visualSide === 'left')
+? (reversed ? 'away' : 'home')
+: (reversed ? 'home' : 'away');
+adjustGames(logicalSide, delta);
 }
-    function getVisualSides() {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-  return reversed
-    ? { left: 'away', right: 'home' }
-    : { left: 'home', right: 'away' };
+function getVisualSides() {
+const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+return reversed
+? { left: 'away', right: 'home' }
+: { left: 'home', right: 'away' };
 }
 function clearNames() {
-  if (confirm("You really wanna clear the names?")) {
-    document.getElementById('homeName').value = '';
-    document.getElementById('awayName').value = '';
-    localStorage.removeItem('homeName');
-    localStorage.removeItem('awayName');
+if (confirm("You really wanna clear the names?")) {
+document.getElementById('homeName').value = '';
+document.getElementById('awayName').value = '';
+localStorage.removeItem('homeName');
+localStorage.removeItem('awayName');
 
-    // Reset players too
-    players.A = { name: 'Player 1', wins: 0 };
-    players.B = { name: 'Player 2', wins: 0 };
+// Reset players too
+players.A = { name: 'Player 1', wins: 0 };
+players.B = { name: 'Player 2', wins: 0 };
 
-    updateNameDisplays();
-    updateSummary();
-  }
+updateNameDisplays();
+updateSummary();
 }
-    // 1️⃣ Gamepad connection flag
+}
+// 1️⃣ Gamepad connection flag
 let gamepadConnected = false;
 
 // 2️⃣ Cooldown state objects
 const gamepadButtonCooldown = {
-  left: false,
-  right: false,
-  down: false,
-  up: false
+left: false,
+right: false,
+down: false,
+up: false
 };
 
 const keyboardButtonCooldown = {
-  c: false,
-  d: false,
-  e: false,
-  f: false,
-  escape: false
+c: false,
+d: false,
+e: false,
+f: false,
+escape: false
 };
 
 // 🔁 Debounce helper for keyboard keys
 function triggerKeyOnce(key, actionFn) {
-  if (!keyboardButtonCooldown[key]) {
-    actionFn();
-    keyboardButtonCooldown[key] = true;
-    setTimeout(() => {
-      keyboardButtonCooldown[key] = false;
-    }, 300); // adjust as needed
-  }
+if (!keyboardButtonCooldown[key]) {
+actionFn();
+keyboardButtonCooldown[key] = true;
+setTimeout(() => {
+keyboardButtonCooldown[key] = false;
+}, 300); // adjust as needed
 }
-
-// 🔁 Utility: Check if scoreboard is reversed
-function isReversed() {
-  return document.querySelector('.scoreboard')?.classList.contains('reverse');
 }
 
 // 3️⃣ Gamepad polling function
 function checkButtons() {
-  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-  const gp = gamepads[0];
+const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+const gp = gamepads[0];
 
-  if (!gp) {
-    requestAnimationFrame(checkButtons);
-    return;
-  }
+if (!gp) {
+requestAnimationFrame(checkButtons);
+return;
+}
 
-  const buttons = gp.buttons.map(b => b.pressed);
-  const [hAxis = 0, vAxis = 0] = gp.axes;
+const buttons = gp.buttons.map(b => b.pressed);
+const [hAxis = 0, vAxis = 0] = gp.axes;
 
-  // Gamepad LEFT – score for left-side player (flip aware)
-  if (buttons[14] || hAxis < -0.5) {
-    if (!gamepadButtonCooldown.left) {
-      scoreVisual(isReversed() ? 'right' : 'left');
-      gamepadButtonCooldown.left = true;
-    }
-  } else {
-    gamepadButtonCooldown.left = false;
-  }
+// Gamepad LEFT
+if (buttons[14] || hAxis < -0.5) {
+if (!gamepadButtonCooldown.left) {
+scoreVisual('left');
+gamepadButtonCooldown.left = true;
+}
+} else {
+gamepadButtonCooldown.left = false;
+}
 
-  // Gamepad RIGHT – score for right-side player (flip aware)
-  if (buttons[15] || hAxis > 0.5) {
-    if (!gamepadButtonCooldown.right) {
-      scoreVisual(isReversed() ? 'left' : 'right');
-      gamepadButtonCooldown.right = true;
-    }
-  } else {
-    gamepadButtonCooldown.right = false;
-  }
+// Gamepad RIGHT
+if (buttons[15] || hAxis > 0.5) {
+if (!gamepadButtonCooldown.right) {
+scoreVisual('right');
+gamepadButtonCooldown.right = true;
+}
+} else {
+gamepadButtonCooldown.right = false;
+}
 
-  // Gamepad DOWN – pause/resume timer
-  if (buttons[13] || vAxis > 0.5) {
-    if (!gamepadButtonCooldown.down) {
-      toggleTimer();
-      gamepadButtonCooldown.down = true;
-    }
-  } else {
-    gamepadButtonCooldown.down = false;
-  }
+// Gamepad DOWN
+if (buttons[13] || vAxis > 0.5) {
+if (!gamepadButtonCooldown.down) {
+toggleTimer();
+gamepadButtonCooldown.down = true;
+}
+} else {
+gamepadButtonCooldown.down = false;
+}
 
-  // Gamepad UP – start timeout
-  if (buttons[12] || vAxis < -0.5) {
-    if (!gamepadButtonCooldown.up) {
-      startTimeout();
-      gamepadButtonCooldown.up = true;
-    }
-  } else {
-    gamepadButtonCooldown.up = false;
-  }
+// Gamepad UP
+if (buttons[12] || vAxis < -0.5) {
+if (!gamepadButtonCooldown.up) {
+startTimeout();
+gamepadButtonCooldown.up = true;
+}
+} else {
+gamepadButtonCooldown.up = false;
+}
 
-  requestAnimationFrame(checkButtons);
+requestAnimationFrame(checkButtons);
 }
 
 // 4️⃣ Start gamepad polling loop
 function pollGamepad() {
-  requestAnimationFrame(checkButtons);
+requestAnimationFrame(checkButtons);
 }
 
 // 5️⃣ Gamepad connected listener
 window.addEventListener("gamepadconnected", () => {
-  if (!gamepadConnected) {
-    gamepadConnected = true;
-    console.log("🎮 Gamepad connected!");
-    pollGamepad();
-  }
+if (!gamepadConnected) {
+gamepadConnected = true;
+console.log("🎮 Gamepad connected!");
+pollGamepad();
+}
 });
 
 // 6️⃣ Unified keyboard support (Arrow keys + CDEF + Escape)
 document.addEventListener('keydown', (event) => {
-  const key = event.key.toLowerCase();
-  const tag = event.target.tagName.toLowerCase();
+const key = event.key.toLowerCase();
+const tag = event.target.tagName.toLowerCase();
 
-  // Ignore if typing
-  if (tag === 'input' || tag === 'textarea') return;
+// Ignore if typing
+if (tag === 'input' || tag === 'textarea') return;
 
-  // Prevent browser scroll or nudge
-  if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
-    event.preventDefault();
-  }
+// Prevent browser scroll or nudge
+if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
+event.preventDefault();
+}
 
-  // Arrow key handling (flip aware)
-  switch (event.key) {
-    case 'ArrowLeft':
-      scoreVisual(isReversed() ? 'right' : 'left');
-      break;
-    case 'ArrowRight':
-      scoreVisual(isReversed() ? 'left' : 'right');
-      break;
-    case 'ArrowDown':
-      toggleTimer();
-      break;
-    case 'ArrowUp':
-      startTimeout();
-      break;
-    case 'Escape':
-      triggerKeyOnce('escape', () => {
-        if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
-          resetMatch();
-        }
-      });
-      break;
-  }
-
-  // CDEF key handling with timed debounce (flip aware for E/F)
-  switch (key) {
-    case 'e':
-      triggerKeyOnce('e', () => scoreVisual(isReversed() ? 'right' : 'left'));
-      break;
-    case 'f':
-      triggerKeyOnce('f', () => scoreVisual(isReversed() ? 'left' : 'right'));
-      break;
-    case 'd':
-      triggerKeyOnce('d', () => toggleTimer());
-      break;
-    case 'c':
-      triggerKeyOnce('c', () => startTimeout());
-      break;
-  }
+// Arrow key handling
+switch (event.key) {
+case 'ArrowLeft':
+scoreVisual('left');
+break;
+case 'ArrowRight':
+scoreVisual('right');
+break;
+case 'ArrowDown':
+toggleTimer();
+break;
+case 'ArrowUp':
+startTimeout();
+break;
+case 'Escape':
+triggerKeyOnce('escape', () => {
+if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
+resetMatch();
+}
 });
-    function getHomeName() {
-  return document.getElementById('homeNameDisplay').textContent.trim() || 'Player 1';
+break;
 }
 
-function getAwayName() {
-  return document.getElementById('awayNameDisplay').textContent.trim() || 'Player 2';
+// CDEF key handling with timed debounce
+switch (key) {
+case 'e':
+triggerKeyOnce('e', () => scoreVisual('left'));
+break;
+case 'f':
+triggerKeyOnce('f', () => scoreVisual('right'));
+break;
+case 'd':
+triggerKeyOnce('d', () => toggleTimer());
+break;
+case 'c':
+triggerKeyOnce('c', () => startTimeout());
+break;
 }
+});
 </script>
 </body>
 </html>
