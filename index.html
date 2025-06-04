@@ -1638,16 +1638,16 @@ document.addEventListener('keydown', (event) => {
   // CDEF key handling with cooldown
   if (!keyboardButtonCooldown[key]) {
     switch (key) {
-      case 'c':
+      case 'e':
         scoreVisual('left');
         break;
-      case 'd':
+      case 'f':
         scoreVisual('right');
         break;
-      case 'f':
+      case 'd':
         toggleTimer();
         break;
-      case 'e':
+      case 'c':
         startTimeout();
         break;
     }
