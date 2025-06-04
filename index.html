@@ -747,17 +747,16 @@ body.locked .timeout-button {
 
   // Starts or pauses the timer
   function toggleTimer() {
-  const timerEl = document.getElementById('timer');
-
-  // ✅ If timeout is active, cancel it but continue to toggle the match timer
   if (timeoutActive) {
-  cancelTimeoutAndResume();
-  return;
-}
+    cancelTimeoutAndResume();
+    return;
+  }
+
+  const timerEl = document.getElementById('timer');
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running'); // 🟥 Stopped
+    timerEl.classList.remove('running');
   } else {
     if (!playPuckAnnounced) {
       speak("Play Puck");
@@ -770,7 +769,7 @@ body.locked .timeout-button {
         updateTimer();
       }
     }, 100);
-    timerEl.classList.add('running'); // 🟩 Running
+    timerEl.classList.add('running');
   }
 
   running = !running;
@@ -779,6 +778,7 @@ body.locked .timeout-button {
     function cancelTimeoutAndResume() {
   const timerEl = document.getElementById('timer');
 
+  // Cancel timeout UI
   clearInterval(timeoutInterval);
   timeoutInterval = null;
   timeoutActive = false;
@@ -788,9 +788,21 @@ body.locked .timeout-button {
 
   updateTimer();
 
-  // Now resume match timer (if not already running)
-  if (!running) {
-    toggleTimer(); // this safely starts the main timer
+  // ✅ Immediately resume the match timer without calling toggleTimer()
+  timerInterval = setInterval(() => {
+    if (time > 0) {
+      time--;
+      updateTimer();
+    }
+  }, 100);
+
+  running = true;
+  timerEl.classList.add('running');
+
+  // Optional: Re-speak the play cue if desired
+  if (!playPuckAnnounced) {
+    speak("Play Puck");
+    playPuckAnnounced = true;
   }
 }
     
