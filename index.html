@@ -842,33 +842,33 @@ document.getElementById('timer').classList.remove('running');
 }
 
 function startTimeout() {
-if (timeoutActive) {
-console.warn("⛔ Timeout already running. Ignored.");
-return;
-}
+  if (timeoutActive) {
+    console.warn("⛔ Timeout already running. Ignored.");
+    return;
+  }
 
-timeoutActive = true; // 🟢 Immediately block reentry
+  timeoutActive = true; // 🟢 Immediately block reentry
 
-if (running) {
-toggleTimer(); // ⏸️ Pause game timer
-}
+  if (running) {
+    toggleTimer(); // ⏸️ Pause game timer
+  }
 
-timeoutCounter = 10;
-const timerEl = document.getElementById('timer');
-timerEl.textContent = `Timeout: ${timeoutCounter}`;
-timerEl.classList.add('timer-small');
+  timeoutCounter = 10;
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = `Timeout: ${timeoutCounter}`;
+  timerEl.classList.add('timer-small');
 
-// Tap-to-cancel behavior
-timerEl.onclick = cancelTimeoutAndResume;
+  // Tap-to-cancel behavior
+  timerEl.onclick = cancelTimeoutAndResume;
 
-timeoutInterval = setInterval(() => {
-timeoutCounter--;
-if (timeoutCounter > 0) {
-timerEl.textContent = `Timeout: ${timeoutCounter}`;
-} else {
-cancelTimeoutAndResume(); // ⏹️ Auto-end timeout
-}
-}, 1000);
+  timeoutInterval = setInterval(() => {
+    timeoutCounter--;
+    if (timeoutCounter > 0) {
+      timerEl.textContent = `Timeout: ${timeoutCounter}`;
+    } else {
+      cancelTimeoutAndResume(); // ⏹️ Auto-end timeout
+    }
+  }, 1000);
 }
 
 // Optional helper: if game is resumed manually, ensure timeout is canceled
