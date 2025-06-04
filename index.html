@@ -1526,14 +1526,14 @@ return side;
 function scoreVisual(visualSide) {
   const reversed = document.querySelector('.scoreboard')?.classList.contains('reverse');
 
-  const actualSide = (visualSide === 'left')
-    ? (reversed ? 'away' : 'home')
-    : (reversed ? 'home' : 'away');
+  const side = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')  // left side shows away when reversed
+    : (reversed ? 'home' : 'away'); // right side shows home when reversed
 
   console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
-  console.log(`👉 Actually scoring: ${actualSide}`);
+  console.log(`👉 Actually scoring: ${side}`);
 
-  score(actualSide); // 🔥 this directly updates the score without relying on DOM clicks
+  score(side);
 }
   
 function adjustScoreVisual(visualSide, delta) {
