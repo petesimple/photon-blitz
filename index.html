@@ -1524,17 +1524,22 @@ return side;
 }
   
 function scoreVisual(visualSide) {
-  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+
+  // Map visual left/right to DOM element IDs based on current layout
+  const scoreId = (visualSide === 'left')
+    ? (reversed ? 'awayScoreDisplay' : 'homeScoreDisplay')
+    : (reversed ? 'homeScoreDisplay' : 'awayScoreDisplay');
+
+  const scoreEl = document.getElementById(scoreId);
   console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
+  console.log(`👉 Tapping element: #${scoreId}`);
 
-  const displayId = (visualSide === 'left') ? 'leftScoreDisplay' : 'rightScoreDisplay';
-  const el = document.getElementById(displayId);
-
-  if (el) {
-    console.log(`👉 Clicking DOM element: #${displayId}`);
-    el.click();
+  if (scoreEl) {
+    scoreEl.click(); // trigger the same path as a UI tap
   } else {
-    console.warn(`⚠️ Element #${displayId} not found`);
+    console.warn(`❌ Could not find #${scoreId}`);
   }
 }
   
