@@ -1611,7 +1611,7 @@ function checkButtons() {
   // LEFT input (D-pad left or analog stick left)
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
-      scoreVisual('left');
+      document.getElementById('leftScoreTouchArea')?.click();
       gamepadButtonCooldown.left = true;
     }
   } else {
