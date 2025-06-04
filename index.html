@@ -747,22 +747,18 @@ body.locked .timeout-button {
 
   // Starts or pauses the timer
   function toggleTimer() {
+  const timerEl = document.getElementById('timer');
+
   if (timeoutActive) {
-    cancelTimeoutAndResume();
+    cancelTimeoutAndResume(); // 👈 Handle cancel AND resume from timer press
     return;
   }
 
-  const timerEl = document.getElementById('timer');
-
   if (running) {
     clearInterval(timerInterval);
+    timerInterval = null;
     timerEl.classList.remove('running');
   } else {
-    if (!playPuckAnnounced) {
-      speak("Play Puck");
-      playPuckAnnounced = true;
-    }
-
     timerInterval = setInterval(() => {
       if (time > 0) {
         time--;
@@ -770,6 +766,11 @@ body.locked .timeout-button {
       }
     }, 100);
     timerEl.classList.add('running');
+
+    if (!playPuckAnnounced) {
+      speak("Play Puck");
+      playPuckAnnounced = true;
+    }
   }
 
   running = !running;
