@@ -751,13 +751,9 @@ body.locked .timeout-button {
 
   // ✅ If timeout is active, cancel it but continue to toggle the match timer
   if (timeoutActive) {
-    clearInterval(timeoutInterval);
-    timeoutInterval = null;
-    timeoutActive = false;
-    timerEl.classList.remove('timer-small');
-    timerEl.removeEventListener('click', cancelTimeout);
-    updateTimer(); // Restore main timer view
-  }
+  cancelTimeoutAndResume();
+  return;
+}
 
   if (running) {
     clearInterval(timerInterval);
@@ -780,6 +776,24 @@ body.locked .timeout-button {
   running = !running;
 }
 
+    function cancelTimeoutAndResume() {
+  const timerEl = document.getElementById('timer');
+
+  clearInterval(timeoutInterval);
+  timeoutInterval = null;
+  timeoutActive = false;
+
+  timerEl.classList.remove('timer-small');
+  timerEl.removeEventListener('click', cancelTimeout);
+
+  updateTimer();
+
+  // Now resume match timer (if not already running)
+  if (!running) {
+    toggleTimer(); // this safely starts the main timer
+  }
+}
+    
   // Adjusts the timer by a number of seconds (+/-)
   function adjustTime(seconds) {
     time = Math.max(0, Math.min(5999, time + seconds * 10));
