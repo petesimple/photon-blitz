@@ -749,21 +749,20 @@ body.locked .timeout-button {
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
-  // ✅ If timeout is active, manually clear it first (DO NOT call forceResumePlay here)
+  // ✅ If timeout is active, cancel it but continue to toggle the match timer
   if (timeoutActive) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
     timeoutActive = false;
     timerEl.classList.remove('timer-small');
     timerEl.removeEventListener('click', cancelTimeout);
-    updateTimer(); // Restore match clock display
+    updateTimer(); // Restore main timer view
   }
 
   if (running) {
     clearInterval(timerInterval);
-    timerEl.classList.remove('running'); // 🟥 Stopped = red
+    timerEl.classList.remove('running'); // 🟥 Stopped
   } else {
-    // ✅ Only announce "Play Puck" once per game
     if (!playPuckAnnounced) {
       speak("Play Puck");
       playPuckAnnounced = true;
@@ -775,7 +774,7 @@ body.locked .timeout-button {
         updateTimer();
       }
     }, 100);
-    timerEl.classList.add('running'); // 🟩 Running = green
+    timerEl.classList.add('running'); // 🟩 Running
   }
 
   running = !running;
