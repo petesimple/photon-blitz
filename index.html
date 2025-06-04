@@ -857,15 +857,15 @@ function startTimeout() {
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
 
-  // 🟡 Optional: tap the timer to cancel timeout early
+  // 🟡 Add one-tap cancel
   timerEl.onclick = cancelTimeoutAndResume;
 
   timeoutInterval = setInterval(() => {
     timeoutCounter--;
-    if (timeoutCounter <= 0) {
-      cancelTimeoutAndResume();
-    } else {
+    if (timeoutCounter > 0) {
       timerEl.textContent = `Timeout: ${timeoutCounter}`;
+    } else {
+      cancelTimeoutAndResume(); // Handles everything
     }
   }, 1000);
 }
