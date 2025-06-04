@@ -870,36 +870,7 @@ function startTimeout() {
     }
   }, 1000);
 }
-
-  // Cleanup handler for cancel or completion
-  function clearTimeoutState() {
-    clearInterval(timeoutInterval);
-    timeoutInterval = null;
-    timeoutActive = false;
-    timerEl.classList.remove('timer-small');
-    timerEl.removeEventListener('click', cancelTimeout);
-  }
-
-  function cancelTimeout() {
-    if (!timeoutActive) return;
-    clearTimeoutState();
-    updateTimer(); // restore clock
-  }
-
-  //timerEl.addEventListener('click', cancelTimeout);
-
-  timeoutInterval = setInterval(() => {
-    timeoutCounter--;
-    if (timeoutCounter > 0) {
-      timerEl.textContent = `Timeout: ${timeoutCounter}`;
-    } else {
-      clearTimeoutState();
-      updateTimer(); // restore clock
-      toggleTimer(); // ▶️ Resume match
-    }
-  }, 1000);
-}
-
+    
 // Optional helper: if game is resumed manually, ensure timeout is canceled
 function forceResumePlay() {
   if (timeoutActive) {
