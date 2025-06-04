@@ -1503,11 +1503,15 @@ return side;
 }
 
 function scoreVisual(visualSide) {
-const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
-const actualSide = (visualSide === 'left')
-? (reversed ? 'away' : 'home')
-: (reversed ? 'home' : 'away');
-score(actualSide);
+  const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
+  console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
+
+  const actualSide = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+
+  console.log(`👉 Actually scoring: ${actualSide}`);
+  score(actualSide);
 }
 function adjustScoreVisual(visualSide, delta) {
 const reversed = document.querySelector('.scoreboard').classList.contains('reverse');
