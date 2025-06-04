@@ -1126,38 +1126,46 @@ timerEl.classList.add('timer-small'); // 👈 Add this line
 }
 
 function swapSides() {
-const scoreboard = document.querySelector('.scoreboard');
-const wasReversed = scoreboard.classList.contains('reverse');
+  const scoreboard = document.querySelector('.scoreboard');
+  const wasReversed = scoreboard.classList.contains('reverse');
 
-// 1️⃣ Perform the visual flip
-scoreboard.classList.toggle('reverse');
+  // 1️⃣ Visually reverse the layout
+  scoreboard.classList.toggle('reverse');
 
-// 2️⃣ Swap name input values
-const homeInput = document.getElementById('homeName');
-const awayInput = document.getElementById('awayName');
-[homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
+  // 2️⃣ Swap player names in input fields
+  const homeInput = document.getElementById('homeName');
+  const awayInput = document.getElementById('awayName');
+  [homeInput.value, awayInput.value] = [awayInput.value, homeInput.value];
 
-// 3️⃣ Swap current score values
-[homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
-document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
-document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
+  // 3️⃣ Swap scores
+  [homeScoreValue, awayScoreValue] = [awayScoreValue, homeScoreValue];
+  document.getElementById('homeScoreDisplay').textContent = homeScoreValue;
+  document.getElementById('awayScoreDisplay').textContent = awayScoreValue;
 
-// 4️⃣ 🔄 Swap game win counters
-[homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
+  // 4️⃣ Swap game win counters
+  [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-// 5️⃣ Safely update player object values
-if (players.A) {
-players.A.name = homeInput.value || 'Player 1';
-players.A.wins = homeGamesWon;
-}
-if (players.B) {
-players.B.name = awayInput.value || 'Player 2';
-players.B.wins = awayGamesWon;
-}
+  // 5️⃣ Update A/B player mapping based on new visual layout
+  const isReversed = scoreboard.classList.contains('reverse');
+  if (isReversed) {
+    // Left = away, Right = home
+    players.A.name = awayInput.value || 'Player 2';
+    players.B.name = homeInput.value || 'Player 1';
+    players.A.wins = awayGamesWon;
+    players.B.wins = homeGamesWon;
+  } else {
+    // Left = home, Right = away
+    players.A.name = homeInput.value || 'Player 1';
+    players.B.name = awayInput.value || 'Player 2';
+    players.A.wins = homeGamesWon;
+    players.B.wins = awayGamesWon;
+  }
 
-// 6️⃣ Update UI
-updateNameDisplays();
-updateSummary();
+  // 6️⃣ Refresh the display and summary
+  updateNameDisplays();
+  updateSummary();
+
+  console.log('🔄 Swap complete. reversed =', isReversed);
 }
 
 function saveNames() {
