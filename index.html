@@ -1550,152 +1550,152 @@ let gamepadConnected = false;
 
 // 2️⃣ Cooldown state objects
 const gamepadButtonCooldown = {
-left: false,
-right: false,
-down: false,
-up: false
+  left: false,
+  right: false,
+  down: false,
+  up: false
 };
 
 const keyboardButtonCooldown = {
-c: false,
-d: false,
-e: false,
-f: false,
-escape: false
+  c: false,
+  d: false,
+  e: false,
+  f: false,
+  escape: false
 };
 
 // 🔁 Debounce helper for keyboard keys
 function triggerKeyOnce(key, actionFn) {
-if (!keyboardButtonCooldown[key]) {
-actionFn();
-keyboardButtonCooldown[key] = true;
-setTimeout(() => {
-keyboardButtonCooldown[key] = false;
-}, 300); // adjust as needed
-}
+  if (!keyboardButtonCooldown[key]) {
+    actionFn();
+    keyboardButtonCooldown[key] = true;
+    setTimeout(() => {
+      keyboardButtonCooldown[key] = false;
+    }, 300); // debounce duration
+  }
 }
 
-// 3️⃣ Gamepad polling function
+// 3️⃣ Gamepad polling function (uses scoreVisual so it's layout-aware)
 function checkButtons() {
-const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-const gp = gamepads[0];
+  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gp = gamepads[0];
 
-if (!gp) {
-requestAnimationFrame(checkButtons);
-return;
+  if (!gp) {
+    requestAnimationFrame(checkButtons);
+    return;
+  }
+
+  const buttons = gp.buttons.map(b => b.pressed);
+  const [hAxis = 0, vAxis = 0] = gp.axes;
+
+  // LEFT input (D-pad left or analog stick left)
+  if (buttons[14] || hAxis < -0.5) {
+    if (!gamepadButtonCooldown.left) {
+      scoreVisual('left');
+      gamepadButtonCooldown.left = true;
+    }
+  } else {
+    gamepadButtonCooldown.left = false;
+  }
+
+  // RIGHT input (D-pad right or analog stick right)
+  if (buttons[15] || hAxis > 0.5) {
+    if (!gamepadButtonCooldown.right) {
+      scoreVisual('right');
+      gamepadButtonCooldown.right = true;
+    }
+  } else {
+    gamepadButtonCooldown.right = false;
+  }
+
+  // DOWN input (pause/resume)
+  if (buttons[13] || vAxis > 0.5) {
+    if (!gamepadButtonCooldown.down) {
+      toggleTimer();
+      gamepadButtonCooldown.down = true;
+    }
+  } else {
+    gamepadButtonCooldown.down = false;
+  }
+
+  // UP input (timeout)
+  if (buttons[12] || vAxis < -0.5) {
+    if (!gamepadButtonCooldown.up) {
+      startTimeout();
+      gamepadButtonCooldown.up = true;
+    }
+  } else {
+    gamepadButtonCooldown.up = false;
+  }
+
+  requestAnimationFrame(checkButtons);
 }
 
-const buttons = gp.buttons.map(b => b.pressed);
-const [hAxis = 0, vAxis = 0] = gp.axes;
-
-// Gamepad LEFT
-if (buttons[14] || hAxis < -0.5) {
-if (!gamepadButtonCooldown.left) {
-scoreVisual('left');
-gamepadButtonCooldown.left = true;
-}
-} else {
-gamepadButtonCooldown.left = false;
-}
-
-// Gamepad RIGHT
-if (buttons[15] || hAxis > 0.5) {
-if (!gamepadButtonCooldown.right) {
-scoreVisual('right');
-gamepadButtonCooldown.right = true;
-}
-} else {
-gamepadButtonCooldown.right = false;
-}
-
-// Gamepad DOWN
-if (buttons[13] || vAxis > 0.5) {
-if (!gamepadButtonCooldown.down) {
-toggleTimer();
-gamepadButtonCooldown.down = true;
-}
-} else {
-gamepadButtonCooldown.down = false;
-}
-
-// Gamepad UP
-if (buttons[12] || vAxis < -0.5) {
-if (!gamepadButtonCooldown.up) {
-startTimeout();
-gamepadButtonCooldown.up = true;
-}
-} else {
-gamepadButtonCooldown.up = false;
-}
-
-requestAnimationFrame(checkButtons);
-}
-
-// 4️⃣ Start gamepad polling loop
+// 4️⃣ Start polling on gamepad connection
 function pollGamepad() {
-requestAnimationFrame(checkButtons);
+  requestAnimationFrame(checkButtons);
 }
 
-// 5️⃣ Gamepad connected listener
+// 5️⃣ Gamepad listener
 window.addEventListener("gamepadconnected", () => {
-if (!gamepadConnected) {
-gamepadConnected = true;
-console.log("🎮 Gamepad connected!");
-pollGamepad();
-}
+  if (!gamepadConnected) {
+    gamepadConnected = true;
+    console.log("🎮 Gamepad connected!");
+    pollGamepad();
+  }
 });
 
-// 6️⃣ Unified keyboard support (Arrow keys + CDEF + Escape)
+// 6️⃣ Keyboard support (Arrow keys and CDEF keys)
 document.addEventListener('keydown', (event) => {
-const key = event.key.toLowerCase();
-const tag = event.target.tagName.toLowerCase();
+  const key = event.key.toLowerCase();
+  const tag = event.target.tagName.toLowerCase();
 
-// Ignore if typing
-if (tag === 'input' || tag === 'textarea') return;
+  // Ignore if typing in input/textarea
+  if (tag === 'input' || tag === 'textarea') return;
 
-// Prevent browser scroll or nudge
-if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
-event.preventDefault();
-}
+  // Prevent default scrolling
+  if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', 'c', 'd', 'e', 'f'].includes(key)) {
+    event.preventDefault();
+  }
 
-// Arrow key handling
-switch (event.key) {
-case 'ArrowLeft':
-scoreVisual('left');
-break;
-case 'ArrowRight':
-scoreVisual('right');
-break;
-case 'ArrowDown':
-toggleTimer();
-break;
-case 'ArrowUp':
-startTimeout();
-break;
-case 'Escape':
-triggerKeyOnce('escape', () => {
-if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
-resetMatch();
-}
-});
-break;
-}
+  // Arrow keys (no debounce)
+  switch (event.key) {
+    case 'ArrowLeft':
+      scoreVisual('left');
+      break;
+    case 'ArrowRight':
+      scoreVisual('right');
+      break;
+    case 'ArrowDown':
+      toggleTimer();
+      break;
+    case 'ArrowUp':
+      startTimeout();
+      break;
+    case 'Escape':
+      triggerKeyOnce('escape', () => {
+        if (confirm("Are you sure you want to reset the match? This will clear all scores and games.")) {
+          resetMatch();
+        }
+      });
+      break;
+  }
 
-// CDEF key handling with timed debounce
-switch (key) {
-case 'e':
-triggerKeyOnce('e', () => scoreVisual('left'));
-break;
-case 'f':
-triggerKeyOnce('f', () => scoreVisual('right'));
-break;
-case 'd':
-triggerKeyOnce('d', () => toggleTimer());
-break;
-case 'c':
-triggerKeyOnce('c', () => startTimeout());
-break;
-}
+  // CDEF keys (with debounce)
+  switch (key) {
+    case 'e':
+      triggerKeyOnce('e', () => scoreVisual('left'));
+      break;
+    case 'f':
+      triggerKeyOnce('f', () => scoreVisual('right'));
+      break;
+    case 'd':
+      triggerKeyOnce('d', () => toggleTimer());
+      break;
+    case 'c':
+      triggerKeyOnce('c', () => startTimeout());
+      break;
+  }
 });
 </script>
 </body>
