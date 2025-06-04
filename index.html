@@ -1700,11 +1700,11 @@ document.addEventListener('keydown', (event) => {
   // Arrow keys
   switch (event.key) {
     case 'ArrowLeft':
-      scoreVisual('left'); // ✅
-      break;
-    case 'ArrowRight':
-      scoreVisual('right'); // ✅
-      break;
+  scoreVisual(shouldFlipControls() ? 'right' : 'left');
+  break;
+case 'ArrowRight':
+  scoreVisual(shouldFlipControls() ? 'left' : 'right');
+  break;
     case 'ArrowDown':
       toggleTimer();
       break;
@@ -1723,11 +1723,11 @@ document.addEventListener('keydown', (event) => {
   // CDEF keys
   switch (key) {
     case 'e':
-      triggerKeyOnce('e', () => scoreVisual('left'));
-      break;
-    case 'f':
-      triggerKeyOnce('f', () => scoreVisual('right'));
-      break;
+  triggerKeyOnce('e', () => scoreVisual(shouldFlipControls() ? 'right' : 'left'));
+  break;
+case 'f':
+  triggerKeyOnce('f', () => scoreVisual(shouldFlipControls() ? 'left' : 'right'));
+  break;
     case 'd':
       triggerKeyOnce('d', () => toggleTimer());
       break;
@@ -1736,6 +1736,10 @@ document.addEventListener('keydown', (event) => {
       break;
   }
 });
+  function shouldFlipControls() {
+  // Flip controls only on even-numbered games (2, 4, 6, ...)
+  return currentGameNumber % 2 === 0;
+}
 </script>
 </body>
 </html>
