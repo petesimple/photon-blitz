@@ -1524,23 +1524,16 @@ return side;
 }
   
 function scoreVisual(visualSide) {
-  const scoreboard = document.querySelector('.scoreboard');
-  const reversed = scoreboard.classList.contains('reverse');
+  const reversed = document.querySelector('.scoreboard')?.classList.contains('reverse');
 
-  // Map visual left/right to DOM element IDs based on current layout
-  const scoreId = (visualSide === 'left')
-    ? (reversed ? 'awayScoreDisplay' : 'homeScoreDisplay')
-    : (reversed ? 'homeScoreDisplay' : 'awayScoreDisplay');
+  const actualSide = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
 
-  const scoreEl = document.getElementById(scoreId);
   console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
-  console.log(`👉 Tapping element: #${scoreId}`);
+  console.log(`👉 Actually scoring: ${actualSide}`);
 
-  if (scoreEl) {
-    scoreEl.click(); // trigger the same path as a UI tap
-  } else {
-    console.warn(`❌ Could not find #${scoreId}`);
-  }
+  score(actualSide); // 🔥 this directly updates the score without relying on DOM clicks
 }
   
 function adjustScoreVisual(visualSide, delta) {
