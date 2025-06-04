@@ -1524,10 +1524,21 @@ return side;
 }
   
 function scoreVisual(visualSide) {
-  const side = getSideFromVisual(visualSide);
-  console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${document.querySelector('.scoreboard').classList.contains('reverse')}`);
+  const scoreboard = document.querySelector('.scoreboard');
+  const reversed = scoreboard.classList.contains('reverse');
+
+  const side = (visualSide === 'left')
+    ? (reversed ? 'away' : 'home')
+    : (reversed ? 'home' : 'away');
+
+  console.log(`🧮 Scoring for visual side: ${visualSide}, reversed: ${reversed}`);
   console.log(`👉 Actually scoring: ${side}`);
-  score(side);
+
+  // Instead of calling score(side), score based on who is currently displayed on that side
+  const scoreDisplayId = (side === 'home') ? 'homeScoreDisplay' : 'awayScoreDisplay';
+
+  // Simulate click on correct DOM element to use the same logic path as a UI tap
+  document.getElementById(scoreDisplayId).click();
 }
 function adjustScoreVisual(visualSide, delta) {
   const side = getSideFromVisual(visualSide);
