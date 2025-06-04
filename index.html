@@ -1535,9 +1535,10 @@ function clearNames() {
   }
 });
     // 1️⃣ Gamepad connection flag
+// Gamepad connection state
 let gamepadConnected = false;
 
-// 2️⃣ Cooldown state object for debouncing
+// Cooldown state objects
 const gamepadButtonCooldown = {
   left: false,
   right: false,
@@ -1545,7 +1546,15 @@ const gamepadButtonCooldown = {
   up: false
 };
 
-// 3️⃣ checkButtons() function — runs every frame
+const keyboardButtonCooldown = {
+  c: false,
+  d: false,
+  e: false,
+  f: false,
+  escape: false
+};
+
+// Gamepad polling function
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
   const gp = gamepads[0];
@@ -1558,7 +1567,7 @@ function checkButtons() {
   const buttons = gp.buttons.map(b => b.pressed);
   const [hAxis = 0, vAxis = 0] = gp.axes;
 
-  // LEFT (button 14 or axis left)
+  // Gamepad LEFT
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
       scoreVisual('left');
@@ -1568,7 +1577,7 @@ function checkButtons() {
     gamepadButtonCooldown.left = false;
   }
 
-  // RIGHT (button 15 or axis right)
+  // Gamepad RIGHT
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
       scoreVisual('right');
@@ -1578,7 +1587,7 @@ function checkButtons() {
     gamepadButtonCooldown.right = false;
   }
 
-  // DOWN (button 13 or axis down)
+  // Gamepad DOWN
   if (buttons[13] || vAxis > 0.5) {
     if (!gamepadButtonCooldown.down) {
       toggleTimer();
@@ -1588,7 +1597,7 @@ function checkButtons() {
     gamepadButtonCooldown.down = false;
   }
 
-  // UP (button 12 or axis up)
+  // Gamepad UP
   if (buttons[12] || vAxis < -0.5) {
     if (!gamepadButtonCooldown.up) {
       startTimeout();
@@ -1601,17 +1610,57 @@ function checkButtons() {
   requestAnimationFrame(checkButtons);
 }
 
-// 4️⃣ Start polling loop
+// Start gamepad polling loop
 function pollGamepad() {
   requestAnimationFrame(checkButtons);
 }
 
-// 5️⃣ Gamepad connected event
+// Gamepad connected listener
 window.addEventListener("gamepadconnected", () => {
   if (!gamepadConnected) {
     gamepadConnected = true;
     console.log("🎮 Gamepad connected!");
     pollGamepad();
+  }
+});
+
+// Keyboard input support for controller in keyboard mode (CDEF + Escape)
+document.addEventListener('keydown', (event) => {
+  const key = event.key.toLowerCase();
+  const tag = event.target.tagName.toLowerCase();
+
+  // Ignore input fields
+  if (tag === 'input' || tag === 'textarea') return;
+
+  if (!keyboardButtonCooldown[key]) {
+    switch (key) {
+      case 'c':
+        scoreVisual('left');
+        break;
+      case 'd':
+        scoreVisual('right');
+        break;
+      case 'f':
+        toggleTimer();
+        break;
+      case 'e':
+        startTimeout();
+        break;
+      case 'escape':
+        if (confirm("Are you sure you want to reset the match?")) {
+          resetMatch();
+        }
+        break;
+    }
+    keyboardButtonCooldown[key] = true;
+    event.preventDefault();
+  }
+});
+
+document.addEventListener('keyup', (event) => {
+  const key = event.key.toLowerCase();
+  if (keyboardButtonCooldown[key]) {
+    keyboardButtonCooldown[key] = false;
   }
 });
 </script>
