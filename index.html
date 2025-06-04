@@ -1632,7 +1632,7 @@ function checkButtons() {
   // LEFT input
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
-      scoreVisual('left'); // ✅ use visual side
+  scoreVisual(shouldFlipControls() ? 'right' : 'left');
       gamepadButtonCooldown.left = true;
     }
   } else {
@@ -1642,7 +1642,7 @@ function checkButtons() {
   // RIGHT input
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
-      scoreVisual('right'); // ✅ use visual side
+  scoreVisual(shouldFlipControls() ? 'left' : 'right');
       gamepadButtonCooldown.right = true;
     }
   } else {
