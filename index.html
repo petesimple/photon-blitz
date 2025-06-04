@@ -788,6 +788,7 @@ function cancelTimeoutAndResume() {
   timerEl.onclick = null;
   updateTimer();
 
+  // ✅ Only resume timer if it was running before timeout
   if (!running) {
     timerInterval = setInterval(() => {
       if (time > 0) {
@@ -847,18 +848,16 @@ function startTimeout() {
     return;
   }
 
-  timeoutActive = true; // 🟢 Immediately block reentry
+  timeoutActive = true;
 
   if (running) {
-    toggleTimer(); // ⏸️ Pause game timer
+    pauseTimer(); // ✅ Use this instead of toggleTimer
   }
 
   timeoutCounter = 10;
   const timerEl = document.getElementById('timer');
   timerEl.textContent = `Timeout: ${timeoutCounter}`;
   timerEl.classList.add('timer-small');
-
-  // Tap-to-cancel behavior
   timerEl.onclick = cancelTimeoutAndResume;
 
   timeoutInterval = setInterval(() => {
@@ -871,6 +870,13 @@ function startTimeout() {
   }, 1000);
 }
 
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  running = false;
+  document.getElementById('timer').classList.remove('running');
+}
+  
 // Optional helper: if game is resumed manually, ensure timeout is canceled
 function forceResumePlay() {
 if (timeoutActive) {
