@@ -749,10 +749,14 @@ body.locked .timeout-button {
   function toggleTimer() {
   const timerEl = document.getElementById('timer');
 
-  // ✅ If a timeout is active, cancel it and resume play
+  // ✅ If timeout is active, manually clear it first (DO NOT call forceResumePlay here)
   if (timeoutActive) {
-    forceResumePlay();
-    return;
+    clearInterval(timeoutInterval);
+    timeoutInterval = null;
+    timeoutActive = false;
+    timerEl.classList.remove('timer-small');
+    timerEl.removeEventListener('click', cancelTimeout);
+    updateTimer(); // Restore match clock display
   }
 
   if (running) {
