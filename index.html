@@ -879,7 +879,7 @@ function forceResumePlay() {
     timeoutActive = false;
     const timerEl = document.getElementById('timer');
     timerEl.classList.remove('timer-small');
-    timerEl.removeEventListener('click', cancelTimeout);
+    timerEl.onclick = null;
   }
   toggleTimer(); // resume game
 }
