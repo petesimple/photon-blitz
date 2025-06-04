@@ -1569,6 +1569,11 @@ function triggerKeyOnce(key, actionFn) {
   }
 }
 
+// 🔁 Utility: Check if scoreboard is reversed
+function isReversed() {
+  return document.querySelector('.scoreboard')?.classList.contains('reverse');
+}
+
 // 3️⃣ Gamepad polling function
 function checkButtons() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
@@ -1582,27 +1587,27 @@ function checkButtons() {
   const buttons = gp.buttons.map(b => b.pressed);
   const [hAxis = 0, vAxis = 0] = gp.axes;
 
-  // Gamepad LEFT
+  // Gamepad LEFT – score for left-side player (flip aware)
   if (buttons[14] || hAxis < -0.5) {
     if (!gamepadButtonCooldown.left) {
-      scoreVisual('left');
+      scoreVisual(isReversed() ? 'right' : 'left');
       gamepadButtonCooldown.left = true;
     }
   } else {
     gamepadButtonCooldown.left = false;
   }
 
-  // Gamepad RIGHT
+  // Gamepad RIGHT – score for right-side player (flip aware)
   if (buttons[15] || hAxis > 0.5) {
     if (!gamepadButtonCooldown.right) {
-      scoreVisual('right');
+      scoreVisual(isReversed() ? 'left' : 'right');
       gamepadButtonCooldown.right = true;
     }
   } else {
     gamepadButtonCooldown.right = false;
   }
 
-  // Gamepad DOWN
+  // Gamepad DOWN – pause/resume timer
   if (buttons[13] || vAxis > 0.5) {
     if (!gamepadButtonCooldown.down) {
       toggleTimer();
@@ -1612,7 +1617,7 @@ function checkButtons() {
     gamepadButtonCooldown.down = false;
   }
 
-  // Gamepad UP
+  // Gamepad UP – start timeout
   if (buttons[12] || vAxis < -0.5) {
     if (!gamepadButtonCooldown.up) {
       startTimeout();
@@ -1652,13 +1657,13 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
   }
 
-  // Arrow key handling
+  // Arrow key handling (flip aware)
   switch (event.key) {
     case 'ArrowLeft':
-      scoreVisual('left');
+      scoreVisual(isReversed() ? 'right' : 'left');
       break;
     case 'ArrowRight':
-      scoreVisual('right');
+      scoreVisual(isReversed() ? 'left' : 'right');
       break;
     case 'ArrowDown':
       toggleTimer();
@@ -1675,13 +1680,13 @@ document.addEventListener('keydown', (event) => {
       break;
   }
 
-  // CDEF key handling with timed debounce
+  // CDEF key handling with timed debounce (flip aware for E/F)
   switch (key) {
     case 'e':
-      triggerKeyOnce('e', () => scoreVisual('left'));
+      triggerKeyOnce('e', () => scoreVisual(isReversed() ? 'right' : 'left'));
       break;
     case 'f':
-      triggerKeyOnce('f', () => scoreVisual('right'));
+      triggerKeyOnce('f', () => scoreVisual(isReversed() ? 'left' : 'right'));
       break;
     case 'd':
       triggerKeyOnce('d', () => toggleTimer());
