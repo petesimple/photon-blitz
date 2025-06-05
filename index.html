@@ -1165,27 +1165,17 @@ function swapSides() {
   // 4️⃣ Swap game win counters
   [homeGamesWon, awayGamesWon] = [awayGamesWon, homeGamesWon];
 
-  // 5️⃣ Update A/B player mapping based on new visual layout
-  const isReversed = scoreboard.classList.contains('reverse');
-  if (isReversed) {
-    // Left = away, Right = home
-    players.A.name = awayInput.value || 'Player 2';
-    players.B.name = homeInput.value || 'Player 1';
-    players.A.wins = awayGamesWon;
-    players.B.wins = homeGamesWon;
-  } else {
-    // Left = home, Right = away
-    players.A.name = homeInput.value || 'Player 1';
-    players.B.name = awayInput.value || 'Player 2';
-    players.A.wins = homeGamesWon;
-    players.B.wins = awayGamesWon;
-  }
+  // 5️⃣ Update player A/B identities using the *new* input values
+  players.A.name = homeInput.value || 'Player 1';
+  players.B.name = awayInput.value || 'Player 2';
+  players.A.wins = homeGamesWon;
+  players.B.wins = awayGamesWon;
 
-  // 6️⃣ Refresh the display and summary
+  // 6️⃣ Refresh all displays
   updateNameDisplays();
   updateSummary();
 
-  console.log('🔄 Swap complete. reversed =', isReversed);
+  console.log('🔄 Swap complete. reversed =', scoreboard.classList.contains('reverse'));
 }
 
 function saveNames() {
