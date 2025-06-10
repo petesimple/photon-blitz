@@ -674,8 +674,8 @@ Enable Sounds
 <!-- ============================================ -->
 
 <!-- 🎮 Match Control -->
-<audio id="audioMatchStart" src="audio/Match-M3.m4a" preload="auto"></audio>
-  <audio id="audioMatchStart" src="audio/Match-F3.m4a" preload="auto"></audio>
+<audio id="audioMatchStartM" src="audio/Match-M3.m4a" preload="auto"></audio>
+  <audio id="audioMatchStartF" src="audio/Match-F3.m4a" preload="auto"></audio>
 
 <!--  
 <audio id="audioPause" src="audio/pause.mp3" preload="auto"></audio>
@@ -795,6 +795,17 @@ const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
 let announcedTimes = new Set(); // Keeps track of times already announced
 let gameScores = []; // Stores completed game results
 
+// Speaks the given text aloud using recorded voices from a studio session
+  function playSound(id) {
+  const audio = document.getElementById(id);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play().catch(err => console.warn("🔇 Playback failed:", err));
+  } else {
+    console.warn(`⚠️ Sound ID not found: ${id}`);
+  }
+}
+  
 // Speaks the given text aloud using browser's speech synthesis
 function speak(text) {
 if ('speechSynthesis' in window) {
