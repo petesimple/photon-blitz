@@ -559,6 +559,11 @@ Lock scoreboard to top
 Enable Sounds
 </label>
 
+  <label>
+  <input type="checkbox" id="voiceoverToggle" checked>
+  Use voiceover audio
+</label>
+
 <!-- Layout toggle button -->
 <!--<button onclick="switchToPortrait()">Switch to Portrait Mode</button>-->
 <!-- REMOVED PORTRAIT MODE BUTTON FOR LATER RELEASES--> 
@@ -791,6 +796,7 @@ let lastGameWasSuddenDeath = false;
 let suddenDeathLoser = null;
 
   //Voiceover section
+  let useVoiceoverAudio = true;
   let matchStartVoicePlayed = false;
 
 // Predefined times in seconds to call out remaining time
@@ -798,14 +804,27 @@ const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
 let announcedTimes = new Set(); // Keeps track of times already announced
 let gameScores = []; // Stores completed game results
 
+
+  document.getElementById('voiceoverToggle').addEventListener('change', function () {
+  useVoiceoverAudio = this.checked;
+  console.log("🔊 Voiceover audio enabled:", useVoiceoverAudio);
+});
 // Speaks the given text aloud using recorded voices from a studio session
-  function playSound(id) {
-  const audio = document.getElementById(id);
-  if (audio) {
-    audio.currentTime = 0;
-    audio.play().catch(err => console.warn("🔇 Playback failed:", err));
+  function playVoiceOrSpeak(text, audioId) {
+  if (useVoiceoverAudio) {
+    const audio = document.getElementById(audioId);
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(err => {
+        console.warn("🎤 Playback failed, falling back to TTS:", err);
+        speak(text); // fallback
+      });
+    } else {
+      console.warn(`⚠️ Audio ID '${audioId}' not found. Using TTS.`);
+      speak(text); // fallback
+    }
   } else {
-    console.warn(`⚠️ Sound ID not found: ${id}`);
+    speak(text);
   }
 }
 
