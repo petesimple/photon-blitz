@@ -788,7 +788,10 @@ let timeoutInterval = null;
 let playPuckAnnounced = false;
 let timeoutActive = false;
 let lastGameWasSuddenDeath = false;
-let suddenDeathLoser = null;  
+let suddenDeathLoser = null;
+
+  //Voiceover section
+  let matchStartVoicePlayed = false;
 
 // Predefined times in seconds to call out remaining time
 const calloutTimes = new Set([150, 120, 90, 70, 60, 45, 30, 15, 10, 5, 4, 3]);
@@ -804,6 +807,12 @@ let gameScores = []; // Stores completed game results
   } else {
     console.warn(`⚠️ Sound ID not found: ${id}`);
   }
+}
+
+function playMatchStartVoice() {
+  const variants = ["audioMatchStartM", "audioMatchStartF"];
+  const chosen = variants[Math.floor(Math.random() * variants.length)];
+  playSound(chosen);
 }
   
 // Speaks the given text aloud using browser's speech synthesis
@@ -898,10 +907,15 @@ function toggleTimer() {
     running = true;
     timerEl.classList.add('running');
 
-    if (!playPuckAnnounced) {
-      speak("Play Puck");
-      playPuckAnnounced = true;
-    }
+    if (!matchStartVoicePlayed) {
+  playMatchStartVoice();
+  matchStartVoicePlayed = true;
+}
+
+if (!playPuckAnnounced) {
+  speak("Play Puck");
+  playPuckAnnounced = true;
+}
   }
 }
 
