@@ -936,7 +936,7 @@ function toggleTimer() {
 }
 
 if (!playPuckAnnounced) {
-  playVoiceOrSpeak("Play Puck");
+  playVoiceOrSpeak("Play Puck", "audioPlayPuck");
   playPuckAnnounced = true;
 }
   }
@@ -966,7 +966,7 @@ function cancelTimeoutAndResume() {
     timerEl.classList.add('running');
 
     if (!playPuckAnnounced) {
-      speak("Play Puck");
+      playVoiceOrSpeak("Play Puck", "audioPlayPuck");
       playPuckAnnounced = true;
     }
   }
