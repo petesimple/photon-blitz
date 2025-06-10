@@ -902,19 +902,6 @@ announcedTimes.add(sec);
 }
 }
 
-  function playVoiceOrSpeak(text, audioId) {
-  const audio = document.getElementById(audioId);
-  if (audio) {
-    audio.currentTime = 0;
-    audio.play().catch(err => {
-      console.warn("🎤 Playback failed, falling back to speech synthesis:", err);
-      speak(text); // fallback to TTS if audio fails
-    });
-  } else {
-    console.warn(`⚠️ Audio ID '${audioId}' not found. Using TTS.`);
-    speak(text); // fallback
-  }
-}
   
 // Starts or pauses the timer
 function toggleTimer() {
