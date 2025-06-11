@@ -840,9 +840,16 @@ let announcedTimes = new Set(); // Keeps track of times already announced
 let gameScores = []; // Stores completed game results
 
 
-  document.getElementById('voiceoverToggle').addEventListener('change', function () {
-  useVoiceoverAudio = this.checked;
-  console.log("🔊 Voiceover audio enabled:", useVoiceoverAudio);
+  document.addEventListener('DOMContentLoaded', function () {
+  const toggle = document.getElementById('voiceoverToggle');
+  if (toggle) {
+    toggle.addEventListener('change', function () {
+      useVoiceoverAudio = this.checked;
+      console.log("🔊 Voiceover audio enabled:", useVoiceoverAudio);
+    });
+  } else {
+    console.warn("⚠️ voiceoverToggle checkbox not found.");
+  }
 });
 // Speaks the given text aloud using recorded voices from a studio session
   function playVoiceOrSpeak(text, audioId) {
