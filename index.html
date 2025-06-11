@@ -707,6 +707,38 @@ Enable Sounds
 <audio id="audio4sec" src="audio/4.mp3" preload="auto"></audio>
 <audio id="audio3sec" src="audio/3.mp3" preload="auto"></audio>
 -->
+<audio id="audio2MinM" src="audio/Two-Minutes-M.m4a" preload="auto"></audio>
+<audio id="audio2MinF" src="audio/Two-Minutes-F.m4a" preload="auto"></audio>
+
+<audio id="audio90SecM" src="audio/Ninety-Seconds-M.m4a" preload="auto"></audio>
+<audio id="audio90SecF" src="audio/Ninety-Seconds-F.m4a" preload="auto"></audio>
+
+<audio id="audio10tilBlitzM" src="audio/Ten-Til-Blitz-M.m4a" preload="auto"></audio>
+<audio id="audio10tilBlitzF" src="audio/Ten-Til-Blitz-F.m4a" preload="auto"></audio>
+
+<audio id="audio1MinM" src="audio/One-Minute-M.m4a" preload="auto"></audio>
+<audio id="audio1MinF" src="audio/One-Minute-F.m4a" preload="auto"></audio>
+
+<audio id="audio45SecM" src="audio/Forty-Five-Seconds-M.m4a" preload="auto"></audio>
+<audio id="audio45SecF" src="audio/Forty-Five-Seconds-F.m4a" preload="auto"></audio>
+
+<audio id="audio30SecM" src="audio/Thirty-Seconds-M.m4a" preload="auto"></audio>
+<audio id="audio30SecF" src="audio/Thirty-Seconds-F.m4a" preload="auto"></audio>
+
+<audio id="audio15SecM" src="audio/Fifteen-Seconds-M.m4a" preload="auto"></audio>
+<audio id="audio15SecF" src="audio/Fifteen-Seconds-F.m4a" preload="auto"></audio>
+
+<audio id="audio10SecM" src="audio/Ten-Seconds-M.m4a" preload="auto"></audio>
+<audio id="audio10SecF" src="audio/Ten-Seconds-F.m4a" preload="auto"></audio>
+
+<audio id="audio5M" src="audio/Five-M.m4a" preload="auto"></audio>
+<audio id="audio5F" src="audio/Five-F.m4a" preload="auto"></audio>
+
+<audio id="audio4M" src="audio/Four-M.m4a" preload="auto"></audio>
+<audio id="audio4F" src="audio/Four-F.m4a" preload="auto"></audio>
+
+<audio id="audio3M" src="audio/Three-M.m4a" preload="auto"></audio>
+<audio id="audio3F" src="audio/Three-F.m4a" preload="auto"></audio>
 
 <!-- ⚡ Blitz Mode -->
 <!--
@@ -843,6 +875,17 @@ function playRandomPlayPuckVoice() {
   const chosenId = variants[Math.floor(Math.random() * variants.length)];
   playVoiceOrSpeak("Play Puck", chosenId);
 }
+
+  function playRandomTimerCallout(sec, text, audioVariants) {
+  if (!announcedTimes.has(sec)) {
+    const chosenId = audioVariants?.length
+      ? audioVariants[Math.floor(Math.random() * audioVariants.length)]
+      : null;
+
+    playVoiceOrSpeak(text, chosenId); // fallback happens inside this
+    announcedTimes.add(sec);
+  }
+}
   
 // Speaks the given text aloud using browser's speech synthesis
 function speak(text) {
@@ -899,20 +942,47 @@ function updateTimer() {
 
   // Announce specific countdown moments
   const sec = Math.floor(time / 10);
-  if (!announcedTimes.has(sec)) {
-    if (sec === 70) speak("Ten seconds til Blitz!");
-    else if (sec === 60) speak("One minute remaining");
-    else if (sec === 45) speak("Forty-five seconds");
-    else if (sec === 30) speak("Thirty seconds");
-    else if (sec === 15) speak("Fifteen seconds");
-    else if (sec === 10) speak("Ten seconds");
-    else if (sec === 5) speak("Five");
-    else if (sec === 4) speak("Four");
-    else if (sec === 3) speak("Three");
-    else if (sec === 120) speak("Two minutes remaining");
-    else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
 
-    announcedTimes.add(sec);
+switch (sec) {
+  case 120:
+    playRandomTimerCallout(sec, "Two minutes remaining", ["audio2MinM", "audio2MinF"]);
+    break;
+  case 90:
+    playRandomTimerCallout(sec, "Ninety seconds", ["audio90SecM", "audio90SecF"]);
+    break;
+  case 70:
+    playRandomTimerCallout(sec, "Ten seconds til Blitz!", ["audio10tilBlitzM", "audio10tilBlitzF"]);
+    break;
+  case 60:
+    playRandomTimerCallout(sec, "One minute remaining", ["audio1MinM", "audio1MinF"]);
+    break;
+  case 45:
+    playRandomTimerCallout(sec, "Forty-five seconds", ["audio45SecM", "audio45SecF"]);
+    break;
+  case 30:
+    playRandomTimerCallout(sec, "Thirty seconds", ["audio30SecM", "audio30SecF"]);
+    break;
+  case 15:
+    playRandomTimerCallout(sec, "Fifteen seconds", ["audio15SecM", "audio15SecF"]);
+    break;
+  case 10:
+    playRandomTimerCallout(sec, "Ten seconds", ["audio10SecM", "audio10SecF"]);
+    break;
+  case 5:
+    playRandomTimerCallout(sec, "Five", ["audio5M", "audio5F"]);
+    break;
+  case 4:
+    playRandomTimerCallout(sec, "Four", ["audio4M", "audio4F"]);
+    break;
+  case 3:
+    playRandomTimerCallout(sec, "Three", ["audio3M", "audio3F"]);
+    break;
+  default:
+    if (calloutTimes.has(sec)) {
+      const fallbackText = `${minutes}:${seconds}`;
+      playRandomTimerCallout(sec, fallbackText, []); // TTS only
+    }
+    break;
   }
 }
 
