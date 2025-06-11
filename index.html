@@ -876,16 +876,7 @@ function playRandomPlayPuckVoice() {
   playVoiceOrSpeak("Play Puck", chosenId);
 }
 
-  function playRandomTimerCallout(sec, text, audioVariants) {
-  if (!announcedTimes.has(sec)) {
-    const chosenId = audioVariants?.length
-      ? audioVariants[Math.floor(Math.random() * audioVariants.length)]
-      : null;
-
-    playVoiceOrSpeak(text, chosenId); // fallback happens inside this
-    announcedTimes.add(sec);
-  }
-}
+  
   
 // Speaks the given text aloud using browser's speech synthesis
 function speak(text) {
@@ -1053,6 +1044,17 @@ function cancelTimeoutAndResume() {
   }
 }
 
+function playRandomTimerCallout(sec, text, audioVariants) {
+  if (!announcedTimes.has(sec)) {
+    const chosenId = audioVariants?.length
+      ? audioVariants[Math.floor(Math.random() * audioVariants.length)]
+      : null;
+
+    playVoiceOrSpeak(text, chosenId); // fallback happens inside this
+    announcedTimes.add(sec);
+  }
+}
+  
 // Adjusts the timer by a number of seconds (+/-)
 function adjustTime(seconds) {
 time = Math.max(0, Math.min(5999, time + seconds * 10));
