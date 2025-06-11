@@ -831,10 +831,17 @@ let gameScores = []; // Stores completed game results
   }
 }
 
+ //Randomizer section for voices 
 function playMatchStartVoice() {
   const variants = ["audioMatchStartM", "audioMatchStartF"];
   const chosen = variants[Math.floor(Math.random() * variants.length)];
   playSound(chosen);
+}
+
+function playRandomPlayPuckVoice() {
+  const variants = ["audioPlayPuckM", "audioPlayPuckF"];
+  const chosenId = variants[Math.floor(Math.random() * variants.length)];
+  playVoiceOrSpeak("Play Puck", chosenId);
 }
   
 // Speaks the given text aloud using browser's speech synthesis
@@ -849,60 +856,64 @@ speechSynthesis.speak(msg);
 }
 
 
-// Updates the visible timer and manages game flow at key time events
 function updateTimer() {
-const timerEl = document.getElementById('timer');
-timerEl.classList.remove('timer-small');
-const minutes = String(Math.floor(time / 600));
-const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
-const tenths = String(time % 10);
-timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
+  const timerEl = document.getElementById('timer');
+  timerEl.classList.remove('timer-small');
+  const minutes = String(Math.floor(time / 600));
+  const seconds = String(Math.floor((time % 600) / 10)).padStart(2, '0');
+  const tenths = String(time % 10);
+  timerEl.textContent = `${minutes}:${seconds}.${tenths}`;
 
-// Trigger Blitz mode at exactly 1:00 remaining
-const blitzWrapper = document.getElementById('blitzWrapper');
-const logoWrapper = document.getElementById('logoWrapper');
-const blitzBanner = document.getElementById('blitzBanner');
-
-if (time <= 600 && !blitz) {
-blitz = true;
-blitzWrapper.classList.add('active');
-logoWrapper.classList.add('hidden');
-blitzBanner.style.display = 'block';
-speak("Blitz Blitz Blitz! Double Points!");
-} else if (time > 600 && !running && !blitz) {
-// Reset visuals if not in blitz and timer is above 1:00
-blitzWrapper.classList.remove('active');
-logoWrapper.classList.remove('hidden');
+  // ✅ Trigger "Play Puck" voiceover exactly at 2:59.9
+  if (time === 1799 && !playPuckAnnounced) {
+  playRandomPlayPuckVoice();
+  playPuckAnnounced = true;
 }
 
-// Handle end-of-match logic
-if (time === 0) {
-clearInterval(timerInterval);
-running = false;
-if (homeScoreValue === awayScoreValue) {
-startSuddenDeath();
-} else {
-endGame();
-}
-}
+  // Trigger Blitz mode at exactly 1:00 remaining
+  const blitzWrapper = document.getElementById('blitzWrapper');
+  const logoWrapper = document.getElementById('logoWrapper');
+  const blitzBanner = document.getElementById('blitzBanner');
 
-// Announce specific countdown moments
-const sec = Math.floor(time / 10);
-if (!announcedTimes.has(sec)) {
-if (sec === 70) speak("Ten seconds til Blitz!");
-else if (sec === 60) speak("One minute remaining");
-else if (sec === 45) speak("Forty-five seconds");
-else if (sec === 30) speak("Thirty seconds");
-else if (sec === 15) speak("Fifteen seconds");
-else if (sec === 10) speak("Ten seconds");
-else if (sec === 5) speak("Five");
-else if (sec === 4) speak("Four");
-else if (sec === 3) speak("Three");
-else if (sec === 120) speak("Two minutes remaining"); // ✅ new override
-else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
+  if (time <= 600 && !blitz) {
+    blitz = true;
+    blitzWrapper.classList.add('active');
+    logoWrapper.classList.add('hidden');
+    blitzBanner.style.display = 'block';
+    speak("Blitz Blitz Blitz! Double Points!");
+  } else if (time > 600 && !running && !blitz) {
+    blitzWrapper.classList.remove('active');
+    logoWrapper.classList.remove('hidden');
+  }
 
-announcedTimes.add(sec);
-}
+  // Handle end-of-match logic
+  if (time === 0) {
+    clearInterval(timerInterval);
+    running = false;
+    if (homeScoreValue === awayScoreValue) {
+      startSuddenDeath();
+    } else {
+      endGame();
+    }
+  }
+
+  // Announce specific countdown moments
+  const sec = Math.floor(time / 10);
+  if (!announcedTimes.has(sec)) {
+    if (sec === 70) speak("Ten seconds til Blitz!");
+    else if (sec === 60) speak("One minute remaining");
+    else if (sec === 45) speak("Forty-five seconds");
+    else if (sec === 30) speak("Thirty seconds");
+    else if (sec === 15) speak("Fifteen seconds");
+    else if (sec === 10) speak("Ten seconds");
+    else if (sec === 5) speak("Five");
+    else if (sec === 4) speak("Four");
+    else if (sec === 3) speak("Three");
+    else if (sec === 120) speak("Two minutes remaining");
+    else if (calloutTimes.has(sec)) speak(`${minutes}:${seconds}`);
+
+    announcedTimes.add(sec);
+  }
 }
 
   
