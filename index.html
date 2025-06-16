@@ -1828,6 +1828,8 @@ const keyboardButtonCooldown = {
   d: false,
   e: false,
   f: false,
+  g: false,
+  i: false,
   escape: false
 };
 
@@ -1962,6 +1964,12 @@ switch (event.key) {
       break;
     case 'c':
       triggerKeyOnce('c', () => startTimeout());
+      break;
+    case 'i':
+      triggerKeyOnce('i', () => adjustScoreVisual('left', -1));
+      break;
+    case 'g':
+      triggerKeyOnce('g', () => adjustScoreVisual('right', -1));
       break;
   }
 }); // ✅ this closes the event listener
