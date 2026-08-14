@@ -63,8 +63,8 @@ body {
 
 .score-side {
   display: flex;
-  flex: 1 1 200px;
-  min-width: 130px;
+  flex: 1 1 0;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -75,7 +75,9 @@ body {
 }
 
 .score-center {
-  width: clamp(180px, 28vw, 380px);
+  width: clamp(300px, 38vw, 720px);
+  min-width: 0;
+  flex: 0 1 auto;
   height: 100%;
   padding: 10px 0;
   display: flex;
@@ -141,6 +143,7 @@ body {
   width: 100%;
   height: clamp(112px, 34vh, 300px);
   min-height: 112px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +153,8 @@ body {
 #timer {
   width: 100%;
   height: 1.2em;
-  font-size: clamp(4em, 10vw, 8.5em);
+  font-size: clamp(3em, 9vw, 9em);
+  line-height: 1;
   color: #ff4444;
   text-shadow: 0 0 10px #f00, 0 0 20px #f00;
   display: flex;
@@ -170,6 +174,10 @@ body {
   text-shadow: 0 0 8px #00eaff, 0 0 18px #00eaff80;
   line-height: 1.05;
   overflow-wrap: anywhere;
+  align-items: center;
+  justify-content: center;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 #customGraphicDisplay {
@@ -343,8 +351,8 @@ body.locked #menu { margin-top: 220px; }
 @media (max-width: 650px) {
   body { padding: 0; }
   .scoreboard { width: 100%; height: 100svh; min-height: 320px; padding: 24px 5px; }
-  .score-center { width: 165px; }
-  .score-side { min-width: 90px; }
+  .score-center { width: clamp(150px, 42vw, 300px); }
+  .score-side { min-width: 0; }
   .score-name { font-size: 0.95em; letter-spacing: 0.08em; }
   .score-number { font-size: clamp(4.5em, 15vw, 8em); }
   #centerDisplay { height: clamp(100px, 34vh, 220px); min-height: 100px; }
@@ -418,7 +426,7 @@ body.locked #menu { margin-top: 220px; }
 </div>
 
 <div id="gear" onclick="toggleMenu()" role="button" aria-label="Open settings" tabindex="0">⚙️</div>
-<div id="versionTag">v2.7.2 Full-Screen Ref View</div>
+<div id="versionTag">v2.7.3 Auto-Fit Center Display</div>
 
 <div id="menu">
   <div id="gearBack" onclick="toggleMenu()" role="button" aria-label="Close settings">⚙️</div>
@@ -539,6 +547,7 @@ let sidesSwapped = false;
 let centerDisplayMode = 'timer';
 let centerCustomText = 'PHOTON';
 let centerGraphicUrl = 'photonblitzlogo.png';
+let centerFitFrame = null;
 
 const STORAGE = {
   mode: 'photonCenterMode',
@@ -700,6 +709,55 @@ function showCenterElement(id, displayType) {
   return element;
 }
 
+function fitCenterElement(element) {
+  if (!element || element.hidden) return;
+
+  const container = document.getElementById('centerDisplay');
+  element.style.removeProperty('font-size');
+
+  const maximumSize = parseFloat(getComputedStyle(element).fontSize);
+  const minimumSize = element.id === 'timer' ? 28 : 18;
+  const availableWidth = Math.max(1, container.clientWidth - 24);
+  const availableHeight = Math.max(1, container.clientHeight - 16);
+  let low = Math.min(minimumSize, maximumSize);
+  let high = maximumSize;
+  let best = low;
+
+  for (let pass = 0; pass < 12; pass += 1) {
+    const candidate = (low + high) / 2;
+    element.style.fontSize = `${candidate}px`;
+    const fits = element.scrollWidth <= availableWidth && element.scrollHeight <= availableHeight;
+
+    if (fits) {
+      best = candidate;
+      low = candidate;
+    } else {
+      high = candidate;
+    }
+  }
+
+  element.style.fontSize = `${best}px`;
+}
+
+function scheduleCenterFit() {
+  cancelAnimationFrame(centerFitFrame);
+  centerFitFrame = requestAnimationFrame(() => {
+    const visibleElement = timeoutActive
+      ? document.getElementById('timer')
+      : document.getElementById(
+          centerDisplayMode === 'timer'
+            ? 'timer'
+            : centerDisplayMode === 'words'
+              ? 'customTextDisplay'
+              : 'customGraphicDisplay'
+        );
+
+    if (visibleElement && visibleElement.id !== 'customGraphicDisplay') {
+      fitCenterElement(visibleElement);
+    }
+  });
+}
+
 function renderCenterDisplay() {
   if (timeoutActive) return;
   hideCenterElements();
@@ -708,12 +766,13 @@ function renderCenterDisplay() {
     showCenterElement('timer', 'flex');
     updateTimer();
   } else if (centerDisplayMode === 'words') {
-    const textEl = showCenterElement('customTextDisplay', 'block');
+    const textEl = showCenterElement('customTextDisplay', 'flex');
     textEl.textContent = centerCustomText.trim() || 'PHOTON';
   } else {
     const image = showCenterElement('customGraphicDisplay', 'block');
     image.src = centerGraphicUrl.trim() || 'photonblitzlogo.png';
   }
+  scheduleCenterFit();
 }
 
 function updateCustomCenterText() {
@@ -762,6 +821,7 @@ function showTimeout() {
   timerEl.classList.remove('running');
   timerEl.classList.add('timer-small');
   timerEl.textContent = `TIMEOUT: ${timeoutCounter}`;
+  scheduleCenterFit();
 }
 
 function finishTimeout() {
@@ -977,6 +1037,11 @@ document.addEventListener('DOMContentLoaded', () => {
     useVoiceoverAudio = event.target.checked;
     localStorage.setItem(STORAGE.voice, String(useVoiceoverAudio));
   });
+
+  window.addEventListener('resize', scheduleCenterFit);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(scheduleCenterFit);
+  }
 
   document.getElementById('customGraphicDisplay').addEventListener('error', () => {
     const graphic = document.getElementById('customGraphicDisplay');
