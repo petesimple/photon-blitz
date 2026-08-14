@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Photon Blitz Score System</title>
 
 <link rel="manifest" href="manifest.json" />
@@ -26,6 +26,7 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 html, body {
   width: 100%;
   min-height: 100%;
+  background-color: #010518;
 }
 
 body {
@@ -33,6 +34,7 @@ body {
   background: linear-gradient(to bottom right, #010518, #012b58);
   color: #00eaff;
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -242,7 +244,10 @@ body {
 #toolsPanel {
   width: 100%;
   min-height: 100svh;
-  padding: 28px 20px 60px;
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-right: max(20px, env(safe-area-inset-right));
+  padding-bottom: max(60px, env(safe-area-inset-bottom));
+  padding-left: max(20px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -367,6 +372,17 @@ body.locked #menu { margin-top: 220px; }
   .name-input { width: 95%; max-width: 360px; }
 }
 
+@media screen and (orientation: landscape) {
+  html, body {
+    background: #010518;
+  }
+
+  .scoreboard {
+    padding-left: max(clamp(8px, 3vw, 44px), env(safe-area-inset-left));
+    padding-right: max(clamp(8px, 3vw, 44px), env(safe-area-inset-right));
+  }
+}
+
 @media (max-width: 390px) {
   .score-center { width: 130px; }
   #timer { font-size: 2.6em; }
@@ -426,7 +442,7 @@ body.locked #menu { margin-top: 220px; }
 </div>
 
 <div id="gear" onclick="toggleMenu()" role="button" aria-label="Open settings" tabindex="0">⚙️</div>
-<div id="versionTag">v2.7.3 Auto-Fit Center Display</div>
+<div id="versionTag">v2.7.5 Score-Pause Fix</div>
 
 <div id="menu">
   <div id="gearBack" onclick="toggleMenu()" role="button" aria-label="Close settings">⚙️</div>
@@ -828,7 +844,7 @@ function finishTimeout() {
   clearInterval(timeoutInterval);
   timeoutInterval = null;
   timeoutActive = false;
-  const shouldResume = centerDisplayMode === 'timer' && wasRunningBeforeTimeout;
+  const shouldResume = centerDisplayMode === 'timer';
   wasRunningBeforeTimeout = false;
   renderCenterDisplay();
   if (shouldResume) startMatchTimer();
@@ -839,7 +855,7 @@ function cancelTimeoutAndRestore() {
   clearInterval(timeoutInterval);
   timeoutInterval = null;
   timeoutActive = false;
-  const shouldResume = centerDisplayMode === 'timer' && wasRunningBeforeTimeout;
+  const shouldResume = centerDisplayMode === 'timer';
   wasRunningBeforeTimeout = false;
   renderCenterDisplay();
   if (shouldResume) startMatchTimer();
@@ -853,6 +869,10 @@ function updateBlitzDisplay() {
 }
 
 function scoreVisual(side) {
+  if (centerDisplayMode === 'timer' && running) {
+    pauseMatchTimer();
+  }
+
   const physicalHome = sidesSwapped ? side === 'right' : side === 'left';
   const points = centerDisplayMode === 'timer' && blitz ? 2 : 1;
   if (physicalHome) homeScoreValue += points;
@@ -1008,11 +1028,57 @@ function toggleSound() {
 
 function handleKey(event) {
   if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-  if (event.code === 'Space') { event.preventDefault(); toggleTimer(); }
-  if (event.key === 'ArrowLeft') scoreVisual('left');
-  if (event.key === 'ArrowRight') scoreVisual('right');
-  if (event.key.toLowerCase() === 't') startTimeout();
+  if (event.repeat) return;
+
+  const key = event.key.toLowerCase();
+  if (['arrowleft', 'arrowright', 'arrowdown', 'arrowup', ' ', 'c', 'd', 'e', 'f'].includes(key)) {
+    event.preventDefault();
+  }
+
+  if (event.key === 'ArrowLeft' || key === 'e') scoreVisual('left');
+  if (event.key === 'ArrowRight' || key === 'f') scoreVisual('right');
+  if (event.key === 'ArrowDown' || event.code === 'Space' || key === 'd') toggleTimer();
+  if (event.key === 'ArrowUp' || key === 'c' || key === 't') startTimeout();
+  if (key === 'i') adjustScoreVisual('left', -1);
+  if (key === 'g') adjustScoreVisual('right', -1);
 }
+
+const gamepadCooldown = { left: false, right: false, down: false, up: false };
+let gamepadPollingStarted = false;
+
+function checkGamepadButtons() {
+  const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+  const gamepad = gamepads[0];
+
+  if (gamepad) {
+    const buttons = gamepad.buttons.map(button => button.pressed);
+    const horizontalAxis = gamepad.axes[0] || 0;
+    const verticalAxis = gamepad.axes[1] || 0;
+    const leftPressed = buttons[14] || horizontalAxis < -0.5;
+    const rightPressed = buttons[15] || horizontalAxis > 0.5;
+    const downPressed = buttons[13] || verticalAxis > 0.5;
+    const upPressed = buttons[12] || verticalAxis < -0.5;
+
+    if (leftPressed && !gamepadCooldown.left) scoreVisual('left');
+    if (rightPressed && !gamepadCooldown.right) scoreVisual('right');
+    if (downPressed && !gamepadCooldown.down) toggleTimer();
+    if (upPressed && !gamepadCooldown.up) startTimeout();
+
+    gamepadCooldown.left = leftPressed;
+    gamepadCooldown.right = rightPressed;
+    gamepadCooldown.down = downPressed;
+    gamepadCooldown.up = upPressed;
+  }
+
+  requestAnimationFrame(checkGamepadButtons);
+}
+
+window.addEventListener('gamepadconnected', () => {
+  if (!gamepadPollingStarted) {
+    gamepadPollingStarted = true;
+    requestAnimationFrame(checkGamepadButtons);
+  }
+});
 
 function loadPreferences() {
   soundEnabled = localStorage.getItem(STORAGE.sound) !== 'false';
@@ -1080,6 +1146,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('keydown', handleKey);
+
+  if (!gamepadPollingStarted && navigator.getGamepads && Array.from(navigator.getGamepads()).some(Boolean)) {
+    gamepadPollingStarted = true;
+    requestAnimationFrame(checkGamepadButtons);
+  }
 });
 </script>
 </body>
