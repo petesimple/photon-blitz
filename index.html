@@ -142,6 +142,7 @@ body {
 @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 #centerDisplay {
+  position: relative;
   width: 100%;
   height: clamp(112px, 34vh, 300px);
   min-height: 112px;
@@ -167,6 +168,25 @@ body {
 
 #timer.running { color: #00ff00; text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
 #timer.timer-small { font-size: 2.5em; text-shadow: 0 0 6px #f00; }
+
+#nextGameHint {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 4px;
+  color: #ffcc00;
+  font-size: clamp(0.7em, 1.5vw, 1.1em);
+  font-weight: bold;
+  line-height: 1.25;
+  text-shadow: 0 0 7px #ffcc00;
+  pointer-events: none;
+  animation: nextGamePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes nextGamePulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
 
 #customTextDisplay {
   width: 100%;
@@ -412,6 +432,7 @@ body.locked #menu { margin-top: 220px; }
     </div>
     <div id="centerDisplay">
       <div id="timer">3:00.0</div>
+      <div id="nextGameHint" hidden>Tap time to swap sides and reset timer</div>
       <div id="customTextDisplay" hidden>PHOTON</div>
       <img id="customGraphicDisplay" src="" alt="Custom center graphic" hidden />
       <div id="graphicFallback" hidden>Graphic could not be loaded.<br />Check the image address.</div>
@@ -442,7 +463,7 @@ body.locked #menu { margin-top: 220px; }
 </div>
 
 <div id="gear" onclick="toggleMenu()" role="button" aria-label="Open settings" tabindex="0">⚙️</div>
-<div id="versionTag">v2.7.5 Score-Pause Fix</div>
+<div id="versionTag">v2.7.6 Next-Game Prompt</div>
 
 <div id="menu">
   <div id="gearBack" onclick="toggleMenu()" role="button" aria-label="Close settings">⚙️</div>
@@ -564,6 +585,7 @@ let centerDisplayMode = 'timer';
 let centerCustomText = 'PHOTON';
 let centerGraphicUrl = 'photonblitzlogo.png';
 let centerFitFrame = null;
+let gameOverAwaitingNext = false;
 
 const STORAGE = {
   mode: 'photonCenterMode',
@@ -675,13 +697,18 @@ function updateTimer() {
     playVoiceOrSpeak(callouts[seconds][0], callouts[seconds][1]);
   }
 
-  if (time === 0 && !suddenDeath) {
+  if (time === 0 && !suddenDeath && !gameOverAwaitingNext) {
     pauseMatchTimer();
     homeScoreValue === awayScoreValue ? startSuddenDeath() : endGame();
   }
 }
 
 function toggleTimer() {
+  if (gameOverAwaitingNext) {
+    advanceToNextTimedGame();
+    return;
+  }
+
   if (centerDisplayMode !== 'timer') return;
   if (timeoutActive) { cancelTimeoutAndRestore(); return; }
   running ? pauseMatchTimer() : startMatchTimer();
@@ -693,6 +720,8 @@ function setCenterMode(mode) {
   localStorage.setItem(STORAGE.mode, mode);
 
   if (mode !== 'timer') {
+    gameOverAwaitingNext = false;
+    setNextGameHintVisible(false);
     pauseMatchTimer();
     blitz = false;
     suddenDeath = false;
@@ -815,7 +844,7 @@ function loadCenterDisplaySettings() {
 }
 
 function startTimeout() {
-  if (timeoutActive) return;
+  if (timeoutActive || gameOverAwaitingNext) return;
   timeoutActive = true;
   wasRunningBeforeTimeout = centerDisplayMode === 'timer' && running;
   pauseMatchTimer();
@@ -869,6 +898,8 @@ function updateBlitzDisplay() {
 }
 
 function scoreVisual(side) {
+  if (gameOverAwaitingNext) return;
+
   if (centerDisplayMode === 'timer' && running) {
     pauseMatchTimer();
   }
@@ -914,10 +945,33 @@ function endGame() {
   suddenDeath = false;
   blitz = false;
   updateBlitzDisplay();
+
+  if (centerDisplayMode === 'timer') {
+    gameOverAwaitingNext = true;
+    setNextGameHintVisible(true);
+    scheduleCenterFit();
+  }
+}
+
+function setNextGameHintVisible(visible) {
+  const hint = document.getElementById('nextGameHint');
+  hint.hidden = !visible;
+  hint.style.setProperty('display', visible ? 'block' : 'none', 'important');
+}
+
+function advanceToNextTimedGame() {
+  if (!gameOverAwaitingNext) return;
+  gameOverAwaitingNext = false;
+  setNextGameHintVisible(false);
+  swapSides();
+  restartGame();
+  window.scrollTo(0, 0);
 }
 
 function restartGame() {
   pauseMatchTimer();
+  gameOverAwaitingNext = false;
+  setNextGameHintVisible(false);
   if (timeoutActive) {
     clearInterval(timeoutInterval);
     timeoutInterval = null;
